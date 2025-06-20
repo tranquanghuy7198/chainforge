@@ -7,13 +7,14 @@ import {
   CheckCircleOutlined,
   PauseCircleOutlined,
 } from "@ant-design/icons";
-import { Blockchain } from "../../utils/constants";
+import { useAppSelector } from "../../redux/hook";
 
 const WalletCard: React.FC<{
   wallet: Wallet;
   onWalletUpdate: (wallet: Wallet) => void;
-  blockchains: Blockchain[];
-}> = ({ wallet, onWalletUpdate, blockchains }) => {
+}> = ({ wallet, onWalletUpdate }) => {
+  const blockchains = useAppSelector((state) => state.blockchain.blockchains);
+
   return (
     <Card
       hoverable

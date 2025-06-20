@@ -32,7 +32,6 @@ const items: MenuItem[] = [
 export default function Dashboard(props: any) {
   const dispatch = useAppDispatch();
   const wallets = useAppSelector((state) => state.wallet.wallets);
-  const blockchains = useAppSelector((state) => state.blockchain.blockchains);
   let [selectedKey, setSelectedKey] = useState<string>("blockchains");
   let [connectWallet, setConnectWallet] = useState<boolean>(false);
 
@@ -81,7 +80,6 @@ export default function Dashboard(props: any) {
             key={key}
             wallet={wallet}
             onWalletUpdate={(wallet) => dispatch(updateWallet(wallet))}
-            blockchains={blockchains}
           />
         ))}
       </Drawer>
