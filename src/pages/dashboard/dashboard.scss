@@ -1,0 +1,75 @@
+@import "../../styles.scss";
+
+html,
+body {
+  margin: 0px;
+  height: 100%;
+  width: 100%;
+}
+
+.float-btn {
+  width: 60px;
+  height: 60px;
+}
+
+.float-btn-icon {
+  font-size: 20px;
+}
+
+.main-screen {
+  position: absolute;
+  top: 0px;
+  bottom: 0px;
+  left: 0px;
+  right: 0px;
+}
+
+.left-area {
+  background-color: $primary !important;
+  height: 100vh;
+}
+
+.profile-logo-container {
+  display: flex;
+  align-items: center;
+  padding-left: 40px;
+  height: 80px;
+}
+
+.profile-logo {
+  height: 40px;
+  width: auto;
+  margin-right: 15px;
+}
+
+.profile-title {
+  font-size: 20px;
+  font-weight: bold;
+  color: #ffffff;
+}
+
+.ant-menu {
+  padding-top: 30px;
+  background-color: $primary !important;
+}
+
+.ant-menu-item {
+  padding-left: 40px !important;
+  padding-right: 60px !important;
+}
+
+.ant-menu-item-selected {
+  background-color: $secondary !important;
+}
+
+.page-header {
+  box-shadow: 0px 0px 6px 0px rgba(0, 0, 0, 0.2);
+}
+
+.header-title {
+  color: $secondary;
+}
+
+.queue-anim {
+  margin: 50px;
+}

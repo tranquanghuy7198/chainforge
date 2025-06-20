@@ -1,0 +1,39 @@
+@import "../../styles.scss";
+
+.wallet-card {
+  margin-bottom: 10px;
+  width: 100%;
+  height: min-content;
+}
+
+.wallet-card-content {
+  display: flex;
+  flex-flow: row;
+  width: 100%;
+}
+
+.wallet-logo {
+  margin-right: 20px;
+  width: 50px !important;
+  height: 50px !important;
+}
+
+.wallet-title {
+  width: 100%;
+}
+
+.wallet-name {
+  font-weight: bold;
+  font-size: 20px;
+}
+
+.wallet-info-container {
+  display: flex;
+  flex-flow: row;
+  align-items: center;
+}
+
+.wallet-info {
+  margin-left: 5px;
+  font-weight: bold;
+}

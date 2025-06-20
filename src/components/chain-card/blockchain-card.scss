@@ -1,0 +1,41 @@
+@import "../../styles.scss";
+
+.blockchain-card {
+  width: 320px;
+  height: min-content;
+}
+
+.blockchain-card-content {
+  display: flex;
+  flex-flow: row;
+  width: 100%;
+}
+
+.blockchain-logo {
+  margin-top: 10px;
+  margin-right: 20px;
+  max-width: 50px;
+  max-height: 50px;
+}
+
+.blockchain-title {
+  display: flex;
+  flex-flow: row;
+  // align-items: start;
+}
+
+.blockchain-name {
+  color: $secondary;
+  font-weight: bold;
+  font-size: 20px;
+}
+
+.blockchain-mainnet {
+  margin-left: 5px;
+  margin-top: 5px;
+}
+
+.blockchain-explorer {
+  color: $secondary;
+  cursor: pointer;
+}
