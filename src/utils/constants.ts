@@ -1,3 +1,5 @@
+export const CONTRACT_TEMPLATE_KEY = "contract-templates";
+
 export enum NetworkCluster {
   Ethereum = "ethereum",
   Klaytn = "klaytn",
@@ -25,4 +27,18 @@ export type Blockchain = {
   networkCluster: NetworkCluster;
   logo: string;
   isTestnet: boolean;
+};
+
+export type ContractTemplate = {
+  name: string;
+  abi: Record<string, any>[];
+  bytecode: string;
+  flattenSource: string;
+  networkClusters: NetworkCluster[];
+};
+
+export type DeployedContract = {
+  name: string;
+  abi: Record<string, any>[];
+  addresses: { blockchainId: string; address: string; package?: string }[];
 };
