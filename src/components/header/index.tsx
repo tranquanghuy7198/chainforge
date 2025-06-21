@@ -1,5 +1,6 @@
 import { Input, Select } from "antd";
 import React from "react";
+import "./header.scss";
 
 const Header: React.FC<{
   header: string;
