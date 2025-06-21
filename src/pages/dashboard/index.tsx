@@ -2,6 +2,7 @@ import { Drawer, FloatButton, Layout, Menu, MenuProps } from "antd";
 import {
   AppstoreOutlined,
   FileProtectOutlined,
+  FileTextOutlined,
   WalletOutlined,
 } from "@ant-design/icons";
 import "./dashboard.scss";
@@ -25,6 +26,11 @@ const items: MenuItem[] = [
   {
     key: "contract-templates",
     label: "Contract Templates",
+    icon: <FileTextOutlined />,
+  },
+  {
+    key: "contracts",
+    label: "Contracts",
     icon: <FileProtectOutlined />,
   },
 ];
