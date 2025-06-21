@@ -33,7 +33,7 @@ const Header: React.FC<{
           maxTagCount={"responsive"}
         />
         <Input.Search
-          placeholder="Search blockchains"
+          placeholder="Search"
           onSearch={(value) => onSearched(value)}
           className="page-search"
           allowClear
