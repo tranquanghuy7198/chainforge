@@ -3,9 +3,9 @@ import "./blockchains.scss";
 import React, { useEffect, useState } from "react";
 import BlockchainCard from "../../components/chain-card";
 import { Content } from "antd/es/layout/layout";
-import { Input, Select } from "antd";
 import { Blockchain } from "../../utils/constants";
 import { useAppSelector } from "../../redux/hook";
+import Header from "../../components/header";
 
 const TESTNET: string = "testnet";
 const MAINNET: string = "mainnet";
@@ -38,26 +38,15 @@ const Blockchains: React.FC = () => {
 
   return (
     <div className="page">
-      <div className="page-header">
-        <h1 className="page-title">Blockchains</h1>
-        <div className="page-filter">
-          <Select
-            defaultValue={[MAINNET, TESTNET]}
-            className="page-select"
-            mode="multiple"
-            options={[
-              { value: MAINNET, label: "Mainnet" },
-              { value: TESTNET, label: "Testnet" },
-            ]}
-            onChange={(values: string[]) => setSelectedValues(values)}
-          />
-          <Input.Search
-            placeholder="Search blockchains"
-            onSearch={(value) => setSearchedValue(value)}
-            className="page-search"
-          />
-        </div>
-      </div>
+      <Header
+        header="Blockchains"
+        options={[
+          { value: MAINNET, label: "Mainnet" },
+          { value: TESTNET, label: "Testnet" },
+        ]}
+        onSelected={setSelectedValues}
+        onSearched={setSearchedValue}
+      />
       <Content className="item-dashboard">
         {displayedBlockchains.map((blockchain) => (
           <BlockchainCard blockchain={blockchain} />
