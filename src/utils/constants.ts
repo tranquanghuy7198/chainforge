@@ -9,7 +9,6 @@ export enum NetworkCluster {
   Sui = "sui",
   Cosmos = "cosmos",
   FlowChain = "flowchain",
-  ImmutableX = "immutablex",
 }
 
 export type Blockchain = {

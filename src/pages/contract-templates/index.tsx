@@ -19,9 +19,7 @@ const ContractTemplates: React.FC = () => {
   const [displayedTemplates, setDisplayedTemplates] = useState<
     ContractTemplate[]
   >([]);
-  const [selectedNetworkClusters, setSelectedNetworkClusters] = useState<
-    string[]
-  >(Object.values(NetworkCluster).map((cluster) => cluster.toString()));
+  const [selectedClusters, setSelectedClusters] = useState<string[]>([]);
   const [searchedName, setSearchedName] = useState<string>();
 
   useEffect(() => {
@@ -32,7 +30,7 @@ const ContractTemplates: React.FC = () => {
           !template.name.toLowerCase().includes(searchedName.toLowerCase())
         )
           return false;
-        for (const selectedNetworkCluster of selectedNetworkClusters)
+        for (const selectedNetworkCluster of selectedClusters)
           if (
             !template.networkClusters
               .map((cluster) => cluster.toString())
@@ -42,7 +40,7 @@ const ContractTemplates: React.FC = () => {
         return true;
       })
     );
-  }, [contractTemplates, selectedNetworkClusters, searchedName]);
+  }, [contractTemplates, selectedClusters, searchedName]);
 
   return (
     <div className="page">
@@ -52,8 +50,9 @@ const ContractTemplates: React.FC = () => {
           value: cluster.toString(),
           label: capitalize(cluster.toString()),
         }))}
-        onSelected={setSelectedNetworkClusters}
+        onSelected={setSelectedClusters}
         onSearched={setSearchedName}
+        defaultSelectAll={false}
       />
       <Content className="item-dashboard">
         {displayedTemplates.map((template) => (

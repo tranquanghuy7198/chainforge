@@ -29,6 +29,21 @@ $success: #52c41a;
   height: 100vh;
 }
 
+.item-dashboard {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  height: 100%;
+  overflow-y: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  padding-bottom: 2rem;
+}
+
+.item-dashboard::-webkit-scrollbar {
+  display: none;
+}
+
 /* stylelint-disable at-rule-no-unknown */
 html,
 body {

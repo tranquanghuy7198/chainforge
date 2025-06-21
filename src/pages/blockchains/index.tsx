@@ -46,6 +46,7 @@ const Blockchains: React.FC = () => {
         ]}
         onSelected={setSelectedValues}
         onSearched={setSearchedValue}
+        defaultSelectAll
       />
       <Content className="item-dashboard">
         {displayedBlockchains.map((blockchain) => (

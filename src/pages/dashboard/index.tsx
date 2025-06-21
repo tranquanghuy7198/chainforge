@@ -7,12 +7,12 @@ import {
 import "./dashboard.scss";
 import { useEffect, useState } from "react";
 import Blockchains from "../blockchains";
-import Contracts from "../contracts";
 import WalletCard from "../../components/wallet";
 import { useAppDispatch, useAppSelector } from "../../redux/hook";
 import { fetchBlockchains } from "../../api/blockchains";
 import { setBlockchains } from "../../redux/reducers/blockchain";
 import { updateWallet } from "../../redux/reducers/wallet";
+import ContractTemplates from "../contract-templates";
 
 type MenuItem = Required<MenuProps>["items"][number];
 
@@ -23,8 +23,8 @@ const items: MenuItem[] = [
     icon: <AppstoreOutlined />,
   },
   {
-    key: "contracts",
-    label: "Contracts",
+    key: "contract-templates",
+    label: "Contract Templates",
     icon: <FileProtectOutlined />,
   },
 ];
@@ -56,14 +56,17 @@ export default function Dashboard(props: any) {
       </Layout.Sider>
       <Layout>
         {selectedKey === "blockchains" && <Blockchains key={"blockchains"} />}
-        {selectedKey === "contracts" && <Contracts key={"contracts"} />}
+        {selectedKey === "contract-templates" && (
+          <ContractTemplates key={"contract-templates"} />
+        )}
       </Layout>
       <FloatButton
         className="float-btn"
         type="primary"
         icon={<WalletOutlined className="float-btn-icon" />}
         badge={{
-          count: Object.values(wallets).map((wallet) => wallet.address).length,
+          count: Object.values(wallets).map((wallet) => wallet.address != null)
+            .length,
           color: "green",
         }}
         onClick={() => setConnectWallet(true)}

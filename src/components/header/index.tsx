@@ -7,13 +7,16 @@ const Header: React.FC<{
   options: { value: string; label: string }[];
   onSelected: (selectedValues: string[]) => void;
   onSearched: (value: string) => void;
-}> = ({ header, options, onSelected, onSearched }) => {
+  defaultSelectAll: boolean;
+}> = ({ header, options, onSelected, onSearched, defaultSelectAll }) => {
   return (
     <div className="page-header">
       <h1 className="page-title">{header}</h1>
       <div className="page-filter">
         <Select
-          defaultValue={options.map((option) => option.value)}
+          defaultValue={
+            defaultSelectAll ? options.map((option) => option.value) : []
+          }
           className="page-select"
           mode="multiple"
           options={options}
