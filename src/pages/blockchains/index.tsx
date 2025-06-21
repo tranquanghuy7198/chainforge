@@ -51,7 +51,7 @@ const Blockchains: React.FC = () => {
       />
       <Content className="item-dashboard">
         {displayedBlockchains.map((blockchain) => (
-          <BlockchainCard blockchain={blockchain} />
+          <BlockchainCard key={blockchain.id} blockchain={blockchain} />
         ))}
       </Content>
     </div>

@@ -85,6 +85,7 @@ const ContractTemplates: React.FC = () => {
 
   const saveContractTemplate = (template: ContractTemplate) => {
     setContractTemplates([...contractTemplates, template]);
+    setAddTemplate(false);
     notification.success({
       message: "Contract Created",
       description: "A new contract template has been created",
@@ -108,7 +109,7 @@ const ContractTemplates: React.FC = () => {
       />
       <Content className="item-dashboard">
         {displayedTemplates.map((template) => (
-          <ContractTemplateCard contractTemplate={template} />
+          <ContractTemplateCard key={template.id} contractTemplate={template} />
         ))}
       </Content>
       <Drawer
