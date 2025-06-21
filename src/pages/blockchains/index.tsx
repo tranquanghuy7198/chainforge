@@ -46,6 +46,7 @@ const Blockchains: React.FC = () => {
         ]}
         onSelected={setSelectedValues}
         onSearched={setSearchedValue}
+        onAddRequested={() => {}}
         defaultSelectAll
       />
       <Content className="item-dashboard">

@@ -52,6 +52,7 @@ const ContractTemplates: React.FC = () => {
         }))}
         onSelected={setSelectedClusters}
         onSearched={setSearchedName}
+        onAddRequested={() => {}}
         defaultSelectAll={false}
       />
       <Content className="item-dashboard">
