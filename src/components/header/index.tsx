@@ -21,11 +21,14 @@ const Header: React.FC<{
           mode="multiple"
           options={options}
           onChange={(values: string[]) => onSelected(values)}
+          allowClear
+          maxTagCount={"responsive"}
         />
         <Input.Search
           placeholder="Search blockchains"
           onSearch={(value) => onSearched(value)}
           className="page-search"
+          allowClear
         />
       </div>
     </div>
