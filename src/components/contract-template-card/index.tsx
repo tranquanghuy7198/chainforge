@@ -3,7 +3,6 @@ import "./contract-template-card.scss";
 import { ContractTemplate } from "../../utils/constants";
 import { useAppSelector } from "../../redux/hook";
 import { Button, Card, Image, message, Tooltip } from "antd";
-import { capitalize } from "../../utils/utils";
 import {
   CloudUploadOutlined,
   CopyOutlined,
@@ -48,7 +47,7 @@ const ContractTemplateCard: React.FC<{
         </Tooltip>,
       ]}
     >
-      <div className="template-name">
+      <span className="template-name">
         {contractTemplate.name}
         {Array.from(
           new Map(
@@ -62,7 +61,7 @@ const ContractTemplateCard: React.FC<{
               .map((blockchain) => [blockchain.logo, blockchain])
           ).values()
         ).map((blockchain) => (
-          <Tooltip title={capitalize(blockchain.name)} arrow={false}>
+          <Tooltip title={blockchain.name} arrow={false}>
             <Image
               key={blockchain.id}
               src={blockchain.logo}
@@ -71,7 +70,7 @@ const ContractTemplateCard: React.FC<{
             />
           </Tooltip>
         ))}
-      </div>
+      </span>
       <div className="template-component">
         {[
           { label: "ABI", value: JSON.stringify(contractTemplate.abi) },
@@ -82,7 +81,10 @@ const ContractTemplateCard: React.FC<{
             <Button type="link" onClick={() => openText(value)}>
               {label}
             </Button>
-            <CopyOutlined onClick={() => copyText(value)} />
+            <CopyOutlined
+              onClick={() => copyText(value)}
+              className="copy-info"
+            />
           </div>
         ))}
       </div>

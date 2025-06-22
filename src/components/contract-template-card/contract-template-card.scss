@@ -6,12 +6,10 @@
 }
 
 .template-name {
-  display: flex;
-  flex-flow: row;
+  word-break: break-word;
   color: $secondary;
   font-weight: bold;
   font-size: 20px;
-  align-items: center;
 }
 
 .template-chain {
@@ -24,4 +22,8 @@
   display: flex;
   flex-flow: column;
   align-items: start;
+}
+
+.copy-info {
+  color: rgb(168, 168, 168);
 }
