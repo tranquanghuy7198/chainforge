@@ -13,6 +13,15 @@ import { capitalize } from "../../utils/utils";
 import { Button, Drawer, Form, Input, notification, Select } from "antd";
 import { v4 } from "uuid";
 
+type ContractTemplateForm = {
+  id: string;
+  name: string;
+  abi: string;
+  bytecode: string;
+  flattenSource: string;
+  networkClusters: string[];
+};
+
 const ContractTemplates: React.FC = () => {
   const [contractTemplates, setContractTemplates] = useLocalStorageState<
     ContractTemplate[]
@@ -22,7 +31,8 @@ const ContractTemplates: React.FC = () => {
   >([]);
   const [selectedClusters, setSelectedClusters] = useState<string[]>([]);
   const [searchedName, setSearchedName] = useState<string>();
-  let [addTemplate, setAddTemplate] = useState<boolean>(false);
+  const [openTemplateForm, setOpenTemplateForm] = useState<boolean>(false);
+  const [templateForm, setTemplateForm] = useState<ContractTemplateForm>();
 
   useEffect(() => {
     setDisplayedTemplates(
@@ -50,13 +60,7 @@ const ContractTemplates: React.FC = () => {
     bytecode,
     flattenSource,
     networkClusters,
-  }: {
-    name: string;
-    abi: string;
-    bytecode: string;
-    flattenSource: string;
-    networkClusters: string[];
-  }): ContractTemplate => {
+  }: ContractTemplateForm): ContractTemplate => {
     const parsedAbi = JSON.parse(abi);
     if (
       !Array.isArray(parsedAbi) ||
@@ -72,7 +76,7 @@ const ContractTemplates: React.FC = () => {
       throw new Error("Invalid ABI");
     }
     return {
-      id: v4(),
+      id: templateForm ? templateForm.id : v4(),
       name,
       abi: parsedAbi,
       bytecode,
@@ -84,11 +88,16 @@ const ContractTemplates: React.FC = () => {
   };
 
   const saveContractTemplate = (template: ContractTemplate) => {
-    setContractTemplates([...contractTemplates, template]);
-    setAddTemplate(false);
+    setContractTemplates(
+      contractTemplates.some((t) => t.id === template.id)
+        ? contractTemplates.map((t) => (t.id === template.id ? template : t))
+        : [...contractTemplates, template]
+    );
+    setOpenTemplateForm(false);
+    setTemplateForm(undefined);
     notification.success({
-      message: "Contract Created",
-      description: "A new contract template has been created",
+      message: "Contract Saved",
+      description: "A contract template has been saved",
     });
   };
 
@@ -96,6 +105,24 @@ const ContractTemplates: React.FC = () => {
     setContractTemplates(
       contractTemplates.filter((template) => template.id !== id)
     );
+  };
+
+  const editContractTemplate = (id: string) => {
+    const template = contractTemplates.find((template) => template.id === id);
+    if (!template) notification.error({ message: "Template not found" });
+    else {
+      setTemplateForm({
+        id: template.id,
+        name: template.name,
+        abi: JSON.stringify(template.abi),
+        bytecode: template.bytecode,
+        flattenSource: template.flattenSource,
+        networkClusters: template.networkClusters.map((cluster) =>
+          cluster.toString()
+        ),
+      });
+      setOpenTemplateForm(true);
+    }
   };
 
   return (
@@ -109,7 +136,8 @@ const ContractTemplates: React.FC = () => {
         onSelected={setSelectedClusters}
         onSearched={setSearchedName}
         onAddRequested={() => {
-          setAddTemplate(true);
+          setTemplateForm(undefined);
+          setOpenTemplateForm(true);
         }}
         defaultSelectAll={false}
       />
@@ -119,19 +147,21 @@ const ContractTemplates: React.FC = () => {
             key={template.id}
             contractTemplate={template}
             onDeleteTemplate={deleteContractTemplate}
+            onEditTemplate={editContractTemplate}
           />
         ))}
       </Content>
       <Drawer
         width={700}
         title="Add Contract Template"
-        open={addTemplate}
+        open={openTemplateForm}
         closable={true}
-        onClose={() => setAddTemplate(false)}
+        onClose={() => setOpenTemplateForm(false)}
       >
         <Form
           name="add-contract-template"
           layout="horizontal"
+          initialValues={templateForm}
           onFinish={(values) =>
             saveContractTemplate(parseToContractTemplate(values))
           }
@@ -160,7 +190,7 @@ const ContractTemplates: React.FC = () => {
           </Form.Item>
           <Form.Item>
             <Button type="primary" htmlType="submit">
-              Add Template
+              Save Template
             </Button>
           </Form.Item>
         </Form>
