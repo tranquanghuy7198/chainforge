@@ -138,7 +138,7 @@ const ContractTemplates: React.FC = () => {
         }))}
         onSelected={setSelectedClusters}
         onSearched={setSearchedName}
-        onAddRequested={() => setTemplateForm({ open: true })}
+        onAddRequested={() => setTemplateForm({ open: true, form: undefined })}
         defaultSelectAll={false}
       />
       <Content className="item-dashboard">
@@ -153,7 +153,9 @@ const ContractTemplates: React.FC = () => {
       </Content>
       <Drawer
         width={700}
-        title="Add Contract Template"
+        title={
+          templateForm.form ? templateForm.form.name : "Add Contract Template"
+        }
         open={templateForm.open}
         closable={true}
         onClose={() => setTemplateForm({ ...templateForm, open: false })}
