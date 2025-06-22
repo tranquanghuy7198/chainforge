@@ -12,6 +12,7 @@ import ContractTemplateCard from "../../components/contract-template-card";
 import { capitalize } from "../../utils/utils";
 import { Button, Drawer, Form, Input, notification, Select } from "antd";
 import { v4 } from "uuid";
+import { useForm } from "antd/es/form/Form";
 
 type ContractTemplateForm = {
   id: string;
@@ -35,6 +36,11 @@ const ContractTemplates: React.FC = () => {
     open: boolean;
     form?: ContractTemplateForm;
   }>({ open: false, form: undefined });
+  const [form] = useForm();
+
+  useEffect(() => {
+    if (templateForm.open) form.resetFields();
+  }, [form, templateForm]);
 
   useEffect(() => {
     setDisplayedTemplates(
@@ -161,6 +167,7 @@ const ContractTemplates: React.FC = () => {
         onClose={() => setTemplateForm({ ...templateForm, open: false })}
       >
         <Form
+          form={form}
           name="add-contract-template"
           layout="horizontal"
           initialValues={templateForm.form}
