@@ -113,7 +113,7 @@ const ContractTemplates: React.FC = () => {
         ))}
       </Content>
       <Drawer
-        width={500}
+        width={700}
         title="Add Contract Template"
         open={addTemplate}
         closable={true}
