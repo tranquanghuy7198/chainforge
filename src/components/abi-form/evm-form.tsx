@@ -42,6 +42,11 @@ const EvmForm: React.FC<{
                   <Input placeholder={param.type} />
                 </Form.Item>
               ))}
+              {func.stateMutability === "payable" && (
+                <Form.Item name="payable" label="Payment" required>
+                  <Input placeholder="Wei amount to pay" />
+                </Form.Item>
+              )}
             </Form>
           ))}
       </div>
