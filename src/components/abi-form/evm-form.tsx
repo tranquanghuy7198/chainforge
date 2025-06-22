@@ -10,11 +10,33 @@ const EvmForm: React.FC<{
   abi: any;
 }> = ({ networkClusters, action, abi }) => {
   const blockchains = useAppSelector((state) => state.blockchain.blockchains);
+  const wallets = useAppSelector((state) => state.wallet.wallets);
+
   return (
     <div>
       <Form name="wallet-form" layout="horizontal" onFinish={(values) => {}}>
         <Form.Item name="wallet" label="Wallet" required>
-          <Select />
+          <Select
+            options={Object.values(wallets)
+              .filter((wallet) =>
+                networkClusters.includes(wallet.networkCluster)
+              )
+              .map((wallet) => ({
+                label: wallet.constructor.name,
+                value: wallet.key,
+                emoji: wallet.ui.icon,
+              }))}
+            optionRender={(option) => (
+              <Space align="center">
+                <Image
+                  src={option.data.emoji}
+                  className="select-icon"
+                  preview={false}
+                />
+                <div>{option.data.label}</div>
+              </Space>
+            )}
+          />
         </Form.Item>
         <Form.Item name="blockchain" label="Blockchain" required>
           <Select
@@ -27,7 +49,11 @@ const EvmForm: React.FC<{
               }))}
             optionRender={(option) => (
               <Space align="center">
-                <Image src={option.data.emoji} className="select-icon" />
+                <Image
+                  src={option.data.emoji}
+                  className="select-icon"
+                  preview={false}
+                />
                 <div>{option.data.label}</div>
               </Space>
             )}
