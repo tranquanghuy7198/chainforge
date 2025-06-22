@@ -31,8 +31,10 @@ const ContractTemplates: React.FC = () => {
   >([]);
   const [selectedClusters, setSelectedClusters] = useState<string[]>([]);
   const [searchedName, setSearchedName] = useState<string>();
-  const [openTemplateForm, setOpenTemplateForm] = useState<boolean>(false);
-  const [templateForm, setTemplateForm] = useState<ContractTemplateForm>();
+  const [templateForm, setTemplateForm] = useState<{
+    open: boolean;
+    form?: ContractTemplateForm;
+  }>({ open: false, form: undefined });
 
   useEffect(() => {
     setDisplayedTemplates(
@@ -76,7 +78,7 @@ const ContractTemplates: React.FC = () => {
       throw new Error("Invalid ABI");
     }
     return {
-      id: templateForm ? templateForm.id : v4(),
+      id: templateForm.form ? templateForm.form.id : v4(),
       name,
       abi: parsedAbi,
       bytecode,
@@ -93,8 +95,7 @@ const ContractTemplates: React.FC = () => {
         ? contractTemplates.map((t) => (t.id === template.id ? template : t))
         : [...contractTemplates, template]
     );
-    setOpenTemplateForm(false);
-    setTemplateForm(undefined);
+    setTemplateForm({ open: false });
     notification.success({
       message: "Contract Saved",
       description: "A contract template has been saved",
@@ -112,16 +113,18 @@ const ContractTemplates: React.FC = () => {
     if (!template) notification.error({ message: "Template not found" });
     else {
       setTemplateForm({
-        id: template.id,
-        name: template.name,
-        abi: JSON.stringify(template.abi),
-        bytecode: template.bytecode,
-        flattenSource: template.flattenSource,
-        networkClusters: template.networkClusters.map((cluster) =>
-          cluster.toString()
-        ),
+        open: true,
+        form: {
+          id: template.id,
+          name: template.name,
+          abi: JSON.stringify(template.abi),
+          bytecode: template.bytecode,
+          flattenSource: template.flattenSource,
+          networkClusters: template.networkClusters.map((cluster) =>
+            cluster.toString()
+          ),
+        },
       });
-      setOpenTemplateForm(true);
     }
   };
 
@@ -135,10 +138,7 @@ const ContractTemplates: React.FC = () => {
         }))}
         onSelected={setSelectedClusters}
         onSearched={setSearchedName}
-        onAddRequested={() => {
-          setTemplateForm(undefined);
-          setOpenTemplateForm(true);
-        }}
+        onAddRequested={() => setTemplateForm({ open: true })}
         defaultSelectAll={false}
       />
       <Content className="item-dashboard">
@@ -154,14 +154,14 @@ const ContractTemplates: React.FC = () => {
       <Drawer
         width={700}
         title="Add Contract Template"
-        open={openTemplateForm}
+        open={templateForm.open}
         closable={true}
-        onClose={() => setOpenTemplateForm(false)}
+        onClose={() => setTemplateForm({ ...templateForm, open: false })}
       >
         <Form
           name="add-contract-template"
           layout="horizontal"
-          initialValues={templateForm}
+          initialValues={templateForm.form}
           onFinish={(values) =>
             saveContractTemplate(parseToContractTemplate(values))
           }
