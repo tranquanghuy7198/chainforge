@@ -11,6 +11,12 @@ export enum NetworkCluster {
   FlowChain = "flowchain",
 }
 
+export enum AbiAction {
+  Deploy = "deploy",
+  Read = "read",
+  Write = "write",
+}
+
 export type Blockchain = {
   id: string;
   code: string;
@@ -42,3 +48,20 @@ export type DeployedContract = {
   abi: Record<string, any>[];
   addresses: { blockchainId: string; address: string; package?: string }[];
 };
+
+type EvmAbiField = {
+  internalType: string;
+  name: string;
+  type: string;
+};
+
+type EvmAbiFunction = {
+  name?: string; // No name for constructor
+  inputs: EvmAbiField[];
+  outputs?: any; // No outputs for constructor
+  stateMutability: "view" | "payable" | "nonpayable";
+  type: "constructor" | "function" | "event";
+  anonymous?: boolean; // For events only
+};
+
+export type EvmAbi = EvmAbiFunction[];

@@ -168,7 +168,7 @@ const ContractTemplates: React.FC = () => {
       >
         <Form
           form={form}
-          name="add-contract-template"
+          name="save-contract-template"
           layout="horizontal"
           initialValues={templateForm.form}
           onFinish={(values) =>
