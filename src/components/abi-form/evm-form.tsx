@@ -1,12 +1,15 @@
 import React from "react";
 import { AbiAction, EvmAbi, NetworkCluster } from "../../utils/constants";
-import { Form, Input, Select } from "antd";
+import { Form, Image, Input, Select, Space } from "antd";
+import { useAppSelector } from "../../redux/hook";
+import "./abi-form.scss";
 
 const EvmForm: React.FC<{
   networkClusters: NetworkCluster[];
   action: AbiAction;
   abi: any;
 }> = ({ networkClusters, action, abi }) => {
+  const blockchains = useAppSelector((state) => state.blockchain.blockchains);
   return (
     <div>
       <Form name="wallet-form" layout="horizontal" onFinish={(values) => {}}>
@@ -14,7 +17,21 @@ const EvmForm: React.FC<{
           <Select />
         </Form.Item>
         <Form.Item name="blockchain" label="Blockchain" required>
-          <Select />
+          <Select
+            options={blockchains
+              .filter((chain) => networkClusters.includes(chain.networkCluster))
+              .map((chain) => ({
+                label: chain.name,
+                value: chain.id,
+                emoji: chain.logo,
+              }))}
+            optionRender={(option) => (
+              <Space align="center">
+                <Image src={option.data.emoji} className="select-icon" />
+                <div>{option.data.label}</div>
+              </Space>
+            )}
+          />
         </Form.Item>
       </Form>
       <div>
