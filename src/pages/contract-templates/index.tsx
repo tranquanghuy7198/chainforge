@@ -92,6 +92,12 @@ const ContractTemplates: React.FC = () => {
     });
   };
 
+  const deleteContractTemplate = (id: string) => {
+    setContractTemplates(
+      contractTemplates.filter((template) => template.id !== id)
+    );
+  };
+
   return (
     <div className="page">
       <Header
@@ -109,7 +115,11 @@ const ContractTemplates: React.FC = () => {
       />
       <Content className="item-dashboard">
         {displayedTemplates.map((template) => (
-          <ContractTemplateCard key={template.id} contractTemplate={template} />
+          <ContractTemplateCard
+            key={template.id}
+            contractTemplate={template}
+            onDeleteTemplate={deleteContractTemplate}
+          />
         ))}
       </Content>
       <Drawer

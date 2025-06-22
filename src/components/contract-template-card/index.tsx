@@ -13,7 +13,8 @@ import {
 
 const ContractTemplateCard: React.FC<{
   contractTemplate: ContractTemplate;
-}> = ({ contractTemplate }) => {
+  onDeleteTemplate: (id: string) => void;
+}> = ({ contractTemplate, onDeleteTemplate }) => {
   const blockchains = useAppSelector((state) => state.blockchain.blockchains);
 
   const openText = (text: string) => {
@@ -40,7 +41,9 @@ const ContractTemplateCard: React.FC<{
           <EditOutlined />
         </Tooltip>,
         <Tooltip title="Delete" arrow={false}>
-          <DeleteOutlined />
+          <DeleteOutlined
+            onClick={() => onDeleteTemplate(contractTemplate.id)}
+          />
         </Tooltip>,
       ]}
     >
