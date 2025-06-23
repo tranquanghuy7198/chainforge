@@ -13,6 +13,8 @@ export const fetchBlockchains = async (): Promise<Blockchain[]> => {
       name: chain.name,
       rpcUrl: chain.rpc_url,
       explorerUrl: chain.explorer_url,
+      addressUrl: chain.address_url,
+      txUrl: chain.tx_url,
       nativeDenom: chain.native_denom,
       nativeToken: chain.native_token,
       nativeDecimal: chain.native_decimal,
