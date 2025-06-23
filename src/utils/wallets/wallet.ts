@@ -39,9 +39,10 @@ export class Wallet {
     blockchain: Blockchain,
     abi: any,
     bytecode: string,
-    args: any[]
+    args: any[],
+    payment?: string
   ): Promise<TxResponse> {
-    console.log(blockchain, abi, bytecode, args);
+    console.log(blockchain, abi, bytecode, args, payment);
     throw new Error("Method not implemented.");
   }
 

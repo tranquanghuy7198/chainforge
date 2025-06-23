@@ -47,12 +47,16 @@ export class MetaMask extends Wallet {
     blockchain: Blockchain,
     abi: any,
     bytecode: string,
-    args: any[]
+    args: any[],
+    payment?: string
   ): Promise<TxResponse> {
     await this.connect(blockchain);
     const signer = await this.provider!.getSigner();
     const factory = new ContractFactory(abi, bytecode, signer);
-    const contract = await factory.deploy(...args);
+    const contract = await factory.deploy(
+      ...args,
+      payment ? { value: payment } : {}
+    );
     await contract.waitForDeployment();
     return {
       contractAddress:
