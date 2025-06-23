@@ -1,17 +1,77 @@
-import React from "react";
-import { AbiAction, EvmAbi, NetworkCluster } from "../../utils/constants";
-import { Button, Collapse, Form, Input } from "antd";
+import React, { useState } from "react";
+import {
+  AbiAction,
+  Blockchain,
+  EvmAbi,
+  EvmAbiFunction,
+  NetworkCluster,
+} from "../../utils/constants";
+import { Button, Collapse, Form, Input, notification } from "antd";
 import { useAppSelector } from "../../redux/hook";
 import "./abi-form.scss";
 import AbiWalletForm from "./abi-wallet-form";
+import { Wallet } from "../../utils/wallets/wallet";
 
 const EvmForm: React.FC<{
   networkClusters: NetworkCluster[];
   action: AbiAction;
   abi: any;
-}> = ({ networkClusters, action, abi }) => {
+  bytecode: string;
+}> = ({ networkClusters, action, abi, bytecode }) => {
   const blockchains = useAppSelector((state) => state.blockchain.blockchains);
   const wallets = useAppSelector((state) => state.wallet.wallets);
+  const [wallet, setWallet] = useState<Wallet>();
+  const [blockchain, setBlockchain] = useState<Blockchain>();
+
+  const deploy = async (
+    wallet: Wallet,
+    blockchain: Blockchain,
+    func: EvmAbiFunction,
+    params: Record<string, string>
+  ) => {
+    console.log(params);
+    const [contractAddress, tx] = await wallet.deploy(
+      blockchain,
+      abi,
+      bytecode,
+      func.inputs.map((param) => {
+        const rawParam = params[param.name];
+        if (param.type.includes("tuple") || param.type.includes("[]"))
+          return JSON.parse(rawParam);
+        return rawParam;
+      })
+    );
+    console.log("CONTRACT", contractAddress);
+    console.log("TX", tx);
+  };
+
+  const read = async () => {};
+
+  const write = async () => {};
+
+  const execute = async (
+    func: EvmAbiFunction,
+    params: Record<string, string>
+  ) => {
+    if (!wallet) {
+      notification.error({
+        message: "No wallet selected",
+        description: "You must select a wallet first",
+      });
+      return;
+    }
+    if (!blockchain) {
+      notification.error({
+        message: "No blockchain selected",
+        description: "You must select a blockchain first",
+      });
+      return;
+    }
+    if (action === AbiAction.Deploy)
+      await deploy(wallet, blockchain, func, params);
+    if (action === AbiAction.Read) await read();
+    if (action === AbiAction.Write) await write();
+  };
 
   return (
     <div>
@@ -32,7 +92,7 @@ const EvmForm: React.FC<{
               <Form
                 name={func.name || func.type}
                 layout="horizontal"
-                onFinish={(values) => {}}
+                onFinish={(values) => execute(func, values)}
               >
                 {func.inputs.map((param) => (
                   <Form.Item

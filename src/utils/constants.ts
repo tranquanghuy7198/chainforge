@@ -55,7 +55,7 @@ type EvmAbiField = {
   type: string;
 };
 
-type EvmAbiFunction = {
+export type EvmAbiFunction = {
   name?: string; // No name for constructor
   inputs: EvmAbiField[];
   outputs?: any; // No outputs for constructor

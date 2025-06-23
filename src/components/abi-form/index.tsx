@@ -8,7 +8,8 @@ const AbiForm: React.FC<{
   networkClusters: NetworkCluster[];
   action: AbiAction;
   abi: any;
-}> = ({ networkClusters, action, abi }) => {
+  bytecode: string;
+}> = ({ networkClusters, action, abi, bytecode }) => {
   if (networkClusters.includes(NetworkCluster.Sui))
     return <SuiForm action={action} abi={abi} />;
   else if (networkClusters.includes(NetworkCluster.Solana))
@@ -19,7 +20,12 @@ const AbiForm: React.FC<{
     return <>Available soon</>;
   else
     return (
-      <EvmForm networkClusters={networkClusters} action={action} abi={abi} />
+      <EvmForm
+        networkClusters={networkClusters}
+        action={action}
+        abi={abi}
+        bytecode={bytecode}
+      />
     );
 };
 

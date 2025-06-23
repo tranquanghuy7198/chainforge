@@ -39,7 +39,7 @@ export class Wallet {
     blockchain: Blockchain,
     abi: any,
     bytecode: string,
-    args: (string | JSON)[]
+    args: any[]
   ): Promise<[string, string]> {
     console.log(blockchain, abi, bytecode, args);
     throw new Error("Method not implemented.");

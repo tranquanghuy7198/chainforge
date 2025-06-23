@@ -47,7 +47,7 @@ export class MetaMask extends Wallet {
     blockchain: Blockchain,
     abi: any,
     bytecode: string,
-    args: (string | JSON)[]
+    args: any[]
   ): Promise<[string, string]> {
     await this.connect(blockchain);
     const signer = await this.provider!.getSigner();

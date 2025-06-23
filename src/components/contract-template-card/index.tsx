@@ -103,6 +103,7 @@ const ContractTemplateCard: React.FC<{
           networkClusters={contractTemplate.networkClusters}
           action={AbiAction.Deploy}
           abi={contractTemplate.abi}
+          bytecode={contractTemplate.bytecode}
         />
       </Drawer>
     </>
