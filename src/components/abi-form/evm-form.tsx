@@ -20,6 +20,8 @@ import AbiWalletForm from "./abi-wallet-form";
 import { Wallet } from "../../utils/wallets/wallet";
 import { capitalize } from "../../utils/utils";
 
+const PAYABLE_AMOUNT = "payable";
+
 const EvmForm: React.FC<{
   networkClusters: NetworkCluster[];
   action: AbiAction;
@@ -47,7 +49,8 @@ const EvmForm: React.FC<{
         if (param.type.includes("tuple") || param.type.includes("[]"))
           return JSON.parse(rawParam);
         return rawParam;
-      })
+      }),
+      params[PAYABLE_AMOUNT]
     );
     setTxResponses({ ...txResponses, [func.name || func.type]: txResponse });
   };
@@ -117,7 +120,7 @@ const EvmForm: React.FC<{
                     </Form.Item>
                   ))}
                   {func.stateMutability === "payable" && (
-                    <Form.Item name="payable" label="Payment" required>
+                    <Form.Item name={PAYABLE_AMOUNT} label="Payment" required>
                       <Input placeholder="Wei amount to pay" />
                     </Form.Item>
                   )}
