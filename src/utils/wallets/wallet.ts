@@ -35,6 +35,16 @@ export class Wallet {
     //
   }
 
+  public async deploy(
+    blockchain: Blockchain,
+    abi: any,
+    bytecode: string,
+    args: (string | JSON)[]
+  ): Promise<[string, string]> {
+    console.log(blockchain, abi, bytecode, args);
+    throw new Error("Method not implemented.");
+  }
+
   public async readContract() {
     //
   }

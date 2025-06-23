@@ -1,4 +1,9 @@
-import { Eip1193Provider, ethers } from "ethers";
+import {
+  BrowserProvider,
+  ContractFactory,
+  Eip1193Provider,
+  ethers,
+} from "ethers";
 import { Wallet } from "../wallet";
 import { Blockchain, NetworkCluster } from "../../constants";
 import MetaMaskIcon from "../../../assets/wallets/metamask.svg";
@@ -6,7 +11,7 @@ import MetaMaskIcon from "../../../assets/wallets/metamask.svg";
 export class MetaMask extends Wallet {
   public key: string = "METAMASK";
   public inject: any;
-  public provider: any;
+  public provider: BrowserProvider | null;
 
   constructor() {
     let ethereum: Eip1193Provider = (window as any).ethereum?.providers
@@ -38,8 +43,27 @@ export class MetaMask extends Wallet {
     await this.switchChain(blockchain);
   }
 
+  public async deploy(
+    blockchain: Blockchain,
+    abi: any,
+    bytecode: string,
+    args: (string | JSON)[]
+  ): Promise<[string, string]> {
+    await this.connect(blockchain);
+    const signer = await this.provider!.getSigner();
+    const factory = new ContractFactory(abi, bytecode, signer);
+    const contract = await factory.deploy(...args);
+    await contract.waitForDeployment();
+    return [
+      typeof contract.target === "string"
+        ? contract.target
+        : await contract.target.getAddress(),
+      contract.deploymentTransaction()?.hash!,
+    ];
+  }
+
   public async switchChain(blockchain?: Blockchain) {
-    const { chainId } = await this.provider.getNetwork();
+    const { chainId } = await this.provider!.getNetwork();
     const chainIdStr = "0x" + chainId.toString(16);
     if (blockchain && chainIdStr !== blockchain.chainId) {
       // Switch here
