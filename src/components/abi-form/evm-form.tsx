@@ -16,55 +16,48 @@ const EvmForm: React.FC<{
   return (
     <div>
       <AbiWalletForm networkClusters={networkClusters} />
-      <div>
-        {(abi as EvmAbi)
+      <Collapse
+        accordion
+        items={(abi as EvmAbi)
           .filter((func) => {
             if (action === AbiAction.Deploy) return func.type === "constructor";
             if (action === AbiAction.Read)
               return func.stateMutability === "view";
             return func.type === "function" && func.stateMutability !== "view";
           })
-          .map((func) => (
-            <Collapse
-              accordion
-              key={func.name || func.type}
-              items={[
-                {
-                  key: func.name || func.type,
-                  label: func.name || func.type,
-                  children: (
-                    <Form
-                      name={func.name || func.type}
-                      layout="horizontal"
-                      onFinish={(values) => {}}
-                    >
-                      {func.inputs.map((param) => (
-                        <Form.Item
-                          key={param.name}
-                          name={param.name}
-                          label={param.name}
-                          required
-                        >
-                          <Input placeholder={param.type} />
-                        </Form.Item>
-                      ))}
-                      {func.stateMutability === "payable" && (
-                        <Form.Item name="payable" label="Payment" required>
-                          <Input placeholder="Wei amount to pay" />
-                        </Form.Item>
-                      )}
-                      <Form.Item>
-                        <Button type="primary" htmlType="submit">
-                          Execute
-                        </Button>
-                      </Form.Item>
-                    </Form>
-                  ),
-                },
-              ]}
-            />
-          ))}
-      </div>
+          .map((func) => ({
+            key: func.name || func.type,
+            label: func.name || func.type,
+            children: (
+              <Form
+                name={func.name || func.type}
+                layout="horizontal"
+                onFinish={(values) => {}}
+              >
+                {func.inputs.map((param) => (
+                  <Form.Item
+                    key={param.name}
+                    name={param.name}
+                    label={param.name}
+                    required
+                  >
+                    <Input placeholder={param.type} />
+                  </Form.Item>
+                ))}
+                {func.stateMutability === "payable" && (
+                  <Form.Item name="payable" label="Payment" required>
+                    <Input placeholder="Wei amount to pay" />
+                  </Form.Item>
+                )}
+                <Form.Item>
+                  <Button type="primary" htmlType="submit">
+                    Execute
+                  </Button>
+                </Form.Item>
+              </Form>
+            ),
+          }))}
+      />
     </div>
   );
 };
