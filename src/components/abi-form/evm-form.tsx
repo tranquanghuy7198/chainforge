@@ -7,7 +7,6 @@ import {
   DeployedContract,
   EvmAbi,
   EvmAbiFunction,
-  NetworkCluster,
   TxResponse,
 } from "../../utils/constants";
 import {

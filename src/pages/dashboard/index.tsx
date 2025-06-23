@@ -14,6 +14,7 @@ import { fetchBlockchains } from "../../api/blockchains";
 import { setBlockchains } from "../../redux/reducers/blockchain";
 import { updateWallet } from "../../redux/reducers/wallet";
 import ContractTemplates from "../contract-templates";
+import Contracts from "../contracts";
 
 type MenuItem = Required<MenuProps>["items"][number];
 
@@ -65,6 +66,7 @@ export default function Dashboard(props: any) {
         {selectedKey === "contract-templates" && (
           <ContractTemplates key={"contract-templates"} />
         )}
+        {selectedKey === "contracts" && <Contracts key={"contracts"} />}
       </Layout>
       <FloatButton
         className="float-btn"
