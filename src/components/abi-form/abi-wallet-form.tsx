@@ -1,16 +1,19 @@
 import { Form, Image, Select, Space } from "antd";
 import React from "react";
-import { NetworkCluster } from "../../utils/constants";
+import { Blockchain, NetworkCluster } from "../../utils/constants";
 import { useAppSelector } from "../../redux/hook";
+import { Wallet } from "../../utils/wallets/wallet";
 
-const AbiWalletForm: React.FC<{ networkClusters: NetworkCluster[] }> = ({
-  networkClusters,
-}) => {
+const AbiWalletForm: React.FC<{
+  networkClusters: NetworkCluster[];
+  onWalletSelected: (wallet: Wallet) => void;
+  onBlockchainSelected: (blockchain: Blockchain) => void;
+}> = ({ networkClusters, onWalletSelected, onBlockchainSelected }) => {
   const blockchains = useAppSelector((state) => state.blockchain.blockchains);
   const wallets = useAppSelector((state) => state.wallet.wallets);
 
   return (
-    <Form name="wallet-form" layout="horizontal" onFinish={(values) => {}}>
+    <Form name="wallet-form" layout="horizontal">
       <Form.Item name="wallet" label="Wallet" required>
         <Select
           options={Object.values(wallets)
@@ -30,6 +33,7 @@ const AbiWalletForm: React.FC<{ networkClusters: NetworkCluster[] }> = ({
               <div>{option.data.label}</div>
             </Space>
           )}
+          onChange={(walletKey: string) => onWalletSelected(wallets[walletKey])}
         />
       </Form.Item>
       <Form.Item name="blockchain" label="Blockchain" required>
@@ -51,6 +55,11 @@ const AbiWalletForm: React.FC<{ networkClusters: NetworkCluster[] }> = ({
               <div>{option.data.label}</div>
             </Space>
           )}
+          onChange={(blockchainId: string) =>
+            onBlockchainSelected(
+              blockchains.find((chain) => chain.id === blockchainId)!
+            )
+          }
         />
       </Form.Item>
     </Form>

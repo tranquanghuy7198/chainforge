@@ -29,7 +29,6 @@ const EvmForm: React.FC<{
     func: EvmAbiFunction,
     params: Record<string, string>
   ) => {
-    console.log(params);
     const [contractAddress, tx] = await wallet.deploy(
       blockchain,
       abi,
@@ -75,7 +74,11 @@ const EvmForm: React.FC<{
 
   return (
     <div>
-      <AbiWalletForm networkClusters={networkClusters} />
+      <AbiWalletForm
+        networkClusters={networkClusters}
+        onWalletSelected={setWallet}
+        onBlockchainSelected={setBlockchain}
+      />
       <Collapse
         accordion
         items={(abi as EvmAbi)
