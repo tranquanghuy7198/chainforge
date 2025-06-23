@@ -1,4 +1,5 @@
 export const CONTRACT_TEMPLATE_KEY = "contract-templates";
+export const CONTRACT_KEY = "contracts";
 
 export enum NetworkCluster {
   Ethereum = "ethereum",
@@ -46,8 +47,8 @@ export type ContractTemplate = {
 };
 
 export type DeployedContract = {
-  name: string;
-  abi: Record<string, any>[];
+  id: string;
+  template: ContractTemplate;
   addresses: { blockchainId: string; address: string; package?: string }[];
 };
 

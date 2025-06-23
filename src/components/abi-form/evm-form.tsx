@@ -2,6 +2,9 @@ import React, { useState } from "react";
 import {
   AbiAction,
   Blockchain,
+  CONTRACT_KEY,
+  ContractTemplate,
+  DeployedContract,
   EvmAbi,
   EvmAbiFunction,
   NetworkCluster,
@@ -19,20 +22,58 @@ import "./abi-form.scss";
 import AbiWalletForm from "./abi-wallet-form";
 import { Wallet } from "../../utils/wallets/wallet";
 import { capitalize } from "../../utils/utils";
+import useLocalStorageState from "use-local-storage-state";
+import { v4 } from "uuid";
 
 const PAYABLE_AMOUNT = "payable";
 
 const EvmForm: React.FC<{
-  networkClusters: NetworkCluster[];
   action: AbiAction;
-  abi: any;
-  bytecode: string;
-}> = ({ networkClusters, action, abi, bytecode }) => {
+  contractTemplate: ContractTemplate;
+}> = ({ action, contractTemplate }) => {
+  const [deployedContracts, setDeployedContracts] = useLocalStorageState<
+    DeployedContract[]
+  >(CONTRACT_KEY, { defaultValue: [] });
   const [wallet, setWallet] = useState<Wallet>();
   const [blockchain, setBlockchain] = useState<Blockchain>();
   const [txResponses, setTxResponses] = useState<Record<string, TxResponse>>(
     {}
   );
+
+  const saveDeployedContract = (blockchain: Blockchain, address: string) => {
+    setDeployedContracts(
+      deployedContracts.some(
+        (contract) => contract.template.id === contractTemplate.id
+      )
+        ? deployedContracts.map((contract) =>
+            contract.template.id === contractTemplate.id
+              ? {
+                  ...contract,
+                  addresses: [
+                    ...contract.addresses,
+                    {
+                      blockchainId: blockchain.id,
+                      address: address!,
+                    },
+                  ],
+                }
+              : contract
+          )
+        : [
+            ...deployedContracts,
+            {
+              id: v4(),
+              template: contractTemplate,
+              addresses: [
+                {
+                  blockchainId: blockchain.id,
+                  address: address!,
+                },
+              ],
+            },
+          ]
+    );
+  };
 
   const deploy = async (
     wallet: Wallet,
@@ -42,8 +83,8 @@ const EvmForm: React.FC<{
   ) => {
     const txResponse = await wallet.deploy(
       blockchain,
-      abi,
-      bytecode,
+      contractTemplate.abi,
+      contractTemplate.bytecode,
       func.inputs.map((param) => {
         const rawParam = params[param.name];
         if (param.type.includes("tuple") || param.type.includes("[]"))
@@ -53,6 +94,7 @@ const EvmForm: React.FC<{
       params[PAYABLE_AMOUNT]
     );
     setTxResponses({ ...txResponses, [func.name || func.type]: txResponse });
+    saveDeployedContract(blockchain, txResponse.contractAddress!);
   };
 
   const read = async () => {};
@@ -86,13 +128,13 @@ const EvmForm: React.FC<{
   return (
     <div>
       <AbiWalletForm
-        networkClusters={networkClusters}
+        networkClusters={contractTemplate.networkClusters}
         onWalletSelected={setWallet}
         onBlockchainSelected={setBlockchain}
       />
       <Collapse
         accordion
-        items={(abi as EvmAbi)
+        items={(contractTemplate.abi as EvmAbi)
           .filter((func) => {
             if (action === AbiAction.Deploy) return func.type === "constructor";
             if (action === AbiAction.Read)
