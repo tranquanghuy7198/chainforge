@@ -25,6 +25,8 @@ export type Blockchain = {
   name: string;
   rpcUrl: string;
   explorerUrl: string;
+  addressUrl: string;
+  txUrl: string;
   nativeDenom: string;
   nativeToken: string;
   nativeDecimal: number;
@@ -65,3 +67,9 @@ export type EvmAbiFunction = {
 };
 
 export type EvmAbi = EvmAbiFunction[];
+
+export type TxResponse = {
+  contractAddress?: string; // Deploy
+  txHash?: string; // Deploy + Write
+  data?: string; // Read
+};

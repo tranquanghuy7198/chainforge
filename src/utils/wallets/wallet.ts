@@ -1,4 +1,4 @@
-import { Blockchain, NetworkCluster } from "../constants";
+import { Blockchain, NetworkCluster, TxResponse } from "../constants";
 
 export const WALLET_STORAGE = "wallets";
 
@@ -40,7 +40,7 @@ export class Wallet {
     abi: any,
     bytecode: string,
     args: any[]
-  ): Promise<[string, string]> {
+  ): Promise<TxResponse> {
     console.log(blockchain, abi, bytecode, args);
     throw new Error("Method not implemented.");
   }

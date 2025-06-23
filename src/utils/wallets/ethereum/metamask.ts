@@ -5,7 +5,7 @@ import {
   ethers,
 } from "ethers";
 import { Wallet } from "../wallet";
-import { Blockchain, NetworkCluster } from "../../constants";
+import { Blockchain, NetworkCluster, TxResponse } from "../../constants";
 import MetaMaskIcon from "../../../assets/wallets/metamask.svg";
 
 export class MetaMask extends Wallet {
@@ -48,18 +48,19 @@ export class MetaMask extends Wallet {
     abi: any,
     bytecode: string,
     args: any[]
-  ): Promise<[string, string]> {
+  ): Promise<TxResponse> {
     await this.connect(blockchain);
     const signer = await this.provider!.getSigner();
     const factory = new ContractFactory(abi, bytecode, signer);
     const contract = await factory.deploy(...args);
     await contract.waitForDeployment();
-    return [
-      typeof contract.target === "string"
-        ? contract.target
-        : await contract.target.getAddress(),
-      contract.deploymentTransaction()?.hash!,
-    ];
+    return {
+      contractAddress:
+        typeof contract.target === "string"
+          ? contract.target
+          : await contract.target.getAddress(),
+      txHash: contract.deploymentTransaction()?.hash,
+    };
   }
 
   public async switchChain(blockchain?: Blockchain) {
