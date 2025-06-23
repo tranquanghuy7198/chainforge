@@ -2,14 +2,14 @@ import React, { useState } from "react";
 import "./contract-template-card.scss";
 import { AbiAction, ContractTemplate } from "../../utils/constants";
 import { useAppSelector } from "../../redux/hook";
-import { Button, Card, Drawer, Image, message, Tooltip } from "antd";
+import { Button, Card, Drawer, Image, Tooltip } from "antd";
 import {
   CloudUploadOutlined,
-  CopyOutlined,
   DeleteOutlined,
   EditOutlined,
 } from "@ant-design/icons";
 import AbiForm from "../abi-form";
+import Paragraph from "antd/es/typography/Paragraph";
 
 const ContractTemplateCard: React.FC<{
   contractTemplate: ContractTemplate;
@@ -23,12 +23,6 @@ const ContractTemplateCard: React.FC<{
     const blob = new Blob([text], { type: "text/plain" });
     const url = URL.createObjectURL(blob);
     window.open(url, "_blank");
-  };
-
-  const copyText = (text: string) => {
-    navigator.clipboard.writeText(text);
-    message.success("Copied!");
-    console.log(text);
   };
 
   return (
@@ -81,13 +75,11 @@ const ContractTemplateCard: React.FC<{
             { label: "Flatten Source", value: contractTemplate.flattenSource },
           ].map(({ label, value }) => (
             <div>
-              <Button type="link" onClick={() => openText(value)}>
-                {label}
-              </Button>
-              <CopyOutlined
-                onClick={() => copyText(value)}
-                className="copy-info"
-              />
+              <Paragraph copyable={{ text: value, tooltips: false }}>
+                <Button type="link" onClick={() => openText(value)}>
+                  {label}
+                </Button>
+              </Paragraph>
             </div>
           ))}
         </div>
