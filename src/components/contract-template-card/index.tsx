@@ -92,10 +92,8 @@ const ContractTemplateCard: React.FC<{
         onClose={() => setOpenDeploy(false)}
       >
         <AbiForm
-          networkClusters={contractTemplate.networkClusters}
           action={AbiAction.Deploy}
-          abi={contractTemplate.abi}
-          bytecode={contractTemplate.bytecode}
+          contractTemplate={contractTemplate}
         />
       </Drawer>
     </>
