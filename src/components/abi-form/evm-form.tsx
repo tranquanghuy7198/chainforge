@@ -1,6 +1,6 @@
 import React from "react";
 import { AbiAction, EvmAbi, NetworkCluster } from "../../utils/constants";
-import { Form, Input } from "antd";
+import { Button, Collapse, Form, Input } from "antd";
 import { useAppSelector } from "../../redux/hook";
 import "./abi-form.scss";
 import AbiWalletForm from "./abi-wallet-form";
@@ -25,28 +25,44 @@ const EvmForm: React.FC<{
             return func.type === "function" && func.stateMutability !== "view";
           })
           .map((func) => (
-            <Form
+            <Collapse
+              accordion
               key={func.name || func.type}
-              name={func.name || func.type}
-              layout="horizontal"
-              onFinish={(values) => {}}
-            >
-              {func.inputs.map((param) => (
-                <Form.Item
-                  key={param.name}
-                  name={param.name}
-                  label={param.name}
-                  required
-                >
-                  <Input placeholder={param.type} />
-                </Form.Item>
-              ))}
-              {func.stateMutability === "payable" && (
-                <Form.Item name="payable" label="Payment" required>
-                  <Input placeholder="Wei amount to pay" />
-                </Form.Item>
-              )}
-            </Form>
+              items={[
+                {
+                  key: func.name || func.type,
+                  label: func.name || func.type,
+                  children: (
+                    <Form
+                      name={func.name || func.type}
+                      layout="horizontal"
+                      onFinish={(values) => {}}
+                    >
+                      {func.inputs.map((param) => (
+                        <Form.Item
+                          key={param.name}
+                          name={param.name}
+                          label={param.name}
+                          required
+                        >
+                          <Input placeholder={param.type} />
+                        </Form.Item>
+                      ))}
+                      {func.stateMutability === "payable" && (
+                        <Form.Item name="payable" label="Payment" required>
+                          <Input placeholder="Wei amount to pay" />
+                        </Form.Item>
+                      )}
+                      <Form.Item>
+                        <Button type="primary" htmlType="submit">
+                          Execute
+                        </Button>
+                      </Form.Item>
+                    </Form>
+                  ),
+                },
+              ]}
+            />
           ))}
       </div>
     </div>
