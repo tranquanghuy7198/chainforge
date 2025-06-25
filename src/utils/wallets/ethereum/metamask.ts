@@ -7,6 +7,7 @@ import {
 import { Wallet } from "../wallet";
 import { Blockchain, NetworkCluster, TxResponse } from "../../constants";
 import MetaMaskIcon from "../../../assets/wallets/metamask.svg";
+import { toMetaMaskCompatibility } from "./utils";
 
 export class MetaMask extends Wallet {
   public key: string = "METAMASK";
@@ -71,7 +72,26 @@ export class MetaMask extends Wallet {
     const { chainId } = await this.provider!.getNetwork();
     const chainIdStr = "0x" + chainId.toString(16);
     if (blockchain && chainIdStr !== blockchain.chainId) {
-      // Switch here
+      try {
+        await this.inject.request({
+          method: "wallet_switchEthereumChain",
+          params: [{ chainId: blockchain.chainId }],
+        });
+      } catch (switchError) {
+        if ((switchError as { code: number }).code === 4902) {
+          try {
+            await this.inject.request({
+              method: "wallet_addEthereumChain",
+              params: [toMetaMaskCompatibility(blockchain)],
+            });
+            await this.switchChain(blockchain);
+          } catch (addError) {
+            throw new Error(`Failed to add chain ${chainIdStr}`);
+          }
+        } else {
+          throw new Error(`Failed to switch to chain ${chainIdStr}`);
+        }
+      }
 
       // Then set result
       this.chainId = blockchain.chainId;
