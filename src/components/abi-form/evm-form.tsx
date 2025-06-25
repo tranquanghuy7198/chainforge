@@ -107,7 +107,36 @@ const EvmForm: React.FC<{
     saveDeployedContract(blockchain, txResponse.contractAddress!);
   };
 
-  const read = async () => {};
+  const read = async (
+    wallet: Wallet,
+    blockchain: Blockchain,
+    func: EvmAbiFunction,
+    params: Record<string, string>
+  ) => {
+    if (!contractAddress) {
+      notification.error({
+        message: "No contract selected",
+        description: "You must select a contract first",
+      });
+      return;
+    }
+
+    const response = await wallet.readContract(
+      blockchain,
+      contractAddress.address,
+      contractTemplate.abi,
+      func.name!,
+      func.inputs.map((param) => {
+        const rawParam = params[param.name];
+        try {
+          return JSON.parse(rawParam);
+        } catch {
+          return rawParam;
+        }
+      })
+    );
+    setTxResponses({ ...txResponses, [func.name!]: response });
+  };
 
   const write = async () => {};
 
@@ -131,7 +160,7 @@ const EvmForm: React.FC<{
     }
     if (action === AbiAction.Deploy)
       await deploy(wallet, blockchain, func, params);
-    if (action === AbiAction.Read) await read();
+    if (action === AbiAction.Read) await read(wallet, blockchain, func, params);
     if (action === AbiAction.Write) await write();
   };
 
