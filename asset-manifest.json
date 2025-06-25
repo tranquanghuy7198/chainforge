@@ -1,17 +1,17 @@
 {
   "files": {
-    "main.css": "/chainforge/static/css/main.549d897b.css",
-    "main.js": "/chainforge/static/js/main.4a67eb2c.js",
+    "main.css": "/chainforge/static/css/main.20c9f15d.css",
+    "main.js": "/chainforge/static/js/main.cf3810d1.js",
     "static/js/453.97cd1bde.chunk.js": "/chainforge/static/js/453.97cd1bde.chunk.js",
     "static/media/sui.svg": "/chainforge/static/media/sui.1cea283c3515727fa97f04923ef52793.svg",
     "static/media/metamask.svg": "/chainforge/static/media/metamask.f3c2e9755cff0f06330d24930814e417.svg",
     "index.html": "/chainforge/index.html",
-    "main.549d897b.css.map": "/chainforge/static/css/main.549d897b.css.map",
-    "main.4a67eb2c.js.map": "/chainforge/static/js/main.4a67eb2c.js.map",
+    "main.20c9f15d.css.map": "/chainforge/static/css/main.20c9f15d.css.map",
+    "main.cf3810d1.js.map": "/chainforge/static/js/main.cf3810d1.js.map",
     "453.97cd1bde.chunk.js.map": "/chainforge/static/js/453.97cd1bde.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.549d897b.css",
-    "static/js/main.4a67eb2c.js"
+    "static/css/main.20c9f15d.css",
+    "static/js/main.cf3810d1.js"
   ]
 }
