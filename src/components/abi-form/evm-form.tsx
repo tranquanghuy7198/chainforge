@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
   AbiAction,
   Blockchain,
@@ -19,36 +19,26 @@ import {
   notification,
 } from "antd";
 import "./abi-form.scss";
-import AbiWalletForm from "./abi-wallet-form";
 import { Wallet } from "../../utils/wallets/wallet";
 import { capitalize } from "../../utils/utils";
 import useLocalStorageState from "use-local-storage-state";
 import { v4 } from "uuid";
-import { useAppSelector } from "../../redux/hook";
 
 const PAYABLE_AMOUNT = "payable";
 
 const EvmForm: React.FC<{
-  contractAddress?: ContractAddress;
   action: AbiAction;
   contractTemplate: ContractTemplate;
-}> = ({ contractAddress, action, contractTemplate }) => {
-  const blockchains = useAppSelector((state) => state.blockchain.blockchains);
+  contractAddress?: ContractAddress;
+  wallet?: Wallet;
+  blockchain?: Blockchain;
+}> = ({ action, contractTemplate, contractAddress, wallet, blockchain }) => {
   const [deployedContracts, setDeployedContracts] = useLocalStorageState<
     DeployedContract[]
   >(CONTRACT_KEY, { defaultValue: [] });
-  const [wallet, setWallet] = useState<Wallet>();
-  const [blockchain, setBlockchain] = useState<Blockchain>();
   const [txResponses, setTxResponses] = useState<Record<string, TxResponse>>(
     {}
   );
-
-  useEffect(() => {
-    const selectedChain = blockchains.find(
-      (chain) => chain.id === contractAddress?.blockchainId
-    );
-    if (selectedChain) setBlockchain(selectedChain);
-  }, [contractAddress, blockchains]);
 
   const saveDeployedContract = (blockchain: Blockchain, address: string) => {
     setDeployedContracts(
@@ -165,71 +155,62 @@ const EvmForm: React.FC<{
   };
 
   return (
-    <div>
-      <AbiWalletForm
-        contractAddress={contractAddress}
-        networkClusters={contractTemplate.networkClusters}
-        onWalletSelected={setWallet}
-        onBlockchainSelected={setBlockchain}
-      />
-      <Collapse
-        accordion
-        items={(contractTemplate.abi as EvmAbi)
-          .filter((func) => {
-            if (action === AbiAction.Deploy) return func.type === "constructor";
-            if (action === AbiAction.Read)
-              return func.stateMutability === "view";
-            return func.type === "function" && func.stateMutability !== "view";
-          })
-          .map((func) => ({
-            key: func.name || func.type,
-            label: func.name || func.type,
-            children: (
-              <>
-                <Form
-                  name={func.name || func.type}
-                  layout="horizontal"
-                  onFinish={(values) => execute(func, values)}
-                >
-                  {func.inputs.map((param) => (
-                    <Form.Item
-                      key={param.name}
-                      name={param.name}
-                      label={param.name}
-                      required
-                    >
-                      <Input placeholder={param.type} />
-                    </Form.Item>
-                  ))}
-                  {func.stateMutability === "payable" && (
-                    <Form.Item name={PAYABLE_AMOUNT} label="Payment" required>
-                      <Input placeholder="Wei amount to pay" />
-                    </Form.Item>
-                  )}
-                  <Form.Item>
-                    <Button type="primary" htmlType="submit">
-                      {capitalize(action.toString())}
-                    </Button>
+    <Collapse
+      accordion
+      items={(contractTemplate.abi as EvmAbi)
+        .filter((func) => {
+          if (action === AbiAction.Deploy) return func.type === "constructor";
+          if (action === AbiAction.Read) return func.stateMutability === "view";
+          return func.type === "function" && func.stateMutability !== "view";
+        })
+        .map((func) => ({
+          key: func.name || func.type,
+          label: func.name || func.type,
+          children: (
+            <>
+              <Form
+                name={func.name || func.type}
+                layout="horizontal"
+                onFinish={(values) => execute(func, values)}
+              >
+                {func.inputs.map((param) => (
+                  <Form.Item
+                    key={param.name}
+                    name={param.name}
+                    label={param.name}
+                    required
+                  >
+                    <Input placeholder={param.type} />
                   </Form.Item>
-                </Form>
-                {Object.keys(txResponses).includes(func.name || func.type) && (
-                  <Descriptions
-                    bordered
-                    size="small"
-                    items={Object.entries(
-                      txResponses[func.name || func.type]
-                    ).map(([key, value]) => ({
-                      key,
-                      label: capitalize(key),
-                      children: value,
-                    }))}
-                  />
+                ))}
+                {func.stateMutability === "payable" && (
+                  <Form.Item name={PAYABLE_AMOUNT} label="Payment" required>
+                    <Input placeholder="Wei amount to pay" />
+                  </Form.Item>
                 )}
-              </>
-            ),
-          }))}
-      />
-    </div>
+                <Form.Item>
+                  <Button type="primary" htmlType="submit">
+                    {capitalize(action.toString())}
+                  </Button>
+                </Form.Item>
+              </Form>
+              {Object.keys(txResponses).includes(func.name || func.type) && (
+                <Descriptions
+                  bordered
+                  size="small"
+                  items={Object.entries(
+                    txResponses[func.name || func.type]
+                  ).map(([key, value]) => ({
+                    key,
+                    label: capitalize(key),
+                    children: value,
+                  }))}
+                />
+              )}
+            </>
+          ),
+        }))}
+    />
   );
 };
 

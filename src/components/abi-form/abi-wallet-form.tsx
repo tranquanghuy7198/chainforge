@@ -84,4 +84,4 @@ const AbiWalletForm: React.FC<{
   );
 };
 
-export default React.memo(AbiWalletForm);
+export default AbiWalletForm;

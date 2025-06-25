@@ -8,6 +8,7 @@ import { Wallet } from "../wallet";
 import { Blockchain, NetworkCluster, TxResponse } from "../../constants";
 import MetaMaskIcon from "../../../assets/wallets/metamask.svg";
 import { toMetaMaskCompatibility } from "./utils";
+import SuperJSON from "superjson";
 
 export class MetaMask extends Wallet {
   public key: string = "METAMASK";
@@ -108,7 +109,9 @@ export class MetaMask extends Wallet {
     await this.connect(blockchain);
     const contract = new ethers.Contract(contractAddress, abi, this.provider);
     const response = await contract[method](...args);
-    return { data: response };
+    return {
+      data: JSON.stringify(JSON.parse(SuperJSON.stringify(response)).json),
+    };
   }
 
   public clone(): Wallet {
