@@ -167,7 +167,7 @@ const EvmForm: React.FC<{
                   )}
                   <Form.Item>
                     <Button type="primary" htmlType="submit">
-                      Execute
+                      {capitalize(action.toString())}
                     </Button>
                   </Form.Item>
                 </Form>

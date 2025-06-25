@@ -8,6 +8,7 @@ import {
   PauseCircleOutlined,
 } from "@ant-design/icons";
 import { useAppSelector } from "../../redux/hook";
+import { shorten } from "../../utils/utils";
 
 const WalletCard: React.FC<{
   wallet: Wallet;
@@ -42,11 +43,7 @@ const WalletCard: React.FC<{
               {wallet.address && <CheckCircleOutlined color="green" />}
               {!wallet.address && <PauseCircleOutlined color="red" />}
               <div className="wallet-info">
-                {wallet.address
-                  ? `${wallet.address?.slice(0, 10)}...${wallet.address?.slice(
-                      -8
-                    )}`
-                  : "Not Connected"}
+                {wallet.address ? shorten(wallet.address) : "Not Connected"}
               </div>
             </div>
             {wallet.chainId && (

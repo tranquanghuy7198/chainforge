@@ -1,1 +1,25 @@
 @import "../../styles.scss";
+
+.contract-name {
+  word-break: break-word;
+  color: $secondary;
+  font-weight: bold;
+  font-size: 20px;
+}
+
+.contract-card {
+  width: 300px;
+  height: min-content;
+}
+
+.contract-chain {
+  max-width: 20px;
+  max-height: 20px;
+  margin-right: 10px;
+}
+
+.contract-address {
+  display: flex;
+  flex-flow: row;
+  align-items: center;
+}
