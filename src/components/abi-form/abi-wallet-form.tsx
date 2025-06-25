@@ -1,5 +1,5 @@
 import { Form, Image, Select, Space } from "antd";
-import React from "react";
+import React, { useEffect } from "react";
 import {
   Blockchain,
   ContractAddress,
@@ -7,6 +7,7 @@ import {
 } from "../../utils/constants";
 import { useAppSelector } from "../../redux/hook";
 import { Wallet } from "../../utils/wallets/wallet";
+import { useForm } from "antd/es/form/Form";
 
 const AbiWalletForm: React.FC<{
   contractAddress?: ContractAddress;
@@ -19,11 +20,17 @@ const AbiWalletForm: React.FC<{
   onWalletSelected,
   onBlockchainSelected,
 }) => {
+  const [form] = useForm();
   const blockchains = useAppSelector((state) => state.blockchain.blockchains);
   const wallets = useAppSelector((state) => state.wallet.wallets);
 
+  useEffect(() => {
+    if (contractAddress?.blockchainId)
+      form.setFieldsValue({ blockchain: contractAddress.blockchainId });
+  }, [contractAddress?.blockchainId, form]);
+
   return (
-    <Form name="wallet-form" layout="horizontal">
+    <Form form={form} name="wallet-form" layout="horizontal">
       <Form.Item name="wallet" label="Wallet" required>
         <Select
           options={Object.values(wallets)
@@ -70,7 +77,6 @@ const AbiWalletForm: React.FC<{
               blockchains.find((chain) => chain.id === blockchainId)!
             )
           }
-          defaultValue={contractAddress?.blockchainId}
           disabled={contractAddress !== undefined}
         />
       </Form.Item>
@@ -78,4 +84,4 @@ const AbiWalletForm: React.FC<{
   );
 };
 
-export default AbiWalletForm;
+export default React.memo(AbiWalletForm);
