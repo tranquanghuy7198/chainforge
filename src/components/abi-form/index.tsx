@@ -2,20 +2,18 @@ import React from "react";
 import "./abi-form.scss";
 import {
   AbiAction,
-  Blockchain,
+  ContractAddress,
   ContractTemplate,
   NetworkCluster,
 } from "../../utils/constants";
 import EvmForm from "./evm-form";
 import SuiForm from "./sui-form";
-import { Wallet } from "../../utils/wallets/wallet";
 
 const AbiForm: React.FC<{
-  fixedWallet?: Wallet;
-  fixedBlockchain?: Blockchain;
+  contractAddress?: ContractAddress;
   action: AbiAction;
   contractTemplate: ContractTemplate;
-}> = ({ fixedWallet, fixedBlockchain, action, contractTemplate }) => {
+}> = ({ contractAddress, action, contractTemplate }) => {
   if (contractTemplate.networkClusters.includes(NetworkCluster.Sui))
     return <SuiForm action={action} abi={contractTemplate.abi} />;
   else if (contractTemplate.networkClusters.includes(NetworkCluster.Solana))
@@ -27,8 +25,7 @@ const AbiForm: React.FC<{
   else
     return (
       <EvmForm
-        fixedWallet={fixedWallet}
-        fixedBlockchain={fixedBlockchain}
+        contractAddress={contractAddress}
         action={action}
         contractTemplate={contractTemplate}
       />

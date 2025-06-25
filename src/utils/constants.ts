@@ -46,10 +46,16 @@ export type ContractTemplate = {
   networkClusters: NetworkCluster[];
 };
 
+export type ContractAddress = {
+  blockchainId: string;
+  address: string;
+  package?: string;
+};
+
 export type DeployedContract = {
   id: string;
   template: ContractTemplate;
-  addresses: { blockchainId: string; address: string; package?: string }[];
+  addresses: ContractAddress[];
 };
 
 type EvmAbiField = {

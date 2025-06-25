@@ -1,8 +1,9 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   AbiAction,
   Blockchain,
   CONTRACT_KEY,
+  ContractAddress,
   ContractTemplate,
   DeployedContract,
   EvmAbi,
@@ -23,25 +24,31 @@ import { Wallet } from "../../utils/wallets/wallet";
 import { capitalize } from "../../utils/utils";
 import useLocalStorageState from "use-local-storage-state";
 import { v4 } from "uuid";
+import { useAppSelector } from "../../redux/hook";
 
 const PAYABLE_AMOUNT = "payable";
 
 const EvmForm: React.FC<{
-  fixedWallet?: Wallet;
-  fixedBlockchain?: Blockchain;
+  contractAddress?: ContractAddress;
   action: AbiAction;
   contractTemplate: ContractTemplate;
-}> = ({ fixedWallet, fixedBlockchain, action, contractTemplate }) => {
+}> = ({ contractAddress, action, contractTemplate }) => {
+  const blockchains = useAppSelector((state) => state.blockchain.blockchains);
   const [deployedContracts, setDeployedContracts] = useLocalStorageState<
     DeployedContract[]
   >(CONTRACT_KEY, { defaultValue: [] });
-  const [wallet, setWallet] = useState<Wallet | undefined>(fixedWallet);
-  const [blockchain, setBlockchain] = useState<Blockchain | undefined>(
-    fixedBlockchain
-  );
+  const [wallet, setWallet] = useState<Wallet>();
+  const [blockchain, setBlockchain] = useState<Blockchain>();
   const [txResponses, setTxResponses] = useState<Record<string, TxResponse>>(
     {}
   );
+
+  useEffect(() => {
+    const selectedChain = blockchains.find(
+      (chain) => chain.id === contractAddress?.blockchainId
+    );
+    if (selectedChain) setBlockchain(selectedChain);
+  }, [contractAddress, blockchains]);
 
   const saveDeployedContract = (blockchain: Blockchain, address: string) => {
     setDeployedContracts(
@@ -131,8 +138,7 @@ const EvmForm: React.FC<{
   return (
     <div>
       <AbiWalletForm
-        fixedWallet={fixedWallet}
-        fixedBlockchain={fixedBlockchain}
+        contractAddress={contractAddress}
         networkClusters={contractTemplate.networkClusters}
         onWalletSelected={setWallet}
         onBlockchainSelected={setBlockchain}
