@@ -92,7 +92,7 @@ const ContractTemplateCard: React.FC<{
         onClose={() => setOpenDeploy(false)}
       >
         <AbiForm
-          action={AbiAction.Deploy}
+          defaultAction={AbiAction.Deploy}
           contractTemplate={contractTemplate}
         />
       </Drawer>

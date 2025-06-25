@@ -12,15 +12,17 @@ import SuiForm from "./sui-form";
 import AbiWalletForm from "./abi-wallet-form";
 import { Wallet } from "../../utils/wallets/wallet";
 import { useAppSelector } from "../../redux/hook";
+import { Radio } from "antd";
 
 const AbiForm: React.FC<{
-  action: AbiAction;
+  defaultAction: AbiAction;
   contractTemplate: ContractTemplate;
   contractAddress?: ContractAddress;
-}> = ({ contractAddress, action, contractTemplate }) => {
+}> = ({ contractAddress, defaultAction, contractTemplate }) => {
   const blockchains = useAppSelector((state) => state.blockchain.blockchains);
   const [wallet, setWallet] = useState<Wallet>();
   const [blockchain, setBlockchain] = useState<Blockchain>();
+  const [action, setAction] = useState<AbiAction>(defaultAction);
 
   useEffect(() => {
     const selectedChain = blockchains.find(
@@ -37,6 +39,17 @@ const AbiForm: React.FC<{
         onWalletSelected={setWallet}
         onBlockchainSelected={setBlockchain}
       />
+      {defaultAction !== AbiAction.Deploy && (
+        <Radio.Group
+          defaultValue={defaultAction}
+          onChange={(event) => setAction(event.target.value as AbiAction)}
+          buttonStyle="solid"
+          className="action-selector"
+        >
+          <Radio.Button value={AbiAction.Read}>Read Contract</Radio.Button>
+          <Radio.Button value={AbiAction.Write}>Write Contract</Radio.Button>
+        </Radio.Group>
+      )}
       {contractTemplate.networkClusters.includes(NetworkCluster.Sui) ? (
         <SuiForm action={action} abi={contractTemplate.abi} />
       ) : contractTemplate.networkClusters.includes(NetworkCluster.Solana) ? (

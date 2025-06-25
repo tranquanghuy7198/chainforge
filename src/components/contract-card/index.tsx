@@ -85,7 +85,7 @@ const ContractCard: React.FC<{ contract: DeployedContract }> = ({
       >
         <AbiForm
           contractAddress={contractAddress}
-          action={AbiAction.Read}
+          defaultAction={AbiAction.Read}
           contractTemplate={contract.template}
         />
       </Drawer>
