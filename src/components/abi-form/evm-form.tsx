@@ -27,14 +27,18 @@ import { v4 } from "uuid";
 const PAYABLE_AMOUNT = "payable";
 
 const EvmForm: React.FC<{
+  fixedWallet?: Wallet;
+  fixedBlockchain?: Blockchain;
   action: AbiAction;
   contractTemplate: ContractTemplate;
-}> = ({ action, contractTemplate }) => {
+}> = ({ fixedWallet, fixedBlockchain, action, contractTemplate }) => {
   const [deployedContracts, setDeployedContracts] = useLocalStorageState<
     DeployedContract[]
   >(CONTRACT_KEY, { defaultValue: [] });
-  const [wallet, setWallet] = useState<Wallet>();
-  const [blockchain, setBlockchain] = useState<Blockchain>();
+  const [wallet, setWallet] = useState<Wallet | undefined>(fixedWallet);
+  const [blockchain, setBlockchain] = useState<Blockchain | undefined>(
+    fixedBlockchain
+  );
   const [txResponses, setTxResponses] = useState<Record<string, TxResponse>>(
     {}
   );
@@ -127,6 +131,8 @@ const EvmForm: React.FC<{
   return (
     <div>
       <AbiWalletForm
+        fixedWallet={fixedWallet}
+        fixedBlockchain={fixedBlockchain}
         networkClusters={contractTemplate.networkClusters}
         onWalletSelected={setWallet}
         onBlockchainSelected={setBlockchain}

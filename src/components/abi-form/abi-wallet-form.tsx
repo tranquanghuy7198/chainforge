@@ -5,10 +5,18 @@ import { useAppSelector } from "../../redux/hook";
 import { Wallet } from "../../utils/wallets/wallet";
 
 const AbiWalletForm: React.FC<{
+  fixedWallet?: Wallet;
+  fixedBlockchain?: Blockchain;
   networkClusters: NetworkCluster[];
   onWalletSelected: (wallet: Wallet) => void;
   onBlockchainSelected: (blockchain: Blockchain) => void;
-}> = ({ networkClusters, onWalletSelected, onBlockchainSelected }) => {
+}> = ({
+  fixedWallet,
+  fixedBlockchain,
+  networkClusters,
+  onWalletSelected,
+  onBlockchainSelected,
+}) => {
   const blockchains = useAppSelector((state) => state.blockchain.blockchains);
   const wallets = useAppSelector((state) => state.wallet.wallets);
 
@@ -34,6 +42,8 @@ const AbiWalletForm: React.FC<{
             </Space>
           )}
           onChange={(walletKey: string) => onWalletSelected(wallets[walletKey])}
+          value={fixedWallet?.key}
+          disabled={fixedWallet !== undefined}
         />
       </Form.Item>
       <Form.Item name="blockchain" label="Blockchain" required>
@@ -60,6 +70,8 @@ const AbiWalletForm: React.FC<{
               blockchains.find((chain) => chain.id === blockchainId)!
             )
           }
+          value={fixedBlockchain?.id}
+          disabled={fixedBlockchain !== undefined}
         />
       </Form.Item>
     </Form>
