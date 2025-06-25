@@ -1,12 +1,15 @@
 import React, { useState } from "react";
-import { AbiAction, DeployedContract } from "../../utils/constants";
+import {
+  AbiAction,
+  ContractAddress,
+  DeployedContract,
+} from "../../utils/constants";
 import { Card, Drawer, Image, Tooltip } from "antd";
 import { useAppSelector } from "../../redux/hook";
 import {
   DeleteOutlined,
   EditOutlined,
   ExportOutlined,
-  EyeOutlined,
   QuestionCircleFilled,
 } from "@ant-design/icons";
 import "./contract-card.scss";
@@ -17,7 +20,7 @@ const ContractCard: React.FC<{ contract: DeployedContract }> = ({
   contract,
 }) => {
   const blockchains = useAppSelector((state) => state.blockchain.blockchains);
-  const [contractAction, setContractAction] = useState<AbiAction>();
+  const [contractAddress, setContractAddress] = useState<ContractAddress>();
 
   return (
     <>
@@ -25,11 +28,8 @@ const ContractCard: React.FC<{ contract: DeployedContract }> = ({
         hoverable
         className="contract-card"
         actions={[
-          <Tooltip title="Read Contract" arrow={false}>
-            <EyeOutlined onClick={() => setContractAction(AbiAction.Read)} />
-          </Tooltip>,
-          <Tooltip title="Write Contract" arrow={false}>
-            <EditOutlined onClick={() => setContractAction(AbiAction.Write)} />
+          <Tooltip title="Edit" arrow={false}>
+            <EditOutlined onClick={() => {}} />
           </Tooltip>,
           <Tooltip title="Delete" arrow={false}>
             <DeleteOutlined />
@@ -43,7 +43,10 @@ const ContractCard: React.FC<{ contract: DeployedContract }> = ({
               (chain) => chain.id === address.blockchainId
             );
             return (
-              <div className="contract-address">
+              <div
+                className="contract-address"
+                onClick={() => setContractAddress(address)}
+              >
                 <Tooltip
                   title={blockchain?.name ?? "Unknown blockchain"}
                   arrow={false}
@@ -68,13 +71,21 @@ const ContractCard: React.FC<{ contract: DeployedContract }> = ({
       </Card>
       <Drawer
         width={700}
-        title={contract.template.name}
-        open={contractAction !== undefined}
+        title={
+          <div>
+            {contract.template.name}{" "}
+            <a>
+              {shorten(contractAddress?.address ?? "")} <ExportOutlined />
+            </a>
+          </div>
+        }
+        open={contractAddress !== undefined}
         closable={true}
-        onClose={() => setContractAction(undefined)}
+        onClose={() => setContractAddress(undefined)}
       >
         <AbiForm
-          action={contractAction ?? AbiAction.Deploy}
+          contractAddress={contractAddress}
+          action={AbiAction.Read}
           contractTemplate={contract.template}
         />
       </Drawer>
