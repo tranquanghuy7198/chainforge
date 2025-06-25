@@ -52,7 +52,7 @@ export class Wallet {
     abi: any,
     method: string,
     args: any[]
-  ) {
+  ): Promise<TxResponse> {
     console.log(blockchain, contractAddress, abi, method, args);
     throw new Error("Method not implemented.");
   }

@@ -84,10 +84,11 @@ export class MetaMask extends Wallet {
     abi: any,
     method: string,
     args: any[]
-  ): Promise<void> {
+  ): Promise<TxResponse> {
     await this.connect(blockchain);
     const contract = new ethers.Contract(contractAddress, abi, this.provider);
-    return await contract[method](...args);
+    const response = await contract[method](...args);
+    return { data: response };
   }
 
   public clone(): Wallet {
