@@ -87,7 +87,7 @@ export class MetaMask extends Wallet {
   ): Promise<void> {
     await this.connect(blockchain);
     const contract = new ethers.Contract(contractAddress, abi, this.provider);
-    return await contract[method](...args.map((arg) => this.parseArg(arg)));
+    return await contract[method](...args);
   }
 
   public clone(): Wallet {

@@ -75,12 +75,4 @@ export class Wallet {
     newWallet.address = this.address;
     return newWallet;
   }
-
-  public parseArg(arg: any) {
-    try {
-      return JSON.parse(arg);
-    } catch (e) {
-      return arg;
-    }
-  }
 }
