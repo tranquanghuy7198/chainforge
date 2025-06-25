@@ -46,8 +46,15 @@ export class Wallet {
     throw new Error("Method not implemented.");
   }
 
-  public async readContract() {
-    //
+  public async readContract(
+    blockchain: Blockchain,
+    contractAddress: string,
+    abi: any,
+    method: string,
+    args: any[]
+  ) {
+    console.log(blockchain, contractAddress, abi, method, args);
+    throw new Error("Method not implemented.");
   }
 
   public async writeContract() {
@@ -67,5 +74,13 @@ export class Wallet {
     newWallet.key = this.key;
     newWallet.address = this.address;
     return newWallet;
+  }
+
+  public parseArg(arg: any) {
+    try {
+      return JSON.parse(arg);
+    } catch (e) {
+      return arg;
+    }
   }
 }

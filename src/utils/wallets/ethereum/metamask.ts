@@ -78,6 +78,18 @@ export class MetaMask extends Wallet {
     } else this.chainId = chainIdStr;
   }
 
+  public async readContract(
+    blockchain: Blockchain,
+    contractAddress: string,
+    abi: any,
+    method: string,
+    args: any[]
+  ): Promise<void> {
+    await this.connect(blockchain);
+    const contract = new ethers.Contract(contractAddress, abi, this.provider);
+    return await contract[method](...args.map((arg) => this.parseArg(arg)));
+  }
+
   public clone(): Wallet {
     let newWallet = super.clone() as MetaMask;
     newWallet.inject = this.inject;
