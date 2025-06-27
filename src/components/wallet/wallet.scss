@@ -1,4 +1,4 @@
-@import "../../styles.scss";
+@use "../../styles.scss" as *;
 
 .wallet-card {
   margin-bottom: 10px;
