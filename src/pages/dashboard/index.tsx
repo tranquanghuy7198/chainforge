@@ -15,6 +15,7 @@ import { setBlockchains } from "../../redux/reducers/blockchain";
 import { updateWallet } from "../../redux/reducers/wallet";
 import ContractTemplates from "../contract-templates";
 import Contracts from "../contracts";
+import ProductContact from "../../components/contact";
 
 type MenuItem = Required<MenuProps>["items"][number];
 
@@ -60,6 +61,7 @@ export default function Dashboard(props: any) {
           theme="dark"
           items={items}
         />
+        <ProductContact />
       </Layout.Sider>
       <Layout>
         {selectedKey === "blockchains" && <Blockchains key={"blockchains"} />}

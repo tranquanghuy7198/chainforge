@@ -4,8 +4,9 @@ $secondary: #235abc;
 $success: #52c41a;
 
 .page {
-  padding: 2rem;
+  padding: 0 2rem 2rem 2rem;
   height: 100vh;
+  overflow-y: hidden;
 }
 
 .item-dashboard {

@@ -24,6 +24,8 @@ body {
 .left-area {
   background-color: $primary !important;
   height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
 
 .profile-logo-container {
@@ -46,13 +48,14 @@ body {
 }
 
 .ant-menu {
-  padding-top: 30px;
   background-color: $primary !important;
+  flex: 1 !important;
+  overflow-y: auto;
 }
 
 .ant-menu-item {
   padding-left: 40px !important;
-  padding-right: 60px !important;
+  padding-right: 40px !important;
 }
 
 .ant-menu-item-selected {

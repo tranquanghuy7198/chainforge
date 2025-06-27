@@ -1,0 +1,17 @@
+.about-product {
+  padding: 10px 40px 10px 40px;
+  display: flex;
+  flex-flow: row;
+  align-items: center;
+  justify-content: space-evenly;
+}
+
+.product-contact {
+  font-size: 15px;
+  color: #d9d9d9;
+
+  :hover {
+    cursor: pointer;
+    color: white;
+  }
+}
