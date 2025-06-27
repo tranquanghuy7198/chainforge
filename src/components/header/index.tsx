@@ -1,6 +1,7 @@
 import { Button, Input, Select } from "antd";
 import React from "react";
 import "./header.scss";
+import { PlusCircleOutlined } from "@ant-design/icons";
 
 const Header: React.FC<{
   header: string;
@@ -38,7 +39,11 @@ const Header: React.FC<{
           className="page-search"
           allowClear
         />
-        <Button type="primary" shape="round" onClick={() => onAddRequested()}>
+        <Button
+          type="primary"
+          icon={<PlusCircleOutlined />}
+          onClick={() => onAddRequested()}
+        >
           Add
         </Button>
       </div>
