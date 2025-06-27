@@ -154,7 +154,8 @@ const EvmForm: React.FC<{
         } catch {
           return rawParam;
         }
-      })
+      }),
+      params[PAYABLE_AMOUNT]
     );
     setTxResponses({ ...txResponses, [func.name!]: response });
   };
