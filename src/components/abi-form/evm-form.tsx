@@ -23,6 +23,11 @@ import { Wallet } from "../../utils/wallets/wallet";
 import { capitalize } from "../../utils/utils";
 import useLocalStorageState from "use-local-storage-state";
 import { v4 } from "uuid";
+import {
+  CloudUploadOutlined,
+  EditOutlined,
+  EyeOutlined,
+} from "@ant-design/icons";
 
 const PAYABLE_AMOUNT = "payable";
 
@@ -190,9 +195,9 @@ const EvmForm: React.FC<{
     try {
       if (action === AbiAction.Deploy)
         await deploy(wallet, blockchain, func, params);
-      if (action === AbiAction.Read)
+      else if (action === AbiAction.Read)
         await read(wallet, blockchain, func, params);
-      if (action === AbiAction.Write)
+      else if (action === AbiAction.Write)
         await write(wallet, blockchain, func, params);
     } catch {
       notification.error({
@@ -240,7 +245,20 @@ const EvmForm: React.FC<{
                   </Form.Item>
                 )}
                 <Form.Item>
-                  <Button type="primary" htmlType="submit" loading={loading}>
+                  <Button
+                    type="primary"
+                    htmlType="submit"
+                    loading={loading}
+                    icon={
+                      action === AbiAction.Deploy ? (
+                        <CloudUploadOutlined />
+                      ) : action === AbiAction.Read ? (
+                        <EyeOutlined />
+                      ) : (
+                        <EditOutlined />
+                      )
+                    }
+                  >
                     {capitalize(action.toString())}
                   </Button>
                 </Form.Item>
