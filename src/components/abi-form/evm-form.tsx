@@ -39,6 +39,7 @@ const EvmForm: React.FC<{
   const [txResponses, setTxResponses] = useState<Record<string, TxResponse>>(
     {}
   );
+  const [loading, setLoading] = useState<boolean>(false);
 
   const saveDeployedContract = (blockchain: Blockchain, address: string) => {
     setDeployedContracts(
@@ -164,6 +165,7 @@ const EvmForm: React.FC<{
     func: EvmAbiFunction,
     params: Record<string, string>
   ) => {
+    // Check for necessary information
     if (!wallet) {
       notification.error({
         message: "No wallet selected",
@@ -178,11 +180,29 @@ const EvmForm: React.FC<{
       });
       return;
     }
-    if (action === AbiAction.Deploy)
-      await deploy(wallet, blockchain, func, params);
-    if (action === AbiAction.Read) await read(wallet, blockchain, func, params);
-    if (action === AbiAction.Write)
-      await write(wallet, blockchain, func, params);
+
+    // Pre-tx UI handling
+    setLoading(true);
+    const { [func.name || func.type]: _, ...newTxResponses } = txResponses;
+    setTxResponses(newTxResponses);
+
+    // Execute
+    try {
+      if (action === AbiAction.Deploy)
+        await deploy(wallet, blockchain, func, params);
+      if (action === AbiAction.Read)
+        await read(wallet, blockchain, func, params);
+      if (action === AbiAction.Write)
+        await write(wallet, blockchain, func, params);
+    } catch {
+      notification.error({
+        message: "Execution rejected",
+        description: "Execution was rejected by user",
+      });
+    }
+
+    // Post-tx UI handling
+    setLoading(false);
   };
 
   return (
@@ -211,16 +231,16 @@ const EvmForm: React.FC<{
                     label={param.name}
                     required
                   >
-                    <Input placeholder={param.type} />
+                    <Input placeholder={param.type} disabled={loading} />
                   </Form.Item>
                 ))}
                 {func.stateMutability === "payable" && (
                   <Form.Item name={PAYABLE_AMOUNT} label="Payment" required>
-                    <Input placeholder="Wei amount to pay" />
+                    <Input placeholder="Wei amount to pay" disabled={loading} />
                   </Form.Item>
                 )}
                 <Form.Item>
-                  <Button type="primary" htmlType="submit">
+                  <Button type="primary" htmlType="submit" loading={loading}>
                     {capitalize(action.toString())}
                   </Button>
                 </Form.Item>
