@@ -2,11 +2,7 @@ import React from "react";
 import { Wallet } from "../../utils/wallets/wallet";
 import { Card, Image } from "antd";
 import "./wallet.scss";
-import {
-  AppstoreOutlined,
-  CheckCircleOutlined,
-  PauseCircleOutlined,
-} from "@ant-design/icons";
+import { CheckCircleOutlined, PauseCircleOutlined } from "@ant-design/icons";
 import { useAppSelector } from "../../redux/hook";
 import { shorten } from "../../utils/utils";
 
@@ -48,10 +44,22 @@ const WalletCard: React.FC<{
             </div>
             {wallet.chainId && (
               <div className="wallet-info-container">
-                <AppstoreOutlined />
+                <Image
+                  src={
+                    blockchains.find(
+                      (blockchain) =>
+                        blockchain.chainId === wallet.chainId &&
+                        blockchain.networkCluster === wallet.networkCluster
+                    )?.logo
+                  }
+                  preview={false}
+                  className="wallet-chain-logo"
+                />
                 <div className="wallet-info">
                   {blockchains.find(
-                    (blockchain) => blockchain.chainId === wallet.chainId
+                    (blockchain) =>
+                      blockchain.chainId === wallet.chainId &&
+                      blockchain.networkCluster === wallet.networkCluster
                   )?.name || `Unknown network (${wallet.chainId})`}
                 </div>
               </div>
