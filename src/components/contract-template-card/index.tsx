@@ -2,11 +2,14 @@ import React, { useState } from "react";
 import "./contract-template-card.scss";
 import { AbiAction, ContractTemplate } from "../../utils/constants";
 import { useAppSelector } from "../../redux/hook";
-import { Button, Card, Drawer, Image, Tooltip } from "antd";
+import { Card, Drawer, Image, Space, Tooltip } from "antd";
 import {
   CloudUploadOutlined,
+  CodeOutlined,
   DeleteOutlined,
   EditOutlined,
+  FieldBinaryOutlined,
+  FileTextOutlined,
 } from "@ant-design/icons";
 import AbiForm from "../abi-form";
 import Paragraph from "antd/es/typography/Paragraph";
@@ -18,12 +21,6 @@ const ContractTemplateCard: React.FC<{
 }> = ({ contractTemplate, onDeleteTemplate, onEditTemplate }) => {
   const blockchains = useAppSelector((state) => state.blockchain.blockchains);
   const [openDeploy, setOpenDeploy] = useState<boolean>(false);
-
-  const openText = (text: string) => {
-    const blob = new Blob([text], { type: "text/plain" });
-    const url = URL.createObjectURL(blob);
-    window.open(url, "_blank");
-  };
 
   return (
     <>
@@ -70,15 +67,36 @@ const ContractTemplateCard: React.FC<{
         </span>
         <div className="template-component">
           {[
-            { label: "ABI", value: JSON.stringify(contractTemplate.abi) },
-            { label: "Bytecode", value: contractTemplate.bytecode },
-            { label: "Flatten Source", value: contractTemplate.flattenSource },
-          ].map(({ label, value }) => (
+            {
+              label: "ABI",
+              value: JSON.stringify(contractTemplate.abi),
+              icon: <FileTextOutlined className="template-icon" />,
+            },
+            {
+              label: "Bytecode",
+              value: contractTemplate.bytecode,
+              icon: <FieldBinaryOutlined className="template-icon" />,
+            },
+            {
+              label: "Flatten Source",
+              value: contractTemplate.flattenSource,
+              icon: <CodeOutlined className="template-icon" />,
+            },
+          ].map(({ label, value, icon }) => (
             <div>
               <Paragraph copyable={{ text: value, tooltips: false }}>
-                <Button type="link" onClick={() => openText(value)}>
-                  {label}
-                </Button>
+                <Space>
+                  {icon}
+                  <a
+                    href={URL.createObjectURL(
+                      new Blob([value], { type: "text/plain" })
+                    )}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    {label}
+                  </a>
+                </Space>
               </Paragraph>
             </div>
           ))}
