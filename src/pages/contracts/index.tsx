@@ -9,8 +9,10 @@ import {
 import ContractCard from "../../components/contract-card";
 import useLocalStorageState from "use-local-storage-state";
 import { capitalize } from "../../utils/utils";
+import { useAppSelector } from "../../redux/hook";
 
 const Contracts: React.FC = () => {
+  const blockchains = useAppSelector((state) => state.blockchain.blockchains);
   const [contracts, setContracts] = useLocalStorageState<DeployedContract[]>(
     CONTRACT_KEY,
     { defaultValue: [] }
@@ -33,15 +35,20 @@ const Contracts: React.FC = () => {
           return false;
         for (const selectedNetworkCluster of selectedClusters)
           if (
-            !contract.template.networkClusters
-              .map((cluster) => cluster.toString())
+            !blockchains
+              .filter((chain) =>
+                contract.addresses
+                  .map((address) => address.blockchainId)
+                  .includes(chain.id)
+              )
+              .map((chain) => chain.networkCluster.toString())
               .includes(selectedNetworkCluster)
           )
             return false;
         return true;
       })
     );
-  }, [contracts, selectedClusters, searchedName]);
+  }, [contracts, blockchains, selectedClusters, searchedName]);
 
   return (
     <div className="page">
