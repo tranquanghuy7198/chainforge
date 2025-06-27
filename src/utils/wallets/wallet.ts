@@ -57,8 +57,16 @@ export class Wallet {
     throw new Error("Method not implemented.");
   }
 
-  public async writeContract() {
-    //
+  public async writeContract(
+    blockchain: Blockchain,
+    contractAddress: string,
+    abi: any,
+    method: string,
+    args: any[],
+    payment?: string
+  ): Promise<TxResponse> {
+    console.log(blockchain, contractAddress, abi, method, args, payment);
+    throw new Error("Method not implemented.");
   }
 
   public async sign() {

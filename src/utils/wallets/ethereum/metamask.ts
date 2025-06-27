@@ -1,6 +1,7 @@
 import {
   BrowserProvider,
   ContractFactory,
+  ContractTransactionResponse,
   Eip1193Provider,
   ethers,
 } from "ethers";
@@ -111,6 +112,26 @@ export class MetaMask extends Wallet {
     const response = await contract[method](...args);
     return {
       data: JSON.stringify(JSON.parse(SuperJSON.stringify(response)).json),
+    };
+  }
+
+  public async writeContract(
+    blockchain: Blockchain,
+    contractAddress: string,
+    abi: any,
+    method: string,
+    args: any[],
+    payment?: string
+  ): Promise<TxResponse> {
+    await this.connect(blockchain);
+    const signer = await this.provider!.getSigner();
+    const contract = new ethers.Contract(contractAddress, abi, signer);
+    const response = (await contract[method](
+      ...args,
+      payment ? { value: payment } : {}
+    )) as ContractTransactionResponse;
+    return {
+      txHash: response.hash,
     };
   }
 
