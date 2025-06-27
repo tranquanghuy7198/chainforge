@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import {
   AbiAction,
+  ADDRESS_PATTERN,
   ContractAddress,
   DeployedContract,
 } from "../../utils/constants";
@@ -74,7 +75,16 @@ const ContractCard: React.FC<{ contract: DeployedContract }> = ({
         title={
           <div>
             {contract.template.name}{" "}
-            <a>
+            <a
+              href={blockchains
+                .find((chain) => chain.id === contractAddress?.blockchainId)
+                ?.addressUrl?.replaceAll(
+                  ADDRESS_PATTERN,
+                  contractAddress?.address || ""
+                )}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
               {shorten(contractAddress?.address ?? "")} <ExportOutlined />
             </a>
           </div>
