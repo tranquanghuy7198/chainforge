@@ -29,14 +29,14 @@ body {
 .profile-logo-container {
   display: flex;
   align-items: center;
-  padding-left: 40px;
+  justify-content: center;
+  gap: 15px;
   height: 80px;
 }
 
 .profile-logo {
-  height: 40px;
-  width: auto;
-  margin-right: 15px;
+  max-height: 30px;
+  max-width: 30px;
 }
 
 .profile-title {

@@ -1,4 +1,4 @@
-import { Drawer, FloatButton, Layout, Menu, MenuProps } from "antd";
+import { Drawer, FloatButton, Image, Layout, Menu, MenuProps } from "antd";
 import {
   AppstoreOutlined,
   FileProtectOutlined,
@@ -16,6 +16,7 @@ import { updateWallet } from "../../redux/reducers/wallet";
 import ContractTemplates from "../contract-templates";
 import Contracts from "../contracts";
 import ProductContact from "../../components/contact";
+import logo from "../../assets/chainforge.png";
 
 type MenuItem = Required<MenuProps>["items"][number];
 
@@ -48,11 +49,11 @@ export default function Dashboard(props: any) {
   }, []);
 
   return (
-    <Layout className="main-screen">
+    <Layout hasSider className="main-screen">
       <Layout.Sider className="left-area" width="auto">
         <div className="profile-logo-container">
-          <img className="profile-logo" src="logo.svg" alt="logo" />
-          <div className="profile-title">TOOLS</div>
+          <Image src={logo} preview={false} className="profile-logo" />
+          <div className="profile-title">CHAINFORGE</div>
         </div>
         <Menu
           defaultSelectedKeys={["blockchains"]}
