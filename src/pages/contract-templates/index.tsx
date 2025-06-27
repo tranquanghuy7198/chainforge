@@ -179,13 +179,16 @@ const ContractTemplates: React.FC = () => {
             <Input placeholder="Contract Name" />
           </Form.Item>
           <Form.Item name="abi" label="ABI" required>
-            <Input.TextArea placeholder="Contract ABI" rows={4} />
+            <Input.TextArea
+              placeholder="Contract ABI (EVM) or IDL (Solana)"
+              rows={4}
+            />
           </Form.Item>
           <Form.Item name="bytecode" label="Bytecode" required>
             <Input.TextArea placeholder="Contract bytecode" rows={4} />
           </Form.Item>
           <Form.Item name="flattenSource" label="Flatten Source" required>
-            <Input.TextArea rows={4} />
+            <Input.TextArea rows={4} placeholder="Contract flatten source" />
           </Form.Item>
           <Form.Item name="networkClusters" label="Network Clusters" required>
             <Select
