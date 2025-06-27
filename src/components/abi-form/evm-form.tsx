@@ -10,14 +10,7 @@ import {
   EvmAbiFunction,
   TxResponse,
 } from "../../utils/constants";
-import {
-  Button,
-  Collapse,
-  Descriptions,
-  Form,
-  Input,
-  notification,
-} from "antd";
+import { Button, Collapse, Descriptions, Form, Input } from "antd";
 import "./abi-form.scss";
 import { Wallet } from "../../utils/wallets/wallet";
 import { capitalize } from "../../utils/utils";
@@ -28,6 +21,8 @@ import {
   EditOutlined,
   EyeOutlined,
 } from "@ant-design/icons";
+import useNotification from "antd/es/notification/useNotification";
+import Paragraph from "antd/es/typography/Paragraph";
 
 const PAYABLE_AMOUNT = "payable";
 
@@ -38,6 +33,7 @@ const EvmForm: React.FC<{
   wallet?: Wallet;
   blockchain?: Blockchain;
 }> = ({ action, contractTemplate, contractAddress, wallet, blockchain }) => {
+  const [notification, contextHolder] = useNotification();
   const [deployedContracts, setDeployedContracts] = useLocalStorageState<
     DeployedContract[]
   >(CONTRACT_KEY, { defaultValue: [] });
@@ -199,10 +195,16 @@ const EvmForm: React.FC<{
         await read(wallet, blockchain, func, params);
       else if (action === AbiAction.Write)
         await write(wallet, blockchain, func, params);
-    } catch {
+    } catch (e) {
       notification.error({
-        message: "Execution rejected",
-        description: "Execution was rejected by user",
+        message: "Execution Failed",
+        description: (
+          <Paragraph
+            ellipsis={{ rows: 4, expandable: true, symbol: "View Full" }}
+          >
+            {e instanceof Error ? e.message : String(e)}
+          </Paragraph>
+        ),
       });
     }
 
@@ -211,75 +213,82 @@ const EvmForm: React.FC<{
   };
 
   return (
-    <Collapse
-      accordion
-      items={(contractTemplate.abi as EvmAbi)
-        .filter((func) => {
-          if (action === AbiAction.Deploy) return func.type === "constructor";
-          if (action === AbiAction.Read) return func.stateMutability === "view";
-          return func.type === "function" && func.stateMutability !== "view";
-        })
-        .map((func) => ({
-          key: func.name || func.type,
-          label: func.name || func.type,
-          children: (
-            <>
-              <Form
-                name={func.name || func.type}
-                layout="horizontal"
-                onFinish={(values) => execute(func, values)}
-              >
-                {func.inputs.map((param) => (
-                  <Form.Item
-                    key={param.name}
-                    name={param.name}
-                    label={param.name}
-                    required
-                  >
-                    <Input placeholder={param.type} disabled={loading} />
+    <>
+      {contextHolder}
+      <Collapse
+        accordion
+        items={(contractTemplate.abi as EvmAbi)
+          .filter((func) => {
+            if (action === AbiAction.Deploy) return func.type === "constructor";
+            if (action === AbiAction.Read)
+              return func.stateMutability === "view";
+            return func.type === "function" && func.stateMutability !== "view";
+          })
+          .map((func) => ({
+            key: func.name || func.type,
+            label: func.name || func.type,
+            children: (
+              <>
+                <Form
+                  name={func.name || func.type}
+                  layout="horizontal"
+                  onFinish={(values) => execute(func, values)}
+                >
+                  {func.inputs.map((param) => (
+                    <Form.Item
+                      key={param.name}
+                      name={param.name}
+                      label={param.name}
+                      required
+                    >
+                      <Input placeholder={param.type} disabled={loading} />
+                    </Form.Item>
+                  ))}
+                  {func.stateMutability === "payable" && (
+                    <Form.Item name={PAYABLE_AMOUNT} label="Payment" required>
+                      <Input
+                        placeholder="Wei amount to pay"
+                        disabled={loading}
+                      />
+                    </Form.Item>
+                  )}
+                  <Form.Item>
+                    <Button
+                      type="primary"
+                      htmlType="submit"
+                      loading={loading}
+                      icon={
+                        action === AbiAction.Deploy ? (
+                          <CloudUploadOutlined />
+                        ) : action === AbiAction.Read ? (
+                          <EyeOutlined />
+                        ) : (
+                          <EditOutlined />
+                        )
+                      }
+                    >
+                      {capitalize(action.toString())}
+                    </Button>
                   </Form.Item>
-                ))}
-                {func.stateMutability === "payable" && (
-                  <Form.Item name={PAYABLE_AMOUNT} label="Payment" required>
-                    <Input placeholder="Wei amount to pay" disabled={loading} />
-                  </Form.Item>
+                </Form>
+                {Object.keys(txResponses).includes(func.name || func.type) && (
+                  <Descriptions
+                    bordered
+                    size="small"
+                    items={Object.entries(
+                      txResponses[func.name || func.type]
+                    ).map(([key, value]) => ({
+                      key,
+                      label: capitalize(key),
+                      children: value,
+                    }))}
+                  />
                 )}
-                <Form.Item>
-                  <Button
-                    type="primary"
-                    htmlType="submit"
-                    loading={loading}
-                    icon={
-                      action === AbiAction.Deploy ? (
-                        <CloudUploadOutlined />
-                      ) : action === AbiAction.Read ? (
-                        <EyeOutlined />
-                      ) : (
-                        <EditOutlined />
-                      )
-                    }
-                  >
-                    {capitalize(action.toString())}
-                  </Button>
-                </Form.Item>
-              </Form>
-              {Object.keys(txResponses).includes(func.name || func.type) && (
-                <Descriptions
-                  bordered
-                  size="small"
-                  items={Object.entries(
-                    txResponses[func.name || func.type]
-                  ).map(([key, value]) => ({
-                    key,
-                    label: capitalize(key),
-                    children: value,
-                  }))}
-                />
-              )}
-            </>
-          ),
-        }))}
-    />
+              </>
+            ),
+          }))}
+      />
+    </>
   );
 };
 
