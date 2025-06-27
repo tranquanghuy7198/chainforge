@@ -10,9 +10,10 @@ import Header from "../../components/header";
 import { Content } from "antd/es/layout/layout";
 import ContractTemplateCard from "../../components/contract-template-card";
 import { capitalize } from "../../utils/utils";
-import { Button, Drawer, Form, Input, notification, Select } from "antd";
+import { Button, Drawer, Form, Input, Select } from "antd";
 import { v4 } from "uuid";
 import { useForm } from "antd/es/form/Form";
+import useNotification from "antd/es/notification/useNotification";
 
 type ContractTemplateForm = {
   id: string;
@@ -24,6 +25,7 @@ type ContractTemplateForm = {
 };
 
 const ContractTemplates: React.FC = () => {
+  const [notification, contextHolder] = useNotification();
   const [contractTemplates, setContractTemplates] = useLocalStorageState<
     ContractTemplate[]
   >(CONTRACT_TEMPLATE_KEY, { defaultValue: [] });
@@ -69,30 +71,34 @@ const ContractTemplates: React.FC = () => {
     flattenSource,
     networkClusters,
   }: ContractTemplateForm): ContractTemplate => {
-    const parsedAbi = JSON.parse(abi);
-    if (
-      !Array.isArray(parsedAbi) ||
-      !parsedAbi.every(
-        (item) =>
-          typeof item === "object" && item !== null && !Array.isArray(item)
-      )
-    ) {
+    try {
+      const parsedAbi = JSON.parse(abi);
+      if (
+        !Array.isArray(parsedAbi) ||
+        !parsedAbi.every(
+          (item) =>
+            typeof item === "object" && item !== null && !Array.isArray(item)
+        )
+      ) {
+        throw new Error("Your ABI is invalid, please check again!");
+      }
+      return {
+        id: templateForm.form ? templateForm.form.id : v4(),
+        name,
+        abi: parsedAbi,
+        bytecode,
+        flattenSource,
+        networkClusters: networkClusters.map(
+          (cluster) => cluster as NetworkCluster
+        ),
+      };
+    } catch (e) {
       notification.error({
         message: "Invalid ABI",
         description: "Your ABI is invalid, please check again!",
       });
-      throw new Error("Invalid ABI");
+      throw e;
     }
-    return {
-      id: templateForm.form ? templateForm.form.id : v4(),
-      name,
-      abi: parsedAbi,
-      bytecode,
-      flattenSource,
-      networkClusters: networkClusters.map(
-        (cluster) => cluster as NetworkCluster
-      ),
-    };
   };
 
   const saveContractTemplate = (template: ContractTemplate) => {
@@ -136,6 +142,7 @@ const ContractTemplates: React.FC = () => {
 
   return (
     <div className="page">
+      {contextHolder}
       <Header
         header="Contract Templates"
         options={Object.values(NetworkCluster).map((cluster) => ({
