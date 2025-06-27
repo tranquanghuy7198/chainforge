@@ -24,8 +24,6 @@ body {
 .left-area {
   background-color: $primary !important;
   height: 100vh;
-  display: flex;
-  flex-direction: column;
 }
 
 .profile-logo-container {
@@ -49,7 +47,7 @@ body {
 
 .ant-menu {
   background-color: $primary !important;
-  flex: 1 !important;
+  height: calc(100vh - 80px - 40px);
   overflow-y: auto;
 }
 
