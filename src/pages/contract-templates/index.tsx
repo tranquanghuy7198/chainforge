@@ -16,6 +16,7 @@ import useNotification from "antd/es/notification/useNotification";
 import ContractTemplateForm, {
   ContractTemplateFormStructure,
 } from "../../components/contract-template-form";
+import Paragraph from "antd/es/typography/Paragraph";
 
 const ContractTemplates: React.FC = () => {
   const [notification, contextHolder] = useNotification();
@@ -82,8 +83,14 @@ const ContractTemplates: React.FC = () => {
       };
     } catch (e) {
       notification.error({
-        message: "Invalid ABI",
-        description: "Your ABI is invalid, please check again!",
+        message: "Invalid data",
+        description: (
+          <Paragraph
+            ellipsis={{ rows: 4, expandable: true, symbol: "View Full" }}
+          >
+            {e instanceof Error ? e.message : String(e)}
+          </Paragraph>
+        ),
       });
       throw e;
     }

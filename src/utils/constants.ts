@@ -44,7 +44,7 @@ export type Blockchain = {
 export type ContractTemplate = {
   id: string;
   name: string;
-  abi: Record<string, any>[];
+  abi: any;
   bytecode: string;
   flattenSource?: string;
   programKeypair?: number[];
