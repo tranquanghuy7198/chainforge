@@ -1,3 +1,5 @@
+import { Keypair } from "@solana/web3.js";
+
 export const CONTRACT_TEMPLATE_KEY = "contract-templates";
 export const CONTRACT_KEY = "contracts";
 export const ADDRESS_PATTERN = "[[address]]";
@@ -45,6 +47,7 @@ export type ContractTemplate = {
   abi: Record<string, any>[];
   bytecode: string;
   flattenSource?: string;
+  programKeypair?: number[];
   networkClusters: NetworkCluster[];
 };
 

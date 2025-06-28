@@ -57,9 +57,11 @@ const ContractTemplates: React.FC = () => {
     abi,
     bytecode,
     flattenSource,
+    programKeypair,
     networkClusters,
   }: ContractTemplateFormStructure): ContractTemplate => {
     try {
+      // Parse ABI
       const parsedAbi = JSON.parse(abi);
       if (
         !Array.isArray(parsedAbi) ||
@@ -70,12 +72,19 @@ const ContractTemplates: React.FC = () => {
       ) {
         throw new Error("Your ABI is invalid, please check again!");
       }
+
+      // Parse Solana program keypair
+      const parsedProgramKeypair = programKeypair
+        ? (JSON.parse(programKeypair) as number[])
+        : undefined;
+
       return {
         id: templateForm.form ? templateForm.form.id : v4(),
         name,
         abi: parsedAbi,
         bytecode,
         flattenSource,
+        programKeypair: parsedProgramKeypair,
         networkClusters: networkClusters.map(
           (cluster) => cluster as NetworkCluster
         ),

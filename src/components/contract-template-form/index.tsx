@@ -10,6 +10,7 @@ export type ContractTemplateFormStructure = {
   abi: string;
   bytecode: string;
   flattenSource?: string;
+  programKeypair?: string;
   networkClusters: string[];
 };
 
@@ -84,21 +85,25 @@ const ContractTemplateForm: React.FC<{
               },
             ]}
           /> */}
-      {networkClusters &&
-        networkClusters.some((networkCluster) =>
-          [
-            NetworkCluster.Ethereum,
-            NetworkCluster.Ronin,
-            NetworkCluster.KardiaChain,
-            NetworkCluster.Klaytn,
-          ]
-            .map((cluster) => cluster.toString())
-            .includes(networkCluster)
-        ) && (
-          <Form.Item name="flattenSource" label="Flatten Source">
-            <Input.TextArea rows={4} placeholder="Contract flatten source" />
-          </Form.Item>
-        )}
+      {(networkClusters || []).includes(NetworkCluster.Solana.toString()) && (
+        <Form.Item name="programKeypair" label="Program Keypair" required>
+          <Input.TextArea placeholder="[1, 2, 151, ...]" rows={2} />
+        </Form.Item>
+      )}
+      {(networkClusters || []).some((networkCluster) =>
+        [
+          NetworkCluster.Ethereum,
+          NetworkCluster.Ronin,
+          NetworkCluster.KardiaChain,
+          NetworkCluster.Klaytn,
+        ]
+          .map((cluster) => cluster.toString())
+          .includes(networkCluster)
+      ) && (
+        <Form.Item name="flattenSource" label="Flatten Source">
+          <Input.TextArea rows={4} placeholder="Contract flatten source" />
+        </Form.Item>
+      )}
       <Form.Item>
         <Button type="primary" htmlType="submit">
           Save Template
