@@ -3,6 +3,8 @@ import { NetworkCluster } from "../../utils/constants";
 import { capitalize } from "../../utils/utils";
 import { useForm, useWatch } from "antd/es/form/Form";
 import { useEffect } from "react";
+import { InboxOutlined } from "@ant-design/icons";
+import Dragger from "antd/es/upload/Dragger";
 
 export type ContractTemplateFormStructure = {
   id: string;
@@ -27,6 +29,13 @@ const ContractTemplateForm: React.FC<{
   useEffect(() => {
     if (templateForm.open) form.resetFields();
   }, [form, templateForm]);
+
+  const readBytecodeFile = async (bytecodeFile: File): Promise<boolean> => {
+    const bytecodeBuffer: ArrayBuffer = await bytecodeFile.arrayBuffer();
+    const bytecodeBytes = new Uint8Array(bytecodeBuffer);
+    form.setFieldValue("bytecode", Buffer.from(bytecodeBytes).toString("hex"));
+    return false;
+  };
 
   return (
     <Form
@@ -58,33 +67,24 @@ const ContractTemplateForm: React.FC<{
       <Form.Item name="bytecode" label="Bytecode" required>
         <Input.TextArea placeholder="Contract bytecode" rows={4} />
       </Form.Item>
-      {/* <Collapse
-            defaultActiveKey={["bytecodeFile"]}
-            ghost
-            items={[
-              {
-                key: "bytecodeFile",
-                label: "or upload bytecode file",
-                children: (
-                  <Form.Item name="bytecodeFile" label="Bytecode File">
-                    <Upload
-                      maxCount={1}
-                      listType="text"
-                      beforeUpload={() => false}
-                      onChange={(info) => {
-                        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                        const file = info.fileList[0]!;
-                      }}
-                    >
-                      <Button icon={<UploadOutlined />}>
-                        Upload Bytecode File
-                      </Button>
-                    </Upload>
-                  </Form.Item>
-                ),
-              },
-            ]}
-          /> */}
+      {(networkClusters || []).includes(NetworkCluster.Solana.toString()) && (
+        <Form.Item name="bytecodeFile" label="Bytecode File">
+          <Dragger
+            name="bytecodeFile"
+            multiple={false}
+            accept=".so"
+            beforeUpload={(file) => readBytecodeFile(file)}
+          >
+            <p className="ant-upload-drag-icon">
+              <InboxOutlined />
+            </p>
+            <p className="ant-upload-text">
+              Click or drag .so file to this area to upload
+            </p>
+            <p className="ant-upload-hint">Support Solana .so files only.</p>
+          </Dragger>
+        </Form.Item>
+      )}
       {(networkClusters || []).includes(NetworkCluster.Solana.toString()) && (
         <Form.Item name="programKeypair" label="Program Keypair" required>
           <Input.TextArea placeholder="[1, 2, 151, ...]" rows={2} />
