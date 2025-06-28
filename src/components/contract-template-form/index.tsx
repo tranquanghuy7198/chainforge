@@ -1,7 +1,7 @@
 import { Button, Form, Input, Select } from "antd";
 import { NetworkCluster } from "../../utils/constants";
 import { capitalize } from "../../utils/utils";
-import { useForm } from "antd/es/form/Form";
+import { useForm, useWatch } from "antd/es/form/Form";
 import { useEffect } from "react";
 
 export type ContractTemplateFormStructure = {
@@ -21,6 +21,7 @@ const ContractTemplateForm: React.FC<{
   saveContractTemplate: (template: ContractTemplateFormStructure) => void;
 }> = ({ templateForm, saveContractTemplate }) => {
   const [form] = useForm();
+  const networkClusters = useWatch<string[]>("networkClusters", form);
 
   useEffect(() => {
     if (templateForm.open) form.resetFields();
@@ -83,17 +84,16 @@ const ContractTemplateForm: React.FC<{
               },
             ]}
           /> */}
-      {form.getFieldValue("networkClusters") &&
-        (form.getFieldValue("networkClusters") as string[]).some(
-          (networkCluster) =>
-            [
-              NetworkCluster.Ethereum,
-              NetworkCluster.Ronin,
-              NetworkCluster.KardiaChain,
-              NetworkCluster.Klaytn,
-            ]
-              .map((cluster) => cluster.toString())
-              .includes(networkCluster)
+      {networkClusters &&
+        networkClusters.some((networkCluster) =>
+          [
+            NetworkCluster.Ethereum,
+            NetworkCluster.Ronin,
+            NetworkCluster.KardiaChain,
+            NetworkCluster.Klaytn,
+          ]
+            .map((cluster) => cluster.toString())
+            .includes(networkCluster)
         ) && (
           <Form.Item name="flattenSource" label="Flatten Source">
             <Input.TextArea rows={4} placeholder="Contract flatten source" />
