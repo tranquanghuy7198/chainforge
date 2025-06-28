@@ -67,22 +67,25 @@ const ContractTemplateCard: React.FC<{
         <div className="template-component">
           {[
             {
+              key: "abi",
               label: "ABI",
               value: JSON.stringify(contractTemplate.abi),
               icon: <FileTextOutlined className="template-icon" />,
             },
             {
+              key: "bytecode",
               label: "Bytecode",
               value: contractTemplate.bytecode,
               icon: <FieldBinaryOutlined className="template-icon" />,
             },
             {
+              key: "flattenSource",
               label: "Flatten Source",
               value: contractTemplate.flattenSource || "",
               icon: <CodeOutlined className="template-icon" />,
             },
-          ].map(({ label, value, icon }) => (
-            <div>
+          ].map(({ key, label, value, icon }) => (
+            <div key={key}>
               <Paragraph copyable={{ text: value, tooltips: false }}>
                 <Space>
                   {icon}
