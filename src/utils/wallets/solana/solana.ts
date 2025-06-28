@@ -4,8 +4,7 @@ import {
   SolflareWalletAdapter,
 } from "@solana/wallet-adapter-wallets";
 import { Blockchain, NetworkCluster } from "../../constants";
-import { Wallet, WalletUI } from "../wallet";
-import PhantomWalletIcon from "../../../assets/wallets/phantom.svg";
+import { Wallet } from "../wallet";
 import {
   BaseMessageSignerWalletAdapter,
   WalletReadyState,
@@ -15,15 +14,17 @@ class Solana extends Wallet {
   public provider: BaseMessageSignerWalletAdapter;
 
   constructor(
-    ui: WalletUI,
-    installLink: string,
-    provider: BaseMessageSignerWalletAdapter
+    provider: BaseMessageSignerWalletAdapter,
+    backgroundColor: string,
+    titleColor: string,
+    installLink: string
   ) {
     super({
       ui: {
-        ...ui,
-        name: provider.name || ui.name,
-        icon: provider.icon || ui.icon,
+        name: provider.name,
+        icon: provider.icon,
+        backgroundColor: backgroundColor,
+        titleColor: titleColor,
       },
       installLink: installLink,
       networkCluster: NetworkCluster.Solana,
@@ -50,14 +51,10 @@ export class Phantom extends Solana {
 
   constructor() {
     super(
-      {
-        name: "Phantom",
-        icon: PhantomWalletIcon,
-        backgroundColor: "#c3bbff",
-        titleColor: "#5345ba",
-      },
-      "https://phantom.com/download",
-      new PhantomWalletAdapter()
+      new PhantomWalletAdapter(),
+      "#c3bbff",
+      "#5345ba",
+      "https://phantom.com/download"
     );
   }
 }
@@ -67,14 +64,10 @@ export class Solflare extends Solana {
 
   constructor() {
     super(
-      {
-        name: "Solflare",
-        icon: PhantomWalletIcon,
-        backgroundColor: "#ffffc4",
-        titleColor: "#e7d000",
-      },
-      "https://www.solflare.com/download/",
-      new SolflareWalletAdapter()
+      new SolflareWalletAdapter(),
+      "#ffffc4",
+      "#e7d000",
+      "https://www.solflare.com/download/"
     );
   }
 }
@@ -84,14 +77,10 @@ export class Nightly extends Solana {
 
   constructor() {
     super(
-      {
-        name: "Nightly",
-        icon: PhantomWalletIcon,
-        backgroundColor: "#c3bbff",
-        titleColor: "#5345ba",
-      },
-      "https://nightly.app/download",
-      new NightlyWalletAdapter()
+      new NightlyWalletAdapter(),
+      "#c3bbff",
+      "#5345ba",
+      "https://nightly.app/download"
     );
   }
 }
