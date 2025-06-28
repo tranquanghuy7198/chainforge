@@ -127,6 +127,9 @@ const ContractTemplates: React.FC = () => {
           abi: JSON.stringify(template.abi),
           bytecode: template.bytecode,
           flattenSource: template.flattenSource,
+          programKeypair: template.programKeypair
+            ? JSON.stringify(template.programKeypair)
+            : undefined,
           networkClusters: template.networkClusters.map((cluster) =>
             cluster.toString()
           ),
