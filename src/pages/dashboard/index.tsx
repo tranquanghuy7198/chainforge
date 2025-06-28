@@ -1,4 +1,13 @@
-import { Drawer, FloatButton, Image, Layout, Menu, MenuProps } from "antd";
+import {
+  Drawer,
+  FloatButton,
+  Image,
+  Layout,
+  Menu,
+  MenuProps,
+  Space,
+  Tag,
+} from "antd";
 import {
   AppstoreOutlined,
   FileProtectOutlined,
@@ -76,15 +85,28 @@ export default function Dashboard(props: any) {
         type="primary"
         icon={<WalletOutlined className="float-btn-icon" />}
         badge={{
-          count: Object.values(wallets).map((wallet) => wallet.address != null)
-            .length,
+          count: Object.values(wallets).filter(
+            (wallet) => wallet.address != null
+          ).length,
           color: "green",
         }}
         onClick={() => setConnectWallet(true)}
       />
       <Drawer
         width={500}
-        title="Select a Wallet"
+        title={
+          <Space>
+            <div>Select a Wallet</div>
+            <Tag color="#108ee9">
+              {
+                Object.values(wallets).filter(
+                  (wallet) => wallet.address != null
+                ).length
+              }{" "}
+              connected
+            </Tag>
+          </Space>
+        }
         open={connectWallet}
         closable={true}
         onClose={() => setConnectWallet(false)}
