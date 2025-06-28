@@ -55,9 +55,8 @@ const ContractTemplateCard: React.FC<{
                 .map((blockchain) => [blockchain.logo, blockchain])
             ).values()
           ).map((blockchain) => (
-            <Tooltip title={blockchain.name} arrow={false}>
+            <Tooltip key={blockchain.id} title={blockchain.name} arrow={false}>
               <Image
-                key={blockchain.id}
                 src={blockchain.logo}
                 preview={false}
                 className="template-chain"
