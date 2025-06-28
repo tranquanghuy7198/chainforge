@@ -10,19 +10,12 @@ import Header from "../../components/header";
 import { Content } from "antd/es/layout/layout";
 import ContractTemplateCard from "../../components/contract-template-card";
 import { capitalize } from "../../utils/utils";
-import { Button, Drawer, Form, Input, Select } from "antd";
+import { Drawer } from "antd";
 import { v4 } from "uuid";
-import { useForm } from "antd/es/form/Form";
 import useNotification from "antd/es/notification/useNotification";
-
-type ContractTemplateForm = {
-  id: string;
-  name: string;
-  abi: string;
-  bytecode: string;
-  flattenSource?: string;
-  networkClusters: string[];
-};
+import ContractTemplateForm, {
+  ContractTemplateFormStructure,
+} from "../../components/contract-template-form";
 
 const ContractTemplates: React.FC = () => {
   const [notification, contextHolder] = useNotification();
@@ -36,13 +29,8 @@ const ContractTemplates: React.FC = () => {
   const [searchedName, setSearchedName] = useState<string>();
   const [templateForm, setTemplateForm] = useState<{
     open: boolean;
-    form?: ContractTemplateForm;
+    form?: ContractTemplateFormStructure;
   }>({ open: false, form: undefined });
-  const [form] = useForm();
-
-  useEffect(() => {
-    if (templateForm.open) form.resetFields();
-  }, [form, templateForm]);
 
   useEffect(() => {
     setDisplayedTemplates(
@@ -70,7 +58,7 @@ const ContractTemplates: React.FC = () => {
     bytecode,
     flattenSource,
     networkClusters,
-  }: ContractTemplateForm): ContractTemplate => {
+  }: ContractTemplateFormStructure): ContractTemplate => {
     try {
       const parsedAbi = JSON.parse(abi);
       if (
@@ -173,46 +161,12 @@ const ContractTemplates: React.FC = () => {
         closable={true}
         onClose={() => setTemplateForm({ ...templateForm, open: false })}
       >
-        <Form
-          form={form}
-          name="save-contract-template"
-          layout="horizontal"
-          initialValues={templateForm.form}
-          onFinish={(values) =>
-            saveContractTemplate(parseToContractTemplate(values))
+        <ContractTemplateForm
+          templateForm={templateForm}
+          saveContractTemplate={(template) =>
+            saveContractTemplate(parseToContractTemplate(template))
           }
-        >
-          <Form.Item name="networkClusters" label="Network Clusters" required>
-            <Select
-              options={Object.values(NetworkCluster).map((cluster) => ({
-                value: cluster.toString(),
-                label: capitalize(cluster.toString()),
-              }))}
-              mode="multiple"
-              allowClear
-            />
-          </Form.Item>
-          <Form.Item name="name" label="Name" required>
-            <Input placeholder="Contract Name" />
-          </Form.Item>
-          <Form.Item name="abi" label="ABI" required>
-            <Input.TextArea
-              placeholder="Contract ABI (EVM) or IDL (Solana)"
-              rows={4}
-            />
-          </Form.Item>
-          <Form.Item name="bytecode" label="Bytecode" required>
-            <Input.TextArea placeholder="Contract bytecode" rows={4} />
-          </Form.Item>
-          <Form.Item name="flattenSource" label="Flatten Source">
-            <Input.TextArea rows={4} placeholder="Contract flatten source" />
-          </Form.Item>
-          <Form.Item>
-            <Button type="primary" htmlType="submit">
-              Save Template
-            </Button>
-          </Form.Item>
-        </Form>
+        />
       </Drawer>
     </div>
   );
