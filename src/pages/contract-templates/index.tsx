@@ -63,15 +63,6 @@ const ContractTemplates: React.FC = () => {
     try {
       // Parse ABI
       const parsedAbi = JSON.parse(abi);
-      if (
-        !Array.isArray(parsedAbi) ||
-        !parsedAbi.every(
-          (item) =>
-            typeof item === "object" && item !== null && !Array.isArray(item)
-        )
-      ) {
-        throw new Error("Your ABI is invalid, please check again!");
-      }
 
       // Parse Solana program keypair
       const parsedProgramKeypair = programKeypair
