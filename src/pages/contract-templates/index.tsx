@@ -182,6 +182,16 @@ const ContractTemplates: React.FC = () => {
             saveContractTemplate(parseToContractTemplate(values))
           }
         >
+          <Form.Item name="networkClusters" label="Network Clusters" required>
+            <Select
+              options={Object.values(NetworkCluster).map((cluster) => ({
+                value: cluster.toString(),
+                label: capitalize(cluster.toString()),
+              }))}
+              mode="multiple"
+              allowClear
+            />
+          </Form.Item>
           <Form.Item name="name" label="Name" required>
             <Input placeholder="Contract Name" />
           </Form.Item>
@@ -194,18 +204,8 @@ const ContractTemplates: React.FC = () => {
           <Form.Item name="bytecode" label="Bytecode" required>
             <Input.TextArea placeholder="Contract bytecode" rows={4} />
           </Form.Item>
-          <Form.Item name="flattenSource" label="Flatten Source" required>
+          <Form.Item name="flattenSource" label="Flatten Source">
             <Input.TextArea rows={4} placeholder="Contract flatten source" />
-          </Form.Item>
-          <Form.Item name="networkClusters" label="Network Clusters" required>
-            <Select
-              options={Object.values(NetworkCluster).map((cluster) => ({
-                value: cluster.toString(),
-                label: capitalize(cluster.toString()),
-              }))}
-              mode="multiple"
-              allowClear
-            />
           </Form.Item>
           <Form.Item>
             <Button type="primary" htmlType="submit">
