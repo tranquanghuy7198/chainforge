@@ -20,7 +20,7 @@ type ContractTemplateForm = {
   name: string;
   abi: string;
   bytecode: string;
-  flattenSource: string;
+  flattenSource?: string;
   networkClusters: string[];
 };
 

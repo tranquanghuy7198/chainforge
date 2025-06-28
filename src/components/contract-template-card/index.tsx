@@ -79,7 +79,7 @@ const ContractTemplateCard: React.FC<{
             },
             {
               label: "Flatten Source",
-              value: contractTemplate.flattenSource,
+              value: contractTemplate.flattenSource || "",
               icon: <CodeOutlined className="template-icon" />,
             },
           ].map(({ label, value, icon }) => (

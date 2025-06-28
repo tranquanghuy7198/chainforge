@@ -44,7 +44,7 @@ export type ContractTemplate = {
   name: string;
   abi: Record<string, any>[];
   bytecode: string;
-  flattenSource: string;
+  flattenSource?: string;
   networkClusters: NetworkCluster[];
 };
 
