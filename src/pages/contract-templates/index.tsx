@@ -95,7 +95,7 @@ const ContractTemplates: React.FC = () => {
   const editContractTemplate = (id: string) => {
     const template = contractTemplates.find((template) => template.id === id);
     if (!template) notification.error({ message: "Template not found" });
-    else {
+    else
       setTemplateForm({
         open: true,
         form: {
@@ -112,7 +112,6 @@ const ContractTemplates: React.FC = () => {
           ),
         },
       });
-    }
   };
 
   return (
