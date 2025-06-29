@@ -1,0 +1,7 @@
+@use "../../styles.scss" as *;
+
+.addresses {
+  display: flex;
+  flex-direction: column;
+  justify-content: stretch;
+}

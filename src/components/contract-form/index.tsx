@@ -3,7 +3,10 @@ import { ContractAddress, DeployedContract } from "../../utils/constants";
 import { v4 } from "uuid";
 import { parseContractTemplateForm } from "../contract-template-form";
 import { useForm } from "antd/es/form/Form";
-import { Button, Form, Input } from "antd";
+import { Button, Form, Image, Input, Select, Space } from "antd";
+import { MinusCircleOutlined, PlusOutlined } from "@ant-design/icons";
+import "./contract-form.scss";
+import { useAppSelector } from "../../redux/hook";
 
 export type ContractFormStructure = {
   id: string;
@@ -37,6 +40,7 @@ const ContractForm: React.FC<{
   contractForm: { open: boolean; form?: ContractFormStructure };
   saveContract: (contract: ContractFormStructure) => void;
 }> = ({ contractForm, saveContract }) => {
+  const blockchains = useAppSelector((state) => state.blockchain.blockchains);
   const [form] = useForm();
 
   useEffect(() => {
@@ -62,6 +66,45 @@ const ContractForm: React.FC<{
       </Form.Item>
       <Form.Item name="flattenSource" label="Flatten Source">
         <Input.TextArea rows={4} placeholder="Contract flatten source" />
+      </Form.Item>
+      <Form.Item label="Addresses">
+        <Form.List name="addresses">
+          {(fields, { add, remove }) => (
+            <div className="addresses">
+              {fields.map((field) => (
+                <Space key={field.key} align="baseline">
+                  <Form.Item name={[field.name, "blockchainId"]}>
+                    <Select
+                      placeholder="Blockchain"
+                      options={blockchains.map((chain) => ({
+                        label: chain.name,
+                        value: chain.id,
+                        emoji: chain.logo,
+                      }))}
+                      optionRender={(option) => (
+                        <Space align="center">
+                          <Image
+                            src={option.data.emoji}
+                            className="select-icon"
+                            preview={false}
+                          />
+                          <div>{option.data.label}</div>
+                        </Space>
+                      )}
+                    />
+                  </Form.Item>
+                  <Form.Item name={[field.name, "address"]}>
+                    <Input placeholder="Address" />
+                  </Form.Item>
+                  <MinusCircleOutlined onClick={() => remove(field.name)} />
+                </Space>
+              ))}
+              <Button type="dashed" onClick={() => add()} block>
+                <PlusOutlined /> Add Address
+              </Button>
+            </div>
+          )}
+        </Form.List>
       </Form.Item>
       <Form.Item>
         <Button type="primary" htmlType="submit">
