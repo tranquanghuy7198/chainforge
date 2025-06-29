@@ -17,9 +17,11 @@ import "./contract-card.scss";
 import { shorten } from "../../utils/utils";
 import AbiForm from "../abi-form";
 
-const ContractCard: React.FC<{ contract: DeployedContract }> = ({
-  contract,
-}) => {
+const ContractCard: React.FC<{
+  contract: DeployedContract;
+  onDeleteContract: (id: string) => void;
+  onEditContract: (id: string) => void;
+}> = ({ contract, onDeleteContract, onEditContract }) => {
   const blockchains = useAppSelector((state) => state.blockchain.blockchains);
   const [contractAddress, setContractAddress] = useState<ContractAddress>();
 
@@ -30,10 +32,10 @@ const ContractCard: React.FC<{ contract: DeployedContract }> = ({
         className="contract-card"
         actions={[
           <Tooltip title="Edit" arrow={false}>
-            <EditOutlined onClick={() => {}} />
+            <EditOutlined onClick={() => onEditContract(contract.id)} />
           </Tooltip>,
           <Tooltip title="Delete" arrow={false}>
-            <DeleteOutlined />
+            <DeleteOutlined onClick={() => onDeleteContract(contract.id)} />
           </Tooltip>,
         ]}
       >
