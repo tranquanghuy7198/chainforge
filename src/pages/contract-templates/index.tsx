@@ -11,10 +11,10 @@ import { Content } from "antd/es/layout/layout";
 import ContractTemplateCard from "../../components/contract-template-card";
 import { capitalize } from "../../utils/utils";
 import { Drawer } from "antd";
-import { v4 } from "uuid";
 import useNotification from "antd/es/notification/useNotification";
 import ContractTemplateForm, {
   ContractTemplateFormStructure,
+  parseContractTemplateForm,
 } from "../../components/contract-template-form";
 import Paragraph from "antd/es/typography/Paragraph";
 
@@ -53,34 +53,11 @@ const ContractTemplates: React.FC = () => {
     );
   }, [contractTemplates, selectedClusters, searchedName]);
 
-  const parseToContractTemplate = ({
-    name,
-    abi,
-    bytecode,
-    flattenSource,
-    programKeypair,
-    networkClusters,
-  }: ContractTemplateFormStructure): ContractTemplate => {
+  const parseToContractTemplate = (
+    form: ContractTemplateFormStructure
+  ): ContractTemplate => {
     try {
-      // Parse ABI
-      const parsedAbi = JSON.parse(abi);
-
-      // Parse Solana program keypair
-      const parsedProgramKeypair = programKeypair
-        ? (JSON.parse(programKeypair) as number[])
-        : undefined;
-
-      return {
-        id: templateForm.form ? templateForm.form.id : v4(),
-        name,
-        abi: parsedAbi,
-        bytecode,
-        flattenSource,
-        programKeypair: parsedProgramKeypair,
-        networkClusters: networkClusters.map(
-          (cluster) => cluster as NetworkCluster
-        ),
-      };
+      return parseContractTemplateForm(form);
     } catch (e) {
       notification.error({
         message: "Invalid data",

@@ -1,10 +1,11 @@
 import { Button, Form, Input, Select } from "antd";
-import { NetworkCluster } from "../../utils/constants";
+import { ContractTemplate, NetworkCluster } from "../../utils/constants";
 import { capitalize } from "../../utils/utils";
 import { useForm, useWatch } from "antd/es/form/Form";
 import { useEffect } from "react";
 import { InboxOutlined } from "@ant-design/icons";
 import Dragger from "antd/es/upload/Dragger";
+import { v4 } from "uuid";
 
 export type ContractTemplateFormStructure = {
   id: string;
@@ -14,6 +15,25 @@ export type ContractTemplateFormStructure = {
   flattenSource?: string;
   programKeypair?: string;
   networkClusters: string[];
+};
+
+export const parseContractTemplateForm = (
+  form: ContractTemplateFormStructure,
+  id?: string
+): ContractTemplate => {
+  return {
+    id: id ?? v4(),
+    name: form.name,
+    abi: JSON.parse(form.abi),
+    bytecode: form.bytecode,
+    flattenSource: form.flattenSource,
+    programKeypair: form.programKeypair
+      ? (JSON.parse(form.programKeypair) as number[])
+      : undefined,
+    networkClusters: form.networkClusters.map(
+      (cluster) => cluster as NetworkCluster
+    ),
+  };
 };
 
 const ContractTemplateForm: React.FC<{
