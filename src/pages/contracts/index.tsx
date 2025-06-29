@@ -10,8 +10,16 @@ import ContractCard from "../../components/contract-card";
 import useLocalStorageState from "use-local-storage-state";
 import { capitalize } from "../../utils/utils";
 import { useAppSelector } from "../../redux/hook";
+import { Drawer } from "antd";
+import ContractForm, {
+  ContractFormStructure,
+  parseContractForm,
+} from "../../components/contract-form";
+import useNotification from "antd/es/notification/useNotification";
+import Paragraph from "antd/es/typography/Paragraph";
 
 const Contracts: React.FC = () => {
+  const [notification, contextHolder] = useNotification();
   const blockchains = useAppSelector((state) => state.blockchain.blockchains);
   const [contracts, setContracts] = useLocalStorageState<DeployedContract[]>(
     CONTRACT_KEY,
@@ -22,6 +30,10 @@ const Contracts: React.FC = () => {
   >([]);
   const [selectedClusters, setSelectedClusters] = useState<string[]>([]);
   const [searchedName, setSearchedName] = useState<string>();
+  const [contractForm, setContractForm] = useState<{
+    open: boolean;
+    form?: ContractFormStructure;
+  }>({ open: false, form: undefined });
 
   useEffect(() => {
     setDisplayedContracts(
@@ -50,8 +62,62 @@ const Contracts: React.FC = () => {
     );
   }, [contracts, blockchains, selectedClusters, searchedName]);
 
+  const parseToContract = (
+    contract: ContractFormStructure
+  ): DeployedContract => {
+    try {
+      return parseContractForm(contract, contractForm.form?.id);
+    } catch (e) {
+      notification.error({
+        message: "Invalid data",
+        description: (
+          <Paragraph
+            ellipsis={{ rows: 4, expandable: true, symbol: "View Full" }}
+          >
+            {e instanceof Error ? e.message : String(e)}
+          </Paragraph>
+        ),
+      });
+      throw e;
+    }
+  };
+
+  const saveContract = (contract: DeployedContract) => {
+    setContracts(
+      contracts.some((c) => c.id === contract.id)
+        ? contracts.map((c) => (c.id === contract.id ? contract : c))
+        : [...contracts, contract]
+    );
+    setContractForm({ open: false });
+    notification.success({
+      message: "Contract Saved",
+      description: "A contract has been saved",
+    });
+  };
+
+  const editContract = (id: string) => {
+    const contract = contracts.find((c) => c.id === id);
+    if (!contract) notification.error({ message: "Contract not found" });
+    else
+      setContractForm({
+        open: true,
+        form: {
+          id: contract.id,
+          name: contract.template.name,
+          abi: contract.template.abi,
+          flattenSource: contract.template.flattenSource,
+          addresses: contract.addresses,
+        },
+      });
+  };
+
+  const deleteContract = (id: string) => {
+    setContracts(contracts.filter((contract) => contract.id !== id));
+  };
+
   return (
     <div className="page">
+      {contextHolder}
       <Header
         header="Contracts"
         options={Object.values(NetworkCluster).map((cluster) => ({
@@ -60,14 +126,31 @@ const Contracts: React.FC = () => {
         }))}
         onSelected={setSelectedClusters}
         onSearched={setSearchedName}
-        onAddRequested={() => {}}
+        onAddRequested={() => setContractForm({ open: true, form: undefined })}
         defaultSelectAll={false}
       />
       <Content className="item-dashboard">
         {displayedContracts.map((contract) => (
-          <ContractCard key={contract.id} contract={contract} />
+          <ContractCard
+            key={contract.id}
+            contract={contract}
+            onDeleteContract={deleteContract}
+            onEditContract={editContract}
+          />
         ))}
       </Content>
+      <Drawer
+        width={700}
+        title={contractForm.form ? contractForm.form.name : "Add Contract"}
+        open={contractForm.open}
+        closable={true}
+        onClose={() => setContractForm({ ...contractForm, open: false })}
+      >
+        <ContractForm
+          contractForm={contractForm}
+          saveContract={(contract) => saveContract(parseToContract(contract))}
+        />
+      </Drawer>
     </div>
   );
 };
