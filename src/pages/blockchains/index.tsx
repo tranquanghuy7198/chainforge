@@ -6,6 +6,9 @@ import { Content } from "antd/es/layout/layout";
 import { Blockchain } from "../../utils/constants";
 import { useAppSelector } from "../../redux/hook";
 import Header from "../../components/header";
+import { Button, Checkbox, Drawer, Form, Input } from "antd";
+import { BlockchainForm, requestNewBlockchain } from "../../api/discord";
+import useNotification from "antd/es/notification/useNotification";
 
 const TESTNET: string = "testnet";
 const MAINNET: string = "mainnet";
@@ -20,6 +23,8 @@ const Blockchains: React.FC = () => {
     TESTNET,
   ]);
   const [searchedValue, setSearchedValue] = useState<string>();
+  const [addBlockchain, setAddBlockchain] = useState<boolean>(false);
+  const [notification, contextHolder] = useNotification();
 
   useEffect(() => {
     setDisplayedBlockchains(
@@ -36,8 +41,17 @@ const Blockchains: React.FC = () => {
     );
   }, [blockchains, selectedValues, searchedValue]);
 
+  const requestChain = async (values: BlockchainForm) => {
+    await requestNewBlockchain(values);
+    notification.success({
+      message: "Request submmited",
+      description: `Thank you for your request. We will support ${values.name} as soon as possible.`,
+    });
+  };
+
   return (
     <div className="page">
+      {contextHolder}
       <Header
         header="Blockchains"
         options={[
@@ -46,7 +60,7 @@ const Blockchains: React.FC = () => {
         ]}
         onSelected={setSelectedValues}
         onSearched={setSearchedValue}
-        onAddRequested={() => {}}
+        onAddRequested={() => setAddBlockchain(true)}
         defaultSelectAll
       />
       <Content className="item-dashboard">
@@ -54,6 +68,34 @@ const Blockchains: React.FC = () => {
           <BlockchainCard key={blockchain.id} blockchain={blockchain} />
         ))}
       </Content>
+      <Drawer
+        width={500}
+        title="Request New Blockchain"
+        open={addBlockchain}
+        closable={true}
+        onClose={() => setAddBlockchain(false)}
+      >
+        <Form
+          name="add-blockchain"
+          layout="horizontal"
+          onFinish={(values) => requestChain(values)}
+        >
+          <Form.Item name="name" label="Name" required>
+            <Input placeholder="Blockchain Name" />
+          </Form.Item>
+          <Form.Item name="referenceLink" label="Reference Link" required>
+            <Input placeholder="Reference Link" />
+          </Form.Item>
+          <Form.Item name="isTestnet" label="Testnet" required>
+            <Checkbox />
+          </Form.Item>
+          <Form.Item>
+            <Button type="primary" htmlType="submit">
+              Request
+            </Button>
+          </Form.Item>
+        </Form>
+      </Drawer>
     </div>
   );
 };
