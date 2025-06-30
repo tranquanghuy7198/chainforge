@@ -80,6 +80,7 @@ const ContractForm: React.FC<{
                 <Space key={field.key} align="baseline">
                   <Form.Item name={[field.name, "blockchainId"]}>
                     <Select
+                      className="contract-chain-select"
                       placeholder="Blockchain"
                       options={blockchains.map((chain) => ({
                         label: chain.name,
