@@ -86,7 +86,12 @@ const Blockchains: React.FC = () => {
           <Form.Item name="referenceLink" label="Reference Link" required>
             <Input placeholder="Reference Link" />
           </Form.Item>
-          <Form.Item name="isTestnet" label="Testnet" required>
+          <Form.Item
+            name="isTestnet"
+            label="Testnet"
+            valuePropName="checked"
+            required
+          >
             <Checkbox />
           </Form.Item>
           <Form.Item>
