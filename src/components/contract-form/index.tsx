@@ -1,8 +1,12 @@
 import React, { useEffect } from "react";
-import { ContractAddress, DeployedContract } from "../../utils/constants";
+import {
+  ContractAddress,
+  DeployedContract,
+  NetworkCluster,
+} from "../../utils/constants";
 import { v4 } from "uuid";
 import { parseContractTemplateForm } from "../contract-template-form";
-import { useForm } from "antd/es/form/Form";
+import { useForm, useWatch } from "antd/es/form/Form";
 import { Button, Form, Image, Input, Select, Space } from "antd";
 import { MinusCircleOutlined, PlusOutlined } from "@ant-design/icons";
 import "./contract-form.scss";
@@ -42,6 +46,7 @@ const ContractForm: React.FC<{
 }> = ({ contractForm, saveContract }) => {
   const blockchains = useAppSelector((state) => state.blockchain.blockchains);
   const [form] = useForm();
+  const addresses = useWatch<ContractAddress[]>("addresses", form);
 
   useEffect(() => {
     if (contractForm.open) form.resetFields();
@@ -96,6 +101,15 @@ const ContractForm: React.FC<{
                   <Form.Item name={[field.name, "address"]}>
                     <Input placeholder="Address" />
                   </Form.Item>
+                  {addresses &&
+                    blockchains.find(
+                      (chain) =>
+                        chain.id === addresses[field.name]?.blockchainId
+                    )?.networkCluster === NetworkCluster.Sui && (
+                      <Form.Item name={[field.name, "package"]}>
+                        <Input placeholder="Package" />
+                      </Form.Item>
+                    )}
                   <MinusCircleOutlined onClick={() => remove(field.name)} />
                 </Space>
               ))}
