@@ -1,5 +1,6 @@
 import React, { useEffect } from "react";
 import {
+  Blockchain,
   ContractAddress,
   DeployedContract,
   NetworkCluster,
@@ -22,6 +23,7 @@ export type ContractFormStructure = {
 
 export const parseContractForm = (
   form: ContractFormStructure,
+  blockchains: Blockchain[],
   id?: string
 ): DeployedContract => {
   const contractId = id ?? v4();
@@ -34,7 +36,11 @@ export const parseContractForm = (
       bytecode: "{}",
       flattenSource: form.flattenSource,
       programKeypair: "[]",
-      networkClusters: [],
+      networkClusters: blockchains
+        .filter((chain) =>
+          form.addresses.some((address) => address.blockchainId === chain.id)
+        )
+        .map((chain) => chain.networkCluster.toString()),
     }),
     addresses: form.addresses,
   };
