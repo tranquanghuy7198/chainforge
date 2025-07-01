@@ -13,6 +13,7 @@ import AbiWalletForm from "./abi-wallet-form";
 import { Wallet } from "../../utils/wallets/wallet";
 import { useAppSelector } from "../../redux/hook";
 import { Radio } from "antd";
+import SolanaForm from "./solana-form";
 
 const AbiForm: React.FC<{
   defaultAction: AbiAction;
@@ -53,7 +54,13 @@ const AbiForm: React.FC<{
       {contractTemplate.networkClusters.includes(NetworkCluster.Sui) ? (
         <SuiForm action={action} abi={contractTemplate.abi} />
       ) : contractTemplate.networkClusters.includes(NetworkCluster.Solana) ? (
-        <>Available soon</>
+        <SolanaForm
+          action={action}
+          contractTemplate={contractTemplate}
+          contractAddress={contractAddress}
+          wallet={wallet}
+          blockchain={blockchain}
+        />
       ) : contractTemplate.networkClusters.includes(NetworkCluster.Cosmos) ? (
         <>Available soon</>
       ) : contractTemplate.networkClusters.includes(
