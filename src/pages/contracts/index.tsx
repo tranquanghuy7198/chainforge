@@ -129,17 +129,19 @@ const Contracts: React.FC = () => {
         onAddRequested={() => setContractForm({ open: true, form: undefined })}
         defaultSelectAll={false}
       />
-      <Masonry
-        columnGutter={10}
-        rowGutter={10}
-        columnWidth={300}
-        items={displayedContracts.map((contract) => ({
-          contract: contract,
-          onDeleteContract: deleteContract,
-          onEditContract: editContract,
-        }))}
-        render={ContractCard}
-      />
+      <div className="masonry-container">
+        <Masonry
+          columnGutter={10}
+          rowGutter={10}
+          columnWidth={300}
+          items={displayedContracts.map((contract) => ({
+            contract: contract,
+            onDeleteContract: deleteContract,
+            onEditContract: editContract,
+          }))}
+          render={ContractCard}
+        />
+      </div>
       <Drawer
         width={700}
         title={contractForm.form ? contractForm.form.name : "Add Contract"}

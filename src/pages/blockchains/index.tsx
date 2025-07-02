@@ -63,15 +63,17 @@ const Blockchains: React.FC = () => {
         onAddRequested={() => setAddBlockchain(true)}
         defaultSelectAll
       />
-      <Masonry
-        columnGutter={10}
-        rowGutter={10}
-        columnWidth={360}
-        items={displayedBlockchains.map((blockchain) => ({
-          blockchain: blockchain,
-        }))}
-        render={BlockchainCard}
-      />
+      <div className="masonry-container">
+        <Masonry
+          columnGutter={10}
+          rowGutter={10}
+          columnWidth={360}
+          items={displayedBlockchains.map((blockchain) => ({
+            blockchain: blockchain,
+          }))}
+          render={BlockchainCard}
+        />
+      </div>
       <Drawer
         width={500}
         title="Request New Blockchain"

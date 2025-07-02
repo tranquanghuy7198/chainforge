@@ -128,17 +128,19 @@ const ContractTemplates: React.FC = () => {
         onAddRequested={() => setTemplateForm({ open: true, form: undefined })}
         defaultSelectAll={false}
       />
-      <Masonry
-        columnGutter={10}
-        rowGutter={10}
-        columnWidth={360}
-        items={displayedTemplates.map((template) => ({
-          contractTemplate: template,
-          onDeleteTemplate: deleteContractTemplate,
-          onEditTemplate: editContractTemplate,
-        }))}
-        render={ContractTemplateCard}
-      />
+      <div className="masonry-container">
+        <Masonry
+          columnGutter={10}
+          rowGutter={10}
+          columnWidth={360}
+          items={displayedTemplates.map((template) => ({
+            contractTemplate: template,
+            onDeleteTemplate: deleteContractTemplate,
+            onEditTemplate: editContractTemplate,
+          }))}
+          render={ContractTemplateCard}
+        />
+      </div>
       <Drawer
         width={700}
         title={
