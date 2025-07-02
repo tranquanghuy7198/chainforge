@@ -1,11 +1,13 @@
-import { Button, Form, Input, Select } from "antd";
+import { Alert, Button, Form, Input, Select } from "antd";
 import { ContractTemplate, NetworkCluster } from "../../utils/constants";
 import { capitalize } from "../../utils/utils";
 import { useForm, useWatch } from "antd/es/form/Form";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { InboxOutlined } from "@ant-design/icons";
 import Dragger from "antd/es/upload/Dragger";
 import { v4 } from "uuid";
+import { Keypair } from "@solana/web3.js";
+import "./contract-template-form.scss";
 
 export type ContractTemplateFormStructure = {
   id: string;
@@ -45,9 +47,12 @@ const ContractTemplateForm: React.FC<{
 }> = ({ templateForm, saveContractTemplate }) => {
   const [form] = useForm();
   const networkClusters = useWatch<string[]>("networkClusters", form);
+  const [solanaProgramId, setSolanaProgramId] = useState<string>();
 
   useEffect(() => {
     if (templateForm.open) form.resetFields();
+    if (templateForm.form?.programKeypair)
+      extractProgramId(templateForm.form.programKeypair);
   }, [form, templateForm]);
 
   const readBytecodeFile = async (bytecodeFile: File): Promise<boolean> => {
@@ -55,6 +60,18 @@ const ContractTemplateForm: React.FC<{
     const bytecodeBytes = new Uint8Array(bytecodeBuffer);
     form.setFieldValue("bytecode", Buffer.from(bytecodeBytes).toString("hex"));
     return false;
+  };
+
+  const extractProgramId = (programKeypair: string) => {
+    try {
+      setSolanaProgramId(
+        `Program ID: ${Keypair.fromSecretKey(
+          Uint8Array.from(JSON.parse(programKeypair))
+        ).publicKey.toBase58()}`
+      );
+    } catch (e) {
+      setSolanaProgramId("");
+    }
   };
 
   return (
@@ -106,9 +123,21 @@ const ContractTemplateForm: React.FC<{
         </Form.Item>
       )}
       {(networkClusters || []).includes(NetworkCluster.Solana.toString()) && (
-        <Form.Item name="programKeypair" label="Program Keypair" required>
-          <Input.TextArea placeholder="[1, 2, 151, ...]" rows={2} />
-        </Form.Item>
+        <>
+          <Form.Item name="programKeypair" label="Program Keypair" required>
+            <Input.TextArea
+              placeholder="[1, 2, 151, ...]"
+              rows={2}
+              onChange={(event) => extractProgramId(event.target.value)}
+            />
+          </Form.Item>
+          <Alert
+            showIcon
+            type={solanaProgramId ? "info" : "error"}
+            message={solanaProgramId || "Invalid program keypair"}
+            className="solana-program-keypair-alert"
+          />
+        </>
       )}
       {(networkClusters || []).some((networkCluster) =>
         [
