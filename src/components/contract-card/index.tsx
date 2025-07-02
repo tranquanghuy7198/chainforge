@@ -18,10 +18,12 @@ import { shorten } from "../../utils/utils";
 import AbiForm from "../abi-form";
 
 const ContractCard: React.FC<{
-  contract: DeployedContract;
-  onDeleteContract: (id: string) => void;
-  onEditContract: (id: string) => void;
-}> = ({ contract, onDeleteContract, onEditContract }) => {
+  data: {
+    contract: DeployedContract;
+    onDeleteContract: (id: string) => void;
+    onEditContract: (id: string) => void;
+  };
+}> = ({ data: { contract, onDeleteContract, onEditContract } }) => {
   const blockchains = useAppSelector((state) => state.blockchain.blockchains);
   const [contractAddress, setContractAddress] = useState<ContractAddress>();
 
@@ -29,7 +31,6 @@ const ContractCard: React.FC<{
     <>
       <Card
         hoverable
-        className="contract-card"
         actions={[
           <Tooltip title="Edit" arrow={false}>
             <EditOutlined onClick={() => onEditContract(contract.id)} />

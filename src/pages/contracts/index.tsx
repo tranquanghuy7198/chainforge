@@ -9,13 +9,14 @@ import ContractCard from "../../components/contract-card";
 import useLocalStorageState from "use-local-storage-state";
 import { capitalize } from "../../utils/utils";
 import { useAppSelector } from "../../redux/hook";
-import { Drawer, Flex } from "antd";
+import { Drawer } from "antd";
 import ContractForm, {
   ContractFormStructure,
   parseContractForm,
 } from "../../components/contract-form";
 import useNotification from "antd/es/notification/useNotification";
 import Paragraph from "antd/es/typography/Paragraph";
+import { Masonry } from "masonic";
 
 const Contracts: React.FC = () => {
   const [notification, contextHolder] = useNotification();
@@ -128,16 +129,17 @@ const Contracts: React.FC = () => {
         onAddRequested={() => setContractForm({ open: true, form: undefined })}
         defaultSelectAll={false}
       />
-      <Flex wrap gap="small">
-        {displayedContracts.map((contract) => (
-          <ContractCard
-            key={contract.id}
-            contract={contract}
-            onDeleteContract={deleteContract}
-            onEditContract={editContract}
-          />
-        ))}
-      </Flex>
+      <Masonry
+        columnGutter={10}
+        rowGutter={10}
+        columnWidth={300}
+        items={displayedContracts.map((contract) => ({
+          contract: contract,
+          onDeleteContract: deleteContract,
+          onEditContract: editContract,
+        }))}
+        render={ContractCard}
+      />
       <Drawer
         width={700}
         title={contractForm.form ? contractForm.form.name : "Add Contract"}
