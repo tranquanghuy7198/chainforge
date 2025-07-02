@@ -12,8 +12,9 @@ import SuiForm from "./sui-form";
 import AbiWalletForm from "./abi-wallet-form";
 import { Wallet } from "../../utils/wallets/wallet";
 import { useAppSelector } from "../../redux/hook";
-import { Radio } from "antd";
+import { Segmented } from "antd";
 import SolanaForm from "./solana-form";
+import { EditOutlined, EyeOutlined } from "@ant-design/icons";
 
 const AbiForm: React.FC<{
   defaultAction: AbiAction;
@@ -41,15 +42,23 @@ const AbiForm: React.FC<{
         onBlockchainSelected={setBlockchain}
       />
       {defaultAction !== AbiAction.Deploy && (
-        <Radio.Group
+        <Segmented<AbiAction>
           defaultValue={defaultAction}
-          onChange={(event) => setAction(event.target.value as AbiAction)}
-          buttonStyle="solid"
+          options={[
+            {
+              label: "Read Contract",
+              value: AbiAction.Read,
+              icon: <EyeOutlined />,
+            },
+            {
+              label: "Write Contract",
+              value: AbiAction.Write,
+              icon: <EditOutlined />,
+            },
+          ]}
+          onChange={(value) => setAction(value)}
           className="action-selector"
-        >
-          <Radio.Button value={AbiAction.Read}>Read Contract</Radio.Button>
-          <Radio.Button value={AbiAction.Write}>Write Contract</Radio.Button>
-        </Radio.Group>
+        />
       )}
       {contractTemplate.networkClusters.includes(NetworkCluster.Sui) ? (
         <SuiForm action={action} abi={contractTemplate.abi} />
