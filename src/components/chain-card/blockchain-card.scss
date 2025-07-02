@@ -1,10 +1,5 @@
 @use "../../styles.scss" as *;
 
-.blockchain-card {
-  width: 360px;
-  height: min-content;
-}
-
 .blockchain-card-content {
   display: flex;
   flex-flow: row;

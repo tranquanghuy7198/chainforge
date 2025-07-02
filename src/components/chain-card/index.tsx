@@ -10,13 +10,12 @@ import "./blockchain-card.scss";
 import React from "react";
 import { Blockchain } from "../../utils/constants";
 
-const BlockchainCard: React.FC<{ blockchain: Blockchain }> = ({
-  blockchain,
+const BlockchainCard: React.FC<{ data: { blockchain: Blockchain } }> = ({
+  data: { blockchain },
 }) => {
   return (
     <Card
       hoverable
-      className="blockchain-card"
       actions={[
         <SettingOutlined />,
         <Tooltip title="Edit" arrow={false}>

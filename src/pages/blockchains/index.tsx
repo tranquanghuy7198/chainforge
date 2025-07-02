@@ -5,9 +5,10 @@ import BlockchainCard from "../../components/chain-card";
 import { Blockchain } from "../../utils/constants";
 import { useAppSelector } from "../../redux/hook";
 import Header from "../../components/header";
-import { Button, Checkbox, Drawer, Flex, Form, Input } from "antd";
+import { Button, Checkbox, Drawer, Form, Input } from "antd";
 import { BlockchainForm, requestNewBlockchain } from "../../api/discord";
 import useNotification from "antd/es/notification/useNotification";
+import { Masonry } from "masonic";
 
 const TESTNET: string = "testnet";
 const MAINNET: string = "mainnet";
@@ -62,11 +63,15 @@ const Blockchains: React.FC = () => {
         onAddRequested={() => setAddBlockchain(true)}
         defaultSelectAll
       />
-      <Flex wrap gap="small">
-        {displayedBlockchains.map((blockchain) => (
-          <BlockchainCard key={blockchain.id} blockchain={blockchain} />
-        ))}
-      </Flex>
+      <Masonry
+        columnGutter={10}
+        rowGutter={10}
+        columnWidth={360}
+        items={displayedBlockchains.map((blockchain) => ({
+          blockchain: blockchain,
+        }))}
+        render={BlockchainCard}
+      />
       <Drawer
         width={500}
         title="Request New Blockchain"
