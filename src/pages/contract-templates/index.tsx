@@ -7,10 +7,9 @@ import {
   NetworkCluster,
 } from "../../utils/constants";
 import Header from "../../components/header";
-import { Content } from "antd/es/layout/layout";
 import ContractTemplateCard from "../../components/contract-template-card";
 import { capitalize } from "../../utils/utils";
-import { Drawer } from "antd";
+import { Drawer, Flex } from "antd";
 import useNotification from "antd/es/notification/useNotification";
 import ContractTemplateForm, {
   ContractTemplateFormStructure,
@@ -128,7 +127,7 @@ const ContractTemplates: React.FC = () => {
         onAddRequested={() => setTemplateForm({ open: true, form: undefined })}
         defaultSelectAll={false}
       />
-      <Content className="item-dashboard">
+      <Flex wrap gap="small">
         {displayedTemplates.map((template) => (
           <ContractTemplateCard
             key={template.id}
@@ -137,7 +136,7 @@ const ContractTemplates: React.FC = () => {
             onEditTemplate={editContractTemplate}
           />
         ))}
-      </Content>
+      </Flex>
       <Drawer
         width={700}
         title={

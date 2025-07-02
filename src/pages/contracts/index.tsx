@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import Header from "../../components/header";
-import { Content } from "antd/es/layout/layout";
 import {
   CONTRACT_KEY,
   DeployedContract,
@@ -10,7 +9,7 @@ import ContractCard from "../../components/contract-card";
 import useLocalStorageState from "use-local-storage-state";
 import { capitalize } from "../../utils/utils";
 import { useAppSelector } from "../../redux/hook";
-import { Drawer } from "antd";
+import { Drawer, Flex } from "antd";
 import ContractForm, {
   ContractFormStructure,
   parseContractForm,
@@ -129,7 +128,7 @@ const Contracts: React.FC = () => {
         onAddRequested={() => setContractForm({ open: true, form: undefined })}
         defaultSelectAll={false}
       />
-      <Content className="item-dashboard">
+      <Flex wrap gap="small">
         {displayedContracts.map((contract) => (
           <ContractCard
             key={contract.id}
@@ -138,7 +137,7 @@ const Contracts: React.FC = () => {
             onEditContract={editContract}
           />
         ))}
-      </Content>
+      </Flex>
       <Drawer
         width={700}
         title={contractForm.form ? contractForm.form.name : "Add Contract"}

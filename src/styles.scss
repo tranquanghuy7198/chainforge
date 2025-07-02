@@ -9,22 +9,7 @@ $success: #52c41a;
   overflow-y: hidden;
 }
 
-.item-dashboard {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
-  height: 100%;
-  overflow-y: auto;
-  scrollbar-width: none;
-  -ms-overflow-style: none;
-  padding-bottom: 2rem;
-}
-
 .select-icon {
   width: 20px !important;
   height: 20px !important;
-}
-
-.item-dashboard::-webkit-scrollbar {
-  display: none;
 }

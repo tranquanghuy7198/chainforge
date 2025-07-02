@@ -2,11 +2,10 @@ import "./blockchains.scss";
 
 import React, { useEffect, useState } from "react";
 import BlockchainCard from "../../components/chain-card";
-import { Content } from "antd/es/layout/layout";
 import { Blockchain } from "../../utils/constants";
 import { useAppSelector } from "../../redux/hook";
 import Header from "../../components/header";
-import { Button, Checkbox, Drawer, Form, Input } from "antd";
+import { Button, Checkbox, Drawer, Flex, Form, Input } from "antd";
 import { BlockchainForm, requestNewBlockchain } from "../../api/discord";
 import useNotification from "antd/es/notification/useNotification";
 
@@ -63,11 +62,11 @@ const Blockchains: React.FC = () => {
         onAddRequested={() => setAddBlockchain(true)}
         defaultSelectAll
       />
-      <Content className="item-dashboard">
+      <Flex wrap gap="small">
         {displayedBlockchains.map((blockchain) => (
           <BlockchainCard key={blockchain.id} blockchain={blockchain} />
         ))}
-      </Content>
+      </Flex>
       <Drawer
         width={500}
         title="Request New Blockchain"
