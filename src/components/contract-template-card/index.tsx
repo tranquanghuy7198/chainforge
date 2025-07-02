@@ -15,10 +15,12 @@ import AbiForm from "../abi-form";
 import Paragraph from "antd/es/typography/Paragraph";
 
 const ContractTemplateCard: React.FC<{
-  contractTemplate: ContractTemplate;
-  onDeleteTemplate: (id: string) => void;
-  onEditTemplate: (id: string) => void;
-}> = ({ contractTemplate, onDeleteTemplate, onEditTemplate }) => {
+  data: {
+    contractTemplate: ContractTemplate;
+    onDeleteTemplate: (id: string) => void;
+    onEditTemplate: (id: string) => void;
+  };
+}> = ({ data: { contractTemplate, onDeleteTemplate, onEditTemplate } }) => {
   const blockchains = useAppSelector((state) => state.blockchain.blockchains);
   const [openDeploy, setOpenDeploy] = useState<boolean>(false);
 
@@ -26,7 +28,6 @@ const ContractTemplateCard: React.FC<{
     <>
       <Card
         hoverable
-        className="contract-template-card"
         actions={[
           <Tooltip title="Deploy" arrow={false}>
             <CloudUploadOutlined onClick={() => setOpenDeploy(true)} />

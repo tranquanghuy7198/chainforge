@@ -9,13 +9,14 @@ import {
 import Header from "../../components/header";
 import ContractTemplateCard from "../../components/contract-template-card";
 import { capitalize } from "../../utils/utils";
-import { Drawer, Flex } from "antd";
+import { Drawer } from "antd";
 import useNotification from "antd/es/notification/useNotification";
 import ContractTemplateForm, {
   ContractTemplateFormStructure,
   parseContractTemplateForm,
 } from "../../components/contract-template-form";
 import Paragraph from "antd/es/typography/Paragraph";
+import { Masonry } from "masonic";
 
 const ContractTemplates: React.FC = () => {
   const [notification, contextHolder] = useNotification();
@@ -127,16 +128,17 @@ const ContractTemplates: React.FC = () => {
         onAddRequested={() => setTemplateForm({ open: true, form: undefined })}
         defaultSelectAll={false}
       />
-      <Flex wrap gap="small">
-        {displayedTemplates.map((template) => (
-          <ContractTemplateCard
-            key={template.id}
-            contractTemplate={template}
-            onDeleteTemplate={deleteContractTemplate}
-            onEditTemplate={editContractTemplate}
-          />
-        ))}
-      </Flex>
+      <Masonry
+        columnGutter={10}
+        rowGutter={10}
+        columnWidth={360}
+        items={displayedTemplates.map((template) => ({
+          contractTemplate: template,
+          onDeleteTemplate: deleteContractTemplate,
+          onEditTemplate: editContractTemplate,
+        }))}
+        render={ContractTemplateCard}
+      />
       <Drawer
         width={700}
         title={

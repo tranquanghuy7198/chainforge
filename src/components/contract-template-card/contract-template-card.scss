@@ -1,10 +1,5 @@
 @use "../../styles.scss" as *;
 
-.contract-template-card {
-  width: 360px;
-  height: min-content;
-}
-
 .template-name {
   word-break: break-word;
   color: $secondary;
