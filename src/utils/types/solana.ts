@@ -2,6 +2,7 @@
 
 import { Buffer } from "buffer";
 import { PublicKey } from "@solana/web3.js";
+import { BN } from "@coral-xyz/anchor";
 export type Idl = {
   address: string;
   metadata: IdlMetadata;
@@ -266,4 +267,16 @@ export const stringifyArgType = (argType: IdlType): string => {
   return Object.entries(argType)
     .map(([key, value]) => `${key}<${stringifyArgType(value)}>`)
     .join("|");
+};
+
+export const parseArg = (
+  argValue: string,
+  argType: IdlType
+): string | PublicKey | BN => {
+  if (argType === "pubkey") return new PublicKey(argValue);
+  if (
+    ["u64", "u128", "u256", "i64", "i128", "i256"].includes(argType.toString())
+  )
+    return new BN(argValue);
+  return argValue;
 };
