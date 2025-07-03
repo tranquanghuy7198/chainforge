@@ -5,6 +5,7 @@
   "private": true,
   "dependencies": {
     "@ant-design/icons": "^6.0.0",
+    "@coral-xyz/anchor": "^0.31.1",
     "@mysten/sui.js": "^0.54.1",
     "@mysten/wallet-adapter-wallet-standard": "^0.8.0",
     "@reduxjs/toolkit": "^2.8.2",
@@ -18,8 +19,10 @@
     "@testing-library/user-event": "^13.5.0",
     "@types/jest": "^27.5.2",
     "antd": "^5.26.1",
+    "camelcase": "^8.0.0",
     "ethers": "^6.14.4",
     "gh-pages": "^6.3.0",
+    "masonic": "^4.1.0",
     "postcss-loader": "^8.1.1",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
