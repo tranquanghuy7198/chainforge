@@ -185,10 +185,15 @@ const SolanaForm: React.FC<{
           .filter((instruction) => {
             if (action === AbiAction.Deploy)
               return instruction.name === DEPLOYMENT_INSTRUCTION;
-            let isWriteInstruction = true;
-            // TODO: classify read and write
-            // for (const account of instruction.accounts)
-            //   console.log(account.name, typeof account);
+            let isWriteInstruction = false;
+            for (const account of instruction.accounts)
+              for (const singleAccount of "accounts" in account
+                ? account.accounts
+                : [account])
+                if (singleAccount.signer || singleAccount.writable) {
+                  isWriteInstruction = true;
+                  break;
+                }
             return (
               instruction.name !== DEPLOYMENT_INSTRUCTION &&
               isWriteInstruction === (action === AbiAction.Write)
