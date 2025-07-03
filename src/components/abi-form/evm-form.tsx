@@ -2,10 +2,8 @@ import React, { useState } from "react";
 import {
   AbiAction,
   Blockchain,
-  CONTRACT_KEY,
   ContractAddress,
   ContractTemplate,
-  DeployedContract,
   EvmAbi,
   EvmAbiFunction,
   TxResponse,
@@ -14,8 +12,6 @@ import { Button, Collapse, Descriptions, Form, Input } from "antd";
 import "./abi-form.scss";
 import { Wallet } from "../../utils/wallets/wallet";
 import { capitalize } from "../../utils/utils";
-import useLocalStorageState from "use-local-storage-state";
-import { v4 } from "uuid";
 import {
   CloudUploadOutlined,
   EditOutlined,
@@ -29,53 +25,23 @@ const PAYABLE_AMOUNT = "payable";
 const EvmForm: React.FC<{
   action: AbiAction;
   contractTemplate: ContractTemplate;
+  saveDeployedContract: (blockchain: Blockchain, address: string) => void;
   contractAddress?: ContractAddress;
   wallet?: Wallet;
   blockchain?: Blockchain;
-}> = ({ action, contractTemplate, contractAddress, wallet, blockchain }) => {
+}> = ({
+  action,
+  contractTemplate,
+  saveDeployedContract,
+  contractAddress,
+  wallet,
+  blockchain,
+}) => {
   const [notification, contextHolder] = useNotification();
-  const [deployedContracts, setDeployedContracts] = useLocalStorageState<
-    DeployedContract[]
-  >(CONTRACT_KEY, { defaultValue: [] });
   const [txResponses, setTxResponses] = useState<Record<string, TxResponse>>(
     {}
   );
   const [loading, setLoading] = useState<boolean>(false);
-
-  const saveDeployedContract = (blockchain: Blockchain, address: string) => {
-    setDeployedContracts(
-      deployedContracts.some(
-        (contract) => contract.template.id === contractTemplate.id
-      )
-        ? deployedContracts.map((contract) =>
-            contract.template.id === contractTemplate.id
-              ? {
-                  ...contract,
-                  addresses: [
-                    ...contract.addresses,
-                    {
-                      blockchainId: blockchain.id,
-                      address: address!,
-                    },
-                  ],
-                }
-              : contract
-          )
-        : [
-            ...deployedContracts,
-            {
-              id: v4(),
-              template: contractTemplate,
-              addresses: [
-                {
-                  blockchainId: blockchain.id,
-                  address: address!,
-                },
-              ],
-            },
-          ]
-    );
-  };
 
   const deploy = async (
     wallet: Wallet,

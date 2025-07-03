@@ -3,8 +3,10 @@ import "./abi-form.scss";
 import {
   AbiAction,
   Blockchain,
+  CONTRACT_KEY,
   ContractAddress,
   ContractTemplate,
+  DeployedContract,
   NetworkCluster,
 } from "../../utils/constants";
 import EvmForm from "./evm-form";
@@ -15,6 +17,8 @@ import { useAppSelector } from "../../redux/hook";
 import { Segmented } from "antd";
 import SolanaForm from "./solana-form";
 import { EditOutlined, EyeOutlined } from "@ant-design/icons";
+import useLocalStorageState from "use-local-storage-state";
+import { v4 } from "uuid";
 
 const AbiForm: React.FC<{
   defaultAction: AbiAction;
@@ -25,6 +29,44 @@ const AbiForm: React.FC<{
   const [wallet, setWallet] = useState<Wallet>();
   const [blockchain, setBlockchain] = useState<Blockchain>();
   const [action, setAction] = useState<AbiAction>(defaultAction);
+  const [deployedContracts, setDeployedContracts] = useLocalStorageState<
+    DeployedContract[]
+  >(CONTRACT_KEY, { defaultValue: [] });
+
+  const saveDeployedContract = (blockchain: Blockchain, address: string) => {
+    setDeployedContracts(
+      deployedContracts.some(
+        (contract) => contract.template.id === contractTemplate.id
+      )
+        ? deployedContracts.map((contract) =>
+            contract.template.id === contractTemplate.id
+              ? {
+                  ...contract,
+                  addresses: [
+                    ...contract.addresses,
+                    {
+                      blockchainId: blockchain.id,
+                      address: address!,
+                    },
+                  ],
+                }
+              : contract
+          )
+        : [
+            ...deployedContracts,
+            {
+              id: v4(),
+              template: contractTemplate,
+              addresses: [
+                {
+                  blockchainId: blockchain.id,
+                  address: address!,
+                },
+              ],
+            },
+          ]
+    );
+  };
 
   useEffect(() => {
     const selectedChain = blockchains.find(
@@ -83,6 +125,7 @@ const AbiForm: React.FC<{
           contractAddress={contractAddress}
           wallet={wallet}
           blockchain={blockchain}
+          saveDeployedContract={saveDeployedContract}
         />
       )}
     </div>
