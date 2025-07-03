@@ -3,12 +3,29 @@ import {
   PhantomWalletAdapter,
   SolflareWalletAdapter,
 } from "@solana/wallet-adapter-wallets";
-import { Blockchain, NetworkCluster } from "../../constants";
+import { Blockchain, NetworkCluster, TxResponse } from "../../constants";
 import { Wallet } from "../wallet";
 import {
   BaseMessageSignerWalletAdapter,
   WalletReadyState,
+  WalletAdapterNetwork,
 } from "@solana/wallet-adapter-base";
+import {
+  AnchorProvider,
+  Idl,
+  Program,
+  Wallet as AnchorWallet,
+} from "@coral-xyz/anchor";
+import {
+  Connection,
+  Keypair,
+  LAMPORTS_PER_SOL,
+  PublicKey,
+  Transaction,
+} from "@solana/web3.js";
+import SuperJSON from "superjson";
+import { buildDeploymentTxs, executeDeploymentTxs } from "./deploy";
+import { BpfLoaderUpgradeable } from "./deploy/bpf-upgradeable";
 
 class Solana extends Wallet {
   public provider: BaseMessageSignerWalletAdapter;
@@ -43,6 +60,150 @@ class Solana extends Wallet {
     await this.provider.connect();
     this.address = this.provider.publicKey?.toString();
     if (blockchain) this.chainId = blockchain.chainId;
+  }
+
+  // public async deploy(
+  //   blockchain: Blockchain,
+  //   abi: any,
+  //   bytecode: string,
+  //   _args: any, // We don't need Solana args when deploying
+  //   payment?: string
+  // ): Promise<TxResponse> {
+  //   // Prepare data
+  //   await this.connect(blockchain);
+  //   const connection = new Connection(blockchain.rpcUrl, "confirmed");
+  //   // const walletBalance = await connection.getBalance(this.provider.publicKey!);
+  //   const programKeypair = payment
+  //     ? Keypair.fromSecretKey(Uint8Array.from(JSON.parse(payment)))
+  //     : undefined;
+
+  //   // Some initial validation
+  //   const programId = new PublicKey((abi as Idl).address);
+  //   const programExists = await connection.getAccountInfo(programId);
+  //   const programBuffer = Buffer.from(bytecode, "hex");
+  //   const bufferBalance = await connection.getMinimumBalanceForRentExemption(
+  //     BpfLoaderUpgradeable.getBufferAccountSize(programBuffer.length)
+  //   );
+  //   const programBalance = await connection.getMinimumBalanceForRentExemption(
+  //     BpfLoaderUpgradeable.getBufferAccountSize(
+  //       BpfLoaderUpgradeable.BUFFER_PROGRAM_SIZE
+  //     )
+  //   );
+  //   if (!programExists) {
+  //     if (!programKeypair)
+  //       throw new Error("Program keypair is required for initial deployment");
+  //     // const neededBalance = 3 * bufferBalance;
+  //     // if (walletBalance < neededBalance) {
+  //     //   throw new Error(
+  //     //     `Initial deployment costs ${(
+  //     //       neededBalance / LAMPORTS_PER_SOL
+  //     //     ).toFixed(2)} SOL but you have ${(
+  //     //       walletBalance / LAMPORTS_PER_SOL
+  //     //     ).toFixed(2)} SOL.`
+  //     //   );
+  //     // }
+  //   } else {
+  //     // if (walletBalance < bufferBalance) {
+  //     //   throw new Error(
+  //     //     `Program upgrading costs ${(bufferBalance / LAMPORTS_PER_SOL).toFixed(
+  //     //       2
+  //     //     )} SOL but you have ${(walletBalance / LAMPORTS_PER_SOL).toFixed(
+  //     //       2
+  //     //     )} SOL.`
+  //     //   );
+  //     // }
+  //   }
+
+  //   // Build all necessary transactions
+  //   const recentBlockhash = await connection.getLatestBlockhash();
+  //   const [createBufferTx, loadBufferTxs, deploymentTx, closeBufferTx] =
+  //     buildDeploymentTxs(
+  //       this.provider.publicKey!,
+  //       programBuffer,
+  //       programExists,
+  //       bufferBalance,
+  //       programBalance,
+  //       recentBlockhash.blockhash,
+  //       programId,
+  //       programKeypair
+  //     );
+
+  //   // Sign them all
+  //   const signedTxs = await this.provider.signAllTransactions([
+  //     createBufferTx,
+  //     ...loadBufferTxs,
+  //     deploymentTx,
+  //     closeBufferTx,
+  //   ]);
+
+  //   // Execute them
+  //   return await executeDeploymentTxs(signedTxs, connection);
+  // }
+
+  // public async readContract(
+  //   blockchain: Blockchain,
+  //   contractAddress: string,
+  //   abi: any,
+  //   method: string,
+  //   args: [any[], Record<string, PublicKey>]
+  // ): Promise<TxResponse> {
+  //   await this.connect(blockchain);
+  //   const [params, accounts] = args;
+  //   const connection = new Connection(blockchain.rpcUrl, "confirmed");
+  //   const program = new Program(
+  //     {
+  //       ...abi,
+  //       address: contractAddress,
+  //     } as Idl,
+  //     { connection }
+  //   );
+  //   const result = await program.methods[method](...params)
+  //     .accounts(accounts)
+  //     .view();
+  //   return {
+  //     data: JSON.stringify(JSON.parse(SuperJSON.stringify(result)).json),
+  //   };
+  // }
+
+  public async writeContract(
+    blockchain: Blockchain,
+    contractAddress: string,
+    abi: any,
+    method: string,
+    args: [any[], Record<string, PublicKey>],
+    payment?: string
+  ): Promise<TxResponse> {
+    // Prepare connection
+    await this.connect(blockchain);
+    const connection = new Connection(blockchain.rpcUrl, "confirmed");
+    const {
+      context: { slot: minContextSlot },
+      value: { blockhash, lastValidBlockHeight },
+    } = await connection.getLatestBlockhashAndContext();
+
+    // Prepare with program instruction
+    const program = new Program(
+      { ...abi, address: contractAddress } as Idl,
+      this.provider as any
+    );
+    const [params, accounts] = args;
+    const programInstruction = await program.methods[method](...params)
+      .accounts(accounts)
+      .instruction();
+
+    // Prepare transaction
+    const tx = new Transaction();
+    tx.add(programInstruction);
+
+    // Send transaction
+    const signature = await this.provider.sendTransaction(tx, connection);
+    await connection.confirmTransaction({
+      signature,
+      blockhash,
+      lastValidBlockHeight,
+      minContextSlot,
+    });
+    return { txHash: signature };
   }
 }
 

@@ -13,8 +13,10 @@ import { capitalize } from "../../utils/utils";
 import {
   ACCOUNT_PARAM,
   ARG_PARAM,
+  convertIdlToCamelCase,
   Idl,
   IdlInstruction,
+  parseArg,
   stringifyArgType,
 } from "../../utils/types/solana";
 import {
@@ -22,9 +24,17 @@ import {
   EditOutlined,
   EyeOutlined,
 } from "@ant-design/icons";
-import { convertIdlToCamelCase } from "@coral-xyz/anchor/dist/cjs/idl";
 import Paragraph from "antd/es/typography/Paragraph";
 import { PublicKey } from "@solana/web3.js";
+
+const DEPLOYMENT_INSTRUCTION = "deploy";
+
+const deploymentSimilationInstruction: IdlInstruction = {
+  name: DEPLOYMENT_INSTRUCTION,
+  discriminator: [],
+  accounts: [],
+  args: [],
+};
 
 const SolanaForm: React.FC<{
   action: AbiAction;
@@ -39,7 +49,44 @@ const SolanaForm: React.FC<{
   );
   const [loading, setLoading] = useState<boolean>(false);
 
+  const deploy = async (wallet: Wallet, blockchain: Blockchain) => {
+    // const response = await wallet.deploy(
+    //   blockchain,
+    //   contractTemplate.abi,
+    //   contractTemplate.bytecode,
+    //   null,
+    //   contractTemplate.programKeypair
+    //     ? JSON.stringify(contractTemplate.programKeypair)
+    //     : undefined
+    // );
+    // setTxResponses({ ...txResponses, [DEPLOYMENT_INSTRUCTION]: response });
+  };
+
   const read = async (
+    wallet: Wallet,
+    blockchain: Blockchain,
+    instruction: IdlInstruction,
+    args: any[],
+    accounts: Record<string, PublicKey>
+  ) => {
+    // if (!contractAddress) {
+    //   notification.error({
+    //     message: "No contract selected",
+    //     description: "You must select a contract first",
+    //   });
+    //   return;
+    // }
+    // const response = await wallet.readContract(
+    //   blockchain,
+    //   contractAddress.address,
+    //   contractTemplate.abi,
+    //   instruction.name,
+    //   [args, accounts]
+    // );
+    // setTxResponses({ ...txResponses, [instruction.name]: response });
+  };
+
+  const write = async (
     wallet: Wallet,
     blockchain: Blockchain,
     instruction: IdlInstruction,
@@ -54,13 +101,14 @@ const SolanaForm: React.FC<{
       return;
     }
 
-    const response = await wallet.readContract(
+    const response = await wallet.writeContract(
       blockchain,
       contractAddress.address,
       contractTemplate.abi,
       instruction.name,
       [args, accounts]
     );
+
     setTxResponses({ ...txResponses, [instruction.name]: response });
   };
 
@@ -92,11 +140,9 @@ const SolanaForm: React.FC<{
     // Execute
     try {
       // Prepare args and accounts
-      const args = instruction.args.map((arg) => {
-        const rawArg = (params[ARG_PARAM] || {})[arg.name];
-        if (arg.type === "pubkey") return new PublicKey(rawArg);
-        return rawArg;
-      });
+      const args = instruction.args.map((arg) =>
+        parseArg((params[ARG_PARAM] || {})[arg.name], arg.type)
+      );
       const accounts = Object.fromEntries(
         Object.entries(params[ACCOUNT_PARAM] || {}).map(([key, value]) => [
           key,
@@ -105,14 +151,11 @@ const SolanaForm: React.FC<{
       );
 
       // Execute in wallet
-      if (action === AbiAction.Deploy)
-        // await deploy(wallet, blockchain, instruction, params);
-        console.log("deploy");
+      if (action === AbiAction.Deploy) await deploy(wallet, blockchain);
       else if (action === AbiAction.Read)
         await read(wallet, blockchain, instruction, args, accounts);
       else if (action === AbiAction.Write)
-        // await write(wallet, blockchain, instruction, params);
-        console.log("write");
+        await write(wallet, blockchain, instruction, args, accounts);
     } catch (e) {
       notification.error({
         message: "Execution Failed",
@@ -135,13 +178,21 @@ const SolanaForm: React.FC<{
       {contextHolder}
       <Collapse
         accordion
-        items={convertIdlToCamelCase(contractTemplate.abi as Idl)
-          .instructions.filter((instruction) => {
-            let isWriteInstruction = false;
+        items={[
+          ...convertIdlToCamelCase(contractTemplate.abi as Idl).instructions,
+          deploymentSimilationInstruction,
+        ]
+          .filter((instruction) => {
+            if (action === AbiAction.Deploy)
+              return instruction.name === DEPLOYMENT_INSTRUCTION;
+            let isWriteInstruction = true;
             // TODO: classify read and write
             // for (const account of instruction.accounts)
             //   console.log(account.name, typeof account);
-            return isWriteInstruction === (action === AbiAction.Write);
+            return (
+              instruction.name !== DEPLOYMENT_INSTRUCTION &&
+              isWriteInstruction === (action === AbiAction.Write)
+            );
           })
           .map((instruction) => ({
             key: instruction.name,
