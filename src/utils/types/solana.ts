@@ -1,5 +1,6 @@
 // From @coral-xyz/anchor
 
+import camelCase from "camelcase";
 import { Buffer } from "buffer";
 import { PublicKey } from "@solana/web3.js";
 import { BN } from "@coral-xyz/anchor";
@@ -234,20 +235,7 @@ export interface IdlProgramAccount {
 }
 export declare function decodeIdlAccount(data: Buffer): IdlProgramAccount;
 export declare function encodeIdlAccount(acc: IdlProgramAccount): Buffer;
-/**
- * Convert the given IDL to camelCase.
- *
- * The IDL is generated from Rust which has different conventions compared to
- * JS/TS, e.g. instruction names in Rust are snake_case.
- *
- * The conversion happens automatically for programs, however, if you are using
- * internals such as `BorshInstructionCoder` and you only have the original
- * (not camelCase) IDL, you might need to use this function.
- *
- * @param idl IDL to convert to camelCase
- * @returns camelCase version of the IDL
- */
-export declare function convertIdlToCamelCase<I extends Idl>(idl: I): I;
+
 /** Conveniently handle all defined field kinds with proper type support. */
 export declare function handleDefinedFields<U, N, T>(
   fields: IdlDefinedFields | undefined,
@@ -280,3 +268,26 @@ export const parseArg = (
     return new BN(argValue);
   return argValue;
 };
+
+export function convertIdlToCamelCase<I extends Idl>(idl: I) {
+  const KEYS_TO_CONVERT = ["name", "path", "account", "relations", "generic"];
+
+  // `my_account.field` is getting converted to `myAccountField` but we
+  // need `myAccount.field`.
+  const toCamelCase = (s: any) => s.split(".").map(camelCase).join(".");
+
+  const recursivelyConvertNamesToCamelCase = (obj: Record<string, any>) => {
+    for (const key in obj) {
+      const val = obj[key];
+      if (KEYS_TO_CONVERT.includes(key)) {
+        obj[key] = Array.isArray(val) ? val.map(toCamelCase) : toCamelCase(val);
+      } else if (typeof val === "object") {
+        recursivelyConvertNamesToCamelCase(val);
+      }
+    }
+  };
+
+  const camelCasedIdl = structuredClone(idl);
+  recursivelyConvertNamesToCamelCase(camelCasedIdl);
+  return camelCasedIdl;
+}
