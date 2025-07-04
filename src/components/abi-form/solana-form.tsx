@@ -26,6 +26,7 @@ import {
 } from "@ant-design/icons";
 import Paragraph from "antd/es/typography/Paragraph";
 import { PublicKey } from "@solana/web3.js";
+import { SolanaExtra } from "../../utils/wallets/solana/utils";
 
 const DEPLOYMENT_INSTRUCTION = "deploy";
 
@@ -63,9 +64,7 @@ const SolanaForm: React.FC<{
       contractTemplate.abi,
       contractTemplate.bytecode,
       null,
-      contractTemplate.programKeypair
-        ? JSON.stringify(contractTemplate.programKeypair)
-        : undefined
+      { programKeypair: contractTemplate.programKeypair } as SolanaExtra
     );
     setTxResponses({ ...txResponses, [DEPLOYMENT_INSTRUCTION]: response });
     saveDeployedContract(blockchain, response.contractAddress!);

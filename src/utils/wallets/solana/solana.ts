@@ -26,6 +26,7 @@ import {
 import SuperJSON from "superjson";
 import { buildDeploymentTxs, executeDeploymentTxs } from "./deploy";
 import { BpfLoaderUpgradeable } from "./deploy/bpf-upgradeable";
+import { SolanaExtra } from "./utils";
 
 class Solana extends Wallet {
   public provider: BaseMessageSignerWalletAdapter;
@@ -67,13 +68,13 @@ class Solana extends Wallet {
     abi: any,
     bytecode: string,
     _args: any, // We don't need Solana args when deploying
-    payment?: string
+    extra: SolanaExtra
   ): Promise<TxResponse> {
     // Prepare data
     await this.connect(blockchain);
     const connection = new Connection(blockchain.rpcUrl, "confirmed");
-    const programKeypair = payment
-      ? Keypair.fromSecretKey(Uint8Array.from(JSON.parse(payment)))
+    const programKeypair = extra.programKeypair
+      ? Keypair.fromSecretKey(Uint8Array.from(extra.programKeypair))
       : undefined;
 
     // Some initial validation
