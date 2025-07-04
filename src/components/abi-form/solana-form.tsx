@@ -39,10 +39,18 @@ const deploymentSimilationInstruction: IdlInstruction = {
 const SolanaForm: React.FC<{
   action: AbiAction;
   contractTemplate: ContractTemplate;
+  saveDeployedContract: (blockchain: Blockchain, address: string) => void;
   contractAddress?: ContractAddress;
   wallet?: Wallet;
   blockchain?: Blockchain;
-}> = ({ action, contractTemplate, contractAddress, wallet, blockchain }) => {
+}> = ({
+  action,
+  contractTemplate,
+  saveDeployedContract,
+  contractAddress,
+  wallet,
+  blockchain,
+}) => {
   const [notification, contextHolder] = useNotification();
   const [txResponses, setTxResponses] = useState<Record<string, TxResponse>>(
     {}
@@ -50,16 +58,17 @@ const SolanaForm: React.FC<{
   const [loading, setLoading] = useState<boolean>(false);
 
   const deploy = async (wallet: Wallet, blockchain: Blockchain) => {
-    // const response = await wallet.deploy(
-    //   blockchain,
-    //   contractTemplate.abi,
-    //   contractTemplate.bytecode,
-    //   null,
-    //   contractTemplate.programKeypair
-    //     ? JSON.stringify(contractTemplate.programKeypair)
-    //     : undefined
-    // );
-    // setTxResponses({ ...txResponses, [DEPLOYMENT_INSTRUCTION]: response });
+    const response = await wallet.deploy(
+      blockchain,
+      contractTemplate.abi,
+      contractTemplate.bytecode,
+      null,
+      contractTemplate.programKeypair
+        ? JSON.stringify(contractTemplate.programKeypair)
+        : undefined
+    );
+    setTxResponses({ ...txResponses, [DEPLOYMENT_INSTRUCTION]: response });
+    saveDeployedContract(blockchain, response.contractAddress!);
   };
 
   const read = async (

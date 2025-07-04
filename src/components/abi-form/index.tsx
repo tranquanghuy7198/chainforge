@@ -111,6 +111,7 @@ const AbiForm: React.FC<{
           contractAddress={contractAddress}
           wallet={wallet}
           blockchain={blockchain}
+          saveDeployedContract={saveDeployedContract}
         />
       ) : contractTemplate.networkClusters.includes(NetworkCluster.Cosmos) ? (
         <>Available soon</>

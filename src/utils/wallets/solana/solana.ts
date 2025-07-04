@@ -62,83 +62,76 @@ class Solana extends Wallet {
     if (blockchain) this.chainId = blockchain.chainId;
   }
 
-  // public async deploy(
-  //   blockchain: Blockchain,
-  //   abi: any,
-  //   bytecode: string,
-  //   _args: any, // We don't need Solana args when deploying
-  //   payment?: string
-  // ): Promise<TxResponse> {
-  //   // Prepare data
-  //   await this.connect(blockchain);
-  //   const connection = new Connection(blockchain.rpcUrl, "confirmed");
-  //   // const walletBalance = await connection.getBalance(this.provider.publicKey!);
-  //   const programKeypair = payment
-  //     ? Keypair.fromSecretKey(Uint8Array.from(JSON.parse(payment)))
-  //     : undefined;
+  public async deploy(
+    blockchain: Blockchain,
+    abi: any,
+    bytecode: string,
+    _args: any, // We don't need Solana args when deploying
+    payment?: string
+  ): Promise<TxResponse> {
+    // Prepare data
+    await this.connect(blockchain);
+    const connection = new Connection(blockchain.rpcUrl, "confirmed");
+    const programKeypair = payment
+      ? Keypair.fromSecretKey(Uint8Array.from(JSON.parse(payment)))
+      : undefined;
 
-  //   // Some initial validation
-  //   const programId = new PublicKey((abi as Idl).address);
-  //   const programExists = await connection.getAccountInfo(programId);
-  //   const programBuffer = Buffer.from(bytecode, "hex");
-  //   const bufferBalance = await connection.getMinimumBalanceForRentExemption(
-  //     BpfLoaderUpgradeable.getBufferAccountSize(programBuffer.length)
-  //   );
-  //   const programBalance = await connection.getMinimumBalanceForRentExemption(
-  //     BpfLoaderUpgradeable.getBufferAccountSize(
-  //       BpfLoaderUpgradeable.BUFFER_PROGRAM_SIZE
-  //     )
-  //   );
-  //   if (!programExists) {
-  //     if (!programKeypair)
-  //       throw new Error("Program keypair is required for initial deployment");
-  //     // const neededBalance = 3 * bufferBalance;
-  //     // if (walletBalance < neededBalance) {
-  //     //   throw new Error(
-  //     //     `Initial deployment costs ${(
-  //     //       neededBalance / LAMPORTS_PER_SOL
-  //     //     ).toFixed(2)} SOL but you have ${(
-  //     //       walletBalance / LAMPORTS_PER_SOL
-  //     //     ).toFixed(2)} SOL.`
-  //     //   );
-  //     // }
-  //   } else {
-  //     // if (walletBalance < bufferBalance) {
-  //     //   throw new Error(
-  //     //     `Program upgrading costs ${(bufferBalance / LAMPORTS_PER_SOL).toFixed(
-  //     //       2
-  //     //     )} SOL but you have ${(walletBalance / LAMPORTS_PER_SOL).toFixed(
-  //     //       2
-  //     //     )} SOL.`
-  //     //   );
-  //     // }
-  //   }
+    // Some initial validation
+    const programId = new PublicKey((abi as Idl).address);
+    const programExists = await connection.getAccountInfo(programId);
+    const programBuffer = Buffer.from(bytecode, "hex");
+    const bufferBalance = await connection.getMinimumBalanceForRentExemption(
+      BpfLoaderUpgradeable.getBufferAccountSize(programBuffer.length)
+    );
+    const programBalance = await connection.getMinimumBalanceForRentExemption(
+      BpfLoaderUpgradeable.getBufferAccountSize(
+        BpfLoaderUpgradeable.BUFFER_PROGRAM_SIZE
+      )
+    );
+    if (!programExists) {
+      if (!programKeypair)
+        throw new Error("Program keypair is required for initial deployment");
+      // const neededBalance = 3 * bufferBalance;
+      // if (walletBalance < neededBalance) {
+      //   throw new Error(
+      //     `Initial deployment costs ${(
+      //       neededBalance / LAMPORTS_PER_SOL
+      //     ).toFixed(2)} SOL but you have ${(
+      //       walletBalance / LAMPORTS_PER_SOL
+      //     ).toFixed(2)} SOL.`
+      //   );
+      // }
+    } else {
+      // if (walletBalance < bufferBalance) {
+      //   throw new Error(
+      //     `Program upgrading costs ${(bufferBalance / LAMPORTS_PER_SOL).toFixed(
+      //       2
+      //     )} SOL but you have ${(walletBalance / LAMPORTS_PER_SOL).toFixed(
+      //       2
+      //     )} SOL.`
+      //   );
+      // }
+    }
 
-  //   // Build all necessary transactions
-  //   const recentBlockhash = await connection.getLatestBlockhash();
-  //   const [createBufferTx, loadBufferTxs, deploymentTx, closeBufferTx] =
-  //     buildDeploymentTxs(
-  //       this.provider.publicKey!,
-  //       programBuffer,
-  //       programExists,
-  //       bufferBalance,
-  //       programBalance,
-  //       recentBlockhash.blockhash,
-  //       programId,
-  //       programKeypair
-  //     );
+    // Build all necessary transactions
+    const recentBlockhash = await connection.getLatestBlockhash();
+    const txs = buildDeploymentTxs(
+      this.provider.publicKey!,
+      programBuffer,
+      programExists,
+      bufferBalance,
+      programBalance,
+      recentBlockhash.blockhash,
+      programId,
+      programKeypair
+    );
 
-  //   // Sign them all
-  //   const signedTxs = await this.provider.signAllTransactions([
-  //     createBufferTx,
-  //     ...loadBufferTxs,
-  //     deploymentTx,
-  //     closeBufferTx,
-  //   ]);
+    // Sign them all
+    const signedTxs = await this.provider.signAllTransactions(txs);
 
-  //   // Execute them
-  //   return await executeDeploymentTxs(signedTxs, connection);
-  // }
+    // Execute them
+    return await executeDeploymentTxs(connection, signedTxs);
+  }
 
   // public async readContract(
   //   blockchain: Blockchain,
