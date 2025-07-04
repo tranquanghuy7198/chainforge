@@ -115,7 +115,7 @@ const sendMultipleAndRetry = async (
 export const executeDeploymentTxs = async (
   connection: Connection,
   transactions: Transaction[]
-): Promise<TxResponse> => {
+): Promise<string> => {
   const [createBufferTx, deploymentTx, closeBufferTx, ...loadBufferTxs] =
     transactions;
 
@@ -141,5 +141,5 @@ export const executeDeploymentTxs = async (
     await connection.sendRawTransaction(closeBufferTx.serialize());
     throw new Error("Deployment failed");
   }
-  return { txHash: deploymentHash };
+  return deploymentHash;
 };

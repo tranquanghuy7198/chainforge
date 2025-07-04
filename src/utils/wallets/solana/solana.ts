@@ -88,30 +88,8 @@ class Solana extends Wallet {
         BpfLoaderUpgradeable.BUFFER_PROGRAM_SIZE
       )
     );
-    if (!programExists) {
-      if (!programKeypair)
-        throw new Error("Program keypair is required for initial deployment");
-      // const neededBalance = 3 * bufferBalance;
-      // if (walletBalance < neededBalance) {
-      //   throw new Error(
-      //     `Initial deployment costs ${(
-      //       neededBalance / LAMPORTS_PER_SOL
-      //     ).toFixed(2)} SOL but you have ${(
-      //       walletBalance / LAMPORTS_PER_SOL
-      //     ).toFixed(2)} SOL.`
-      //   );
-      // }
-    } else {
-      // if (walletBalance < bufferBalance) {
-      //   throw new Error(
-      //     `Program upgrading costs ${(bufferBalance / LAMPORTS_PER_SOL).toFixed(
-      //       2
-      //     )} SOL but you have ${(walletBalance / LAMPORTS_PER_SOL).toFixed(
-      //       2
-      //     )} SOL.`
-      //   );
-      // }
-    }
+    if (!programExists && !programKeypair)
+      throw new Error("Program keypair is required for initial deployment");
 
     // Build all necessary transactions
     const recentBlockhash = await connection.getLatestBlockhash();
@@ -126,11 +104,10 @@ class Solana extends Wallet {
       programKeypair
     );
 
-    // Sign them all
+    // Sign and execute
     const signedTxs = await this.provider.signAllTransactions(txs);
-
-    // Execute them
-    return await executeDeploymentTxs(connection, signedTxs);
+    const txSignature = await executeDeploymentTxs(connection, signedTxs);
+    return { txHash: txSignature };
   }
 
   // public async readContract(
