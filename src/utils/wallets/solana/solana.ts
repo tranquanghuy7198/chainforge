@@ -108,7 +108,7 @@ class Solana extends Wallet {
     // Sign and execute
     const signedTxs = await this.provider.signAllTransactions(txs);
     const txSignature = await executeDeploymentTxs(connection, signedTxs);
-    return { txHash: txSignature };
+    return { contractAddress: programId.toBase58(), txHash: txSignature };
   }
 
   // public async readContract(
