@@ -142,7 +142,7 @@ class Solana extends Wallet {
     abi: any,
     method: string,
     args: [any[], Record<string, PublicKey>],
-    payment?: string
+    extra: SolanaExtra
   ): Promise<TxResponse> {
     // Prepare connection
     await this.connect(blockchain);

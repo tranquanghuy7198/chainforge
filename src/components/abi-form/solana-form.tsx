@@ -114,7 +114,8 @@ const SolanaForm: React.FC<{
       contractAddress.address,
       contractTemplate.abi,
       instruction.name,
-      [args, accounts]
+      [args, accounts],
+      {} as SolanaExtra
     );
 
     setTxResponses({ ...txResponses, [instruction.name]: response });
