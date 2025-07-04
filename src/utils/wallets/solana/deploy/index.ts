@@ -6,16 +6,11 @@ import {
   Transaction,
 } from "@solana/web3.js";
 import { BpfLoaderUpgradeable } from "./bpf-upgradeable";
-import { TxResponse } from "../../../constants";
 import pLimit from "p-limit";
 
 const MAX_RETRIES = 10;
 const SLEEP_MULTIPLIER = 1.4;
 const LOAD_CONCURRENCY = 8;
-
-export const initialValidation = async () => {
-  //
-};
 
 export const buildDeploymentTxs = (
   deployer: PublicKey,
