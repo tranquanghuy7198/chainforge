@@ -19,6 +19,7 @@ import {
 } from "@ant-design/icons";
 import useNotification from "antd/es/notification/useNotification";
 import Paragraph from "antd/es/typography/Paragraph";
+import { EthereumExtra } from "../../utils/wallets/ethereum/utils";
 
 const PAYABLE_AMOUNT = "payable";
 
@@ -59,7 +60,7 @@ const EvmForm: React.FC<{
           return JSON.parse(rawParam);
         return rawParam;
       }),
-      params[PAYABLE_AMOUNT]
+      { payment: params[PAYABLE_AMOUNT] } as EthereumExtra
     );
     setTxResponses({ ...txResponses, [func.name || func.type]: txResponse });
     saveDeployedContract(blockchain, txResponse.contractAddress!);
@@ -123,7 +124,7 @@ const EvmForm: React.FC<{
           return rawParam;
         }
       }),
-      params[PAYABLE_AMOUNT]
+      { payment: params[PAYABLE_AMOUNT] } as EthereumExtra
     );
     setTxResponses({ ...txResponses, [func.name!]: response });
   };

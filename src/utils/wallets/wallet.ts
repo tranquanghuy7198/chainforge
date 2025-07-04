@@ -40,9 +40,9 @@ export class Wallet {
     abi: any,
     bytecode: string,
     args: any,
-    payment?: string
+    extra: any
   ): Promise<TxResponse> {
-    console.log(blockchain, abi, bytecode, args, payment);
+    console.log(blockchain, abi, bytecode, args, extra);
     throw new Error("Method not implemented.");
   }
 
@@ -63,9 +63,9 @@ export class Wallet {
     abi: any,
     method: string,
     args: any,
-    payment?: string
+    extra: any
   ): Promise<TxResponse> {
-    console.log(blockchain, contractAddress, abi, method, args, payment);
+    console.log(blockchain, contractAddress, abi, method, args, extra);
     throw new Error("Method not implemented.");
   }
 

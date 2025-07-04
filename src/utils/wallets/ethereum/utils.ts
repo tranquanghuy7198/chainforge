@@ -1,5 +1,7 @@
 import { Blockchain } from "../../constants";
 
+export type EthereumExtra = { payment?: string };
+
 export const toMetaMaskCompatibility = (blockchain: Blockchain) => {
   return {
     chainId: blockchain.chainId,

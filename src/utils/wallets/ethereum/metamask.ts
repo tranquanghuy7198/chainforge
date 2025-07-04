@@ -8,7 +8,7 @@ import {
 import { Wallet } from "../wallet";
 import { Blockchain, NetworkCluster, TxResponse } from "../../constants";
 import MetaMaskIcon from "../../../assets/wallets/metamask.svg";
-import { toMetaMaskCompatibility } from "./utils";
+import { EthereumExtra, toMetaMaskCompatibility } from "./utils";
 import SuperJSON from "superjson";
 
 export class MetaMask extends Wallet {
@@ -51,14 +51,14 @@ export class MetaMask extends Wallet {
     abi: any,
     bytecode: string,
     args: any[],
-    payment?: string
+    extra: EthereumExtra
   ): Promise<TxResponse> {
     await this.connect(blockchain);
     const signer = await this.provider!.getSigner();
     const factory = new ContractFactory(abi, bytecode, signer);
     const contract = await factory.deploy(
       ...args,
-      payment ? { value: payment } : {}
+      extra.payment ? { value: extra.payment } : {}
     );
     await contract.waitForDeployment();
     return {
@@ -121,14 +121,14 @@ export class MetaMask extends Wallet {
     abi: any,
     method: string,
     args: any[],
-    payment?: string
+    extra: EthereumExtra
   ): Promise<TxResponse> {
     await this.connect(blockchain);
     const signer = await this.provider!.getSigner();
     const contract = new ethers.Contract(contractAddress, abi, signer);
     const response = (await contract[method](
       ...args,
-      payment ? { value: payment } : {}
+      extra.payment ? { value: extra.payment } : {}
     )) as ContractTransactionResponse;
     return {
       txHash: response.hash,
