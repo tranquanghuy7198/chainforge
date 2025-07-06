@@ -210,7 +210,7 @@ const SolanaForm: React.FC<{
           })
           .map((instruction) => ({
             key: instruction.name,
-            label: instruction.name,
+            label: <div className="function-name">{instruction.name}</div>,
             children: (
               <>
                 <Form

@@ -8,10 +8,10 @@ import {
   EvmAbiFunction,
   TxResponse,
 } from "../../utils/constants";
-import { Button, Collapse, Descriptions, Form, Input } from "antd";
+import { Button, Collapse, Descriptions, Form, Input, Space, Tag } from "antd";
 import "./abi-form.scss";
 import { Wallet } from "../../utils/wallets/wallet";
-import { capitalize } from "../../utils/utils";
+import { capitalize, evmFunctionSelector } from "../../utils/utils";
 import {
   CloudUploadOutlined,
   EditOutlined,
@@ -193,7 +193,12 @@ const EvmForm: React.FC<{
           })
           .map((func) => ({
             key: func.name || func.type,
-            label: func.name || func.type,
+            label: (
+              <Space>
+                <div className="function-name">{func.name || func.type}</div>
+                <Tag color="#108ee9">#{evmFunctionSelector(func)}</Tag>
+              </Space>
+            ),
             children: (
               <>
                 <Form
