@@ -32,10 +32,10 @@ const ContractCard: React.FC<{
       <Card
         hoverable
         actions={[
-          <Tooltip title="Edit" arrow={false}>
+          <Tooltip title="Edit">
             <EditOutlined onClick={() => onEditContract(contract.id)} />
           </Tooltip>,
-          <Tooltip title="Delete" arrow={false}>
+          <Tooltip title="Delete">
             <DeleteOutlined onClick={() => onDeleteContract(contract.id)} />
           </Tooltip>,
         ]}
@@ -51,10 +51,7 @@ const ContractCard: React.FC<{
                 className="contract-address"
                 onClick={() => setContractAddress(address)}
               >
-                <Tooltip
-                  title={blockchain?.name ?? "Unknown blockchain"}
-                  arrow={false}
-                >
+                <Tooltip title={blockchain?.name ?? "Unknown blockchain"}>
                   {blockchain ? (
                     <Image
                       src={blockchain.logo}

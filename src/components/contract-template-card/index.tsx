@@ -29,13 +29,13 @@ const ContractTemplateCard: React.FC<{
       <Card
         hoverable
         actions={[
-          <Tooltip title="Deploy" arrow={false}>
+          <Tooltip title="Deploy">
             <CloudUploadOutlined onClick={() => setOpenDeploy(true)} />
           </Tooltip>,
-          <Tooltip title="Edit" arrow={false}>
+          <Tooltip title="Edit">
             <EditOutlined onClick={() => onEditTemplate(contractTemplate.id)} />
           </Tooltip>,
-          <Tooltip title="Delete" arrow={false}>
+          <Tooltip title="Delete">
             <DeleteOutlined
               onClick={() => onDeleteTemplate(contractTemplate.id)}
             />
@@ -56,7 +56,7 @@ const ContractTemplateCard: React.FC<{
                 .map((blockchain) => [blockchain.logo, blockchain])
             ).values()
           ).map((blockchain) => (
-            <Tooltip key={blockchain.id} title={blockchain.name} arrow={false}>
+            <Tooltip key={blockchain.id} title={blockchain.name}>
               <Image
                 src={blockchain.logo}
                 preview={false}

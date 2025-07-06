@@ -18,10 +18,10 @@ const BlockchainCard: React.FC<{ data: { blockchain: Blockchain } }> = ({
       hoverable
       actions={[
         <SettingOutlined />,
-        <Tooltip title="Edit" arrow={false}>
+        <Tooltip title="Edit">
           <EditOutlined />
         </Tooltip>,
-        <Tooltip title="Go to Explorer" arrow={false}>
+        <Tooltip title="Go to Explorer">
           <a
             href={blockchain.explorerUrl}
             target="_blank"
@@ -49,7 +49,6 @@ const BlockchainCard: React.FC<{ data: { blockchain: Blockchain } }> = ({
                     Mainnet <CheckCircleOutlined />
                   </div>
                 }
-                arrow={false}
                 color="green"
               >
                 <CheckCircleTwoTone

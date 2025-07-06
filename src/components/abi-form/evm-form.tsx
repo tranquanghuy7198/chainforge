@@ -8,7 +8,16 @@ import {
   EvmAbiFunction,
   TxResponse,
 } from "../../utils/constants";
-import { Button, Collapse, Descriptions, Form, Input, Space, Tag } from "antd";
+import {
+  Button,
+  Collapse,
+  Descriptions,
+  Form,
+  Input,
+  Space,
+  Tag,
+  Tooltip,
+} from "antd";
 import "./abi-form.scss";
 import { Wallet } from "../../utils/wallets/wallet";
 import { capitalize, evmFunctionSelector } from "../../utils/utils";
@@ -196,7 +205,9 @@ const EvmForm: React.FC<{
             label: (
               <Space>
                 <div className="function-name">{func.name || func.type}</div>
-                <Tag color="#108ee9">#{evmFunctionSelector(func)}</Tag>
+                <Tooltip title="Function Selector">
+                  <Tag color="#108ee9">#{evmFunctionSelector(func)}</Tag>
+                </Tooltip>
               </Space>
             ),
             children: (
