@@ -1,5 +1,6 @@
 import {
   DiscordFilled,
+  GiftFilled,
   GithubFilled,
   GoogleOutlined,
   LinkedinFilled,
@@ -29,6 +30,12 @@ const ProductContact: React.FC = () => {
       <a href="mailto:tranquanghuy7198@gmail.com">
         <GoogleOutlined className="product-contact" />
       </a>
+      <GiftFilled
+        className="product-contact"
+        onClick={() =>
+          window.open("https://github.com/sponsors/tranquanghuy7198")
+        }
+      />
     </div>
   );
 };
