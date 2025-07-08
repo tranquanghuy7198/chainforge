@@ -24,9 +24,12 @@ import {
   Transaction,
 } from "@solana/web3.js";
 import SuperJSON from "superjson";
-import { buildDeploymentTxs, executeDeploymentTxs } from "./deploy";
-import { BpfLoaderUpgradeable } from "./deploy/bpf-upgradeable";
 import { SolanaExtra } from "./utils";
+import {
+  BpfLoaderUpgradeable,
+  buildDeploymentTxs,
+  executeDeploymentTxs,
+} from "solana-bpf";
 
 class Solana extends Wallet {
   public provider: BaseMessageSignerWalletAdapter;
