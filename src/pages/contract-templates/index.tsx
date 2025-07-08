@@ -16,7 +16,7 @@ import ContractTemplateForm, {
   parseContractTemplateForm,
 } from "../../components/contract-template-form";
 import Paragraph from "antd/es/typography/Paragraph";
-import { Masonry } from "masonic";
+// import { Masonry } from "masonic";
 
 const ContractTemplates: React.FC = () => {
   const [notification, contextHolder] = useNotification();
@@ -129,7 +129,7 @@ const ContractTemplates: React.FC = () => {
         defaultSelectAll={false}
       />
       <div className="masonry-container">
-        <Masonry
+        {/* <Masonry
           columnGutter={10}
           rowGutter={10}
           columnWidth={360}
@@ -139,7 +139,7 @@ const ContractTemplates: React.FC = () => {
             onEditTemplate: editContractTemplate,
           }))}
           render={ContractTemplateCard}
-        />
+        /> */}
       </div>
       <Drawer
         width={700}
