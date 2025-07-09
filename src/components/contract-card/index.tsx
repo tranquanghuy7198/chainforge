@@ -18,18 +18,17 @@ import { shorten } from "../../utils/utils";
 import AbiForm from "../abi-form";
 
 const ContractCard: React.FC<{
-  data: {
-    contract: DeployedContract;
-    onDeleteContract: (id: string) => void;
-    onEditContract: (id: string) => void;
-  };
-}> = ({ data: { contract, onDeleteContract, onEditContract } }) => {
+  contract: DeployedContract;
+  onDeleteContract: (id: string) => void;
+  onEditContract: (id: string) => void;
+}> = ({ contract, onDeleteContract, onEditContract }) => {
   const blockchains = useAppSelector((state) => state.blockchain.blockchains);
   const [contractAddress, setContractAddress] = useState<ContractAddress>();
 
   return (
     <>
       <Card
+        className="masonry-item"
         hoverable
         actions={[
           <Tooltip title="Edit">

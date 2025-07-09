@@ -16,7 +16,7 @@ import ContractForm, {
 } from "../../components/contract-form";
 import useNotification from "antd/es/notification/useNotification";
 import Paragraph from "antd/es/typography/Paragraph";
-import { Masonry } from "masonic";
+import { XBlock, XMasonry } from "react-xmasonry";
 
 const Contracts: React.FC = () => {
   const [notification, contextHolder] = useNotification();
@@ -130,17 +130,17 @@ const Contracts: React.FC = () => {
         defaultSelectAll={false}
       />
       <div className="masonry-container">
-        <Masonry
-          columnGutter={10}
-          rowGutter={10}
-          columnWidth={300}
-          items={displayedContracts.map((contract) => ({
-            contract: contract,
-            onDeleteContract: deleteContract,
-            onEditContract: editContract,
-          }))}
-          render={ContractCard}
-        />
+        <XMasonry center={false} targetBlockWidth={300}>
+          {displayedContracts.map((contract) => (
+            <XBlock key={contract.id}>
+              <ContractCard
+                contract={contract}
+                onDeleteContract={deleteContract}
+                onEditContract={editContract}
+              />
+            </XBlock>
+          ))}
+        </XMasonry>
       </div>
       <Drawer
         width={700}
