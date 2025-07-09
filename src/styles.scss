@@ -4,7 +4,6 @@ $secondary: #235abc;
 $success: #52c41a;
 
 .page {
-  padding: 0 2rem 2rem 2rem;
   height: 100vh;
   overflow-y: hidden;
 }
@@ -14,7 +13,12 @@ $success: #52c41a;
   height: 20px !important;
 }
 
+.masonry-item {
+  margin: 5px;
+}
+
 .masonry-container {
+  padding: 0 calc(2rem - 5px) 2rem calc(2rem - 5px);
   height: 100%;
   overflow-y: auto;
   scrollbar-width: none; /* Firefox */
