@@ -44,6 +44,9 @@ const config = {
   plugins: [
     new HtmlWebpackPlugin({
       template: "./public/index.html",
+      templateParameters: {
+        PUBLIC_URL: "./public"
+      }
     }),
     new webpack.ProvidePlugin({
       Buffer: ["buffer", "Buffer"],
