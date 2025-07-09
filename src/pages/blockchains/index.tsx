@@ -8,7 +8,7 @@ import Header from "../../components/header";
 import { Button, Checkbox, Drawer, Form, Input } from "antd";
 import { BlockchainForm, requestNewBlockchain } from "../../api/discord";
 import useNotification from "antd/es/notification/useNotification";
-import { Masonry } from "masonic";
+import { XBlock, XMasonry } from "react-xmasonry";
 
 const TESTNET: string = "testnet";
 const MAINNET: string = "mainnet";
@@ -64,15 +64,13 @@ const Blockchains: React.FC = () => {
         defaultSelectAll
       />
       <div className="masonry-container">
-        <Masonry
-          columnGutter={10}
-          rowGutter={10}
-          columnWidth={360}
-          items={displayedBlockchains.map((blockchain) => ({
-            blockchain: blockchain,
-          }))}
-          render={BlockchainCard}
-        />
+        <XMasonry center={false} targetBlockWidth={360}>
+          {displayedBlockchains.map((blockchain) => (
+            <XBlock key={blockchain.id}>
+              <BlockchainCard blockchain={blockchain} />
+            </XBlock>
+          ))}
+        </XMasonry>
       </div>
       <Drawer
         width={500}
