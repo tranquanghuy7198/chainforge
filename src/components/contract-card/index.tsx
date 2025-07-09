@@ -47,6 +47,7 @@ const ContractCard: React.FC<{
             );
             return (
               <div
+                key={`${address.blockchainId}-${address.address}`}
                 className="contract-address"
                 onClick={() => setContractAddress(address)}
               >
