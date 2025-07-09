@@ -42,7 +42,7 @@ const items: MenuItem[] = [
   },
   {
     key: "contracts",
-    label: "Contracts",
+    label: "Contract Explorer",
     icon: <FileProtectOutlined />,
   },
 ];
