@@ -15,18 +15,17 @@ import AbiForm from "../abi-form";
 import Paragraph from "antd/es/typography/Paragraph";
 
 const ContractTemplateCard: React.FC<{
-  data: {
-    contractTemplate: ContractTemplate;
-    onDeleteTemplate: (id: string) => void;
-    onEditTemplate: (id: string) => void;
-  };
-}> = ({ data: { contractTemplate, onDeleteTemplate, onEditTemplate } }) => {
+  contractTemplate: ContractTemplate;
+  onDeleteTemplate: (id: string) => void;
+  onEditTemplate: (id: string) => void;
+}> = ({ contractTemplate, onDeleteTemplate, onEditTemplate }) => {
   const blockchains = useAppSelector((state) => state.blockchain.blockchains);
   const [openDeploy, setOpenDeploy] = useState<boolean>(false);
 
   return (
     <>
       <Card
+        className="masonry-item"
         hoverable
         actions={[
           <Tooltip title="Deploy">

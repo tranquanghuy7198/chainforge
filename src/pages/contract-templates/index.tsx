@@ -16,7 +16,7 @@ import ContractTemplateForm, {
   parseContractTemplateForm,
 } from "../../components/contract-template-form";
 import Paragraph from "antd/es/typography/Paragraph";
-import { Masonry } from "masonic";
+import { XBlock, XMasonry } from "react-xmasonry";
 
 const ContractTemplates: React.FC = () => {
   const [notification, contextHolder] = useNotification();
@@ -129,17 +129,17 @@ const ContractTemplates: React.FC = () => {
         defaultSelectAll={false}
       />
       <div className="masonry-container">
-        <Masonry
-          columnGutter={10}
-          rowGutter={10}
-          columnWidth={360}
-          items={displayedTemplates.map((template) => ({
-            contractTemplate: template,
-            onDeleteTemplate: deleteContractTemplate,
-            onEditTemplate: editContractTemplate,
-          }))}
-          render={ContractTemplateCard}
-        />
+        <XMasonry center={false} targetBlockWidth={360}>
+          {displayedTemplates.map((template) => (
+            <XBlock key={template.id}>
+              <ContractTemplateCard
+                contractTemplate={template}
+                onDeleteTemplate={deleteContractTemplate}
+                onEditTemplate={editContractTemplate}
+              />
+            </XBlock>
+          ))}
+        </XMasonry>
       </div>
       <Drawer
         width={700}
