@@ -1,5 +1,4 @@
 import {
-  NightlyWalletAdapter,
   PhantomWalletAdapter,
   SolflareWalletAdapter,
 } from "@solana/wallet-adapter-wallets";
@@ -203,19 +202,6 @@ export class Solflare extends Solana {
       "#ffffc4",
       "#e7d000",
       "https://www.solflare.com/download/"
-    );
-  }
-}
-
-export class Nightly extends Solana {
-  public key: string = "NIGHTLY";
-
-  constructor() {
-    super(
-      new NightlyWalletAdapter(),
-      "#c3bbff",
-      "#5345ba",
-      "https://nightly.app/download"
     );
   }
 }
