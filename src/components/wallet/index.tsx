@@ -5,69 +5,90 @@ import "./wallet.scss";
 import { CheckCircleOutlined, PauseCircleOutlined } from "@ant-design/icons";
 import { useAppSelector } from "../../redux/hook";
 import { shorten } from "../../utils/utils";
+import useNotification from "antd/es/notification/useNotification";
+import Paragraph from "antd/es/typography/Paragraph";
 
 const WalletCard: React.FC<{
   wallet: Wallet;
   onWalletUpdate: (wallet: Wallet) => void;
 }> = ({ wallet, onWalletUpdate }) => {
+  const [notification, contextHolder] = useNotification();
   const blockchains = useAppSelector((state) => state.blockchain.blockchains);
 
+  const connectWallet = async (wallet: Wallet): Promise<void> => {
+    try {
+      await wallet.connect();
+      onWalletUpdate(wallet);
+    } catch (error) {
+      notification.error({
+        message: `Cannot connect ${wallet.ui.name}`,
+        description: (
+          <Paragraph
+            ellipsis={{ rows: 4, expandable: true, symbol: "View Full" }}
+          >
+            {error instanceof Error ? error.message : String(error)}
+          </Paragraph>
+        ),
+      });
+    }
+  };
+
   return (
-    <Card
-      hoverable
-      className="wallet-card"
-      style={{ backgroundColor: wallet.ui.backgroundColor }}
-      onClick={() => {
-        wallet.connect();
-        onWalletUpdate(wallet);
-      }}
-    >
-      <div className="wallet-card-content">
-        <Image className="wallet-logo" preview={false} src={wallet.ui.icon} />
-        <div>
-          <div className="wallet-title">
-            <div
-              className="wallet-name"
-              style={{ color: wallet.ui.titleColor }}
-            >
-              {wallet.ui.name}
-            </div>
-            <div
-              className="wallet-info-container"
-              style={{ color: wallet.address ? "green" : "red" }}
-            >
-              {wallet.address && <CheckCircleOutlined color="green" />}
-              {!wallet.address && <PauseCircleOutlined color="red" />}
-              <div className="wallet-info">
-                {wallet.address ? shorten(wallet.address) : "Not Connected"}
+    <>
+      {contextHolder}
+      <Card
+        hoverable
+        className="wallet-card"
+        style={{ backgroundColor: wallet.ui.backgroundColor }}
+        onClick={() => connectWallet(wallet)}
+      >
+        <div className="wallet-card-content">
+          <Image className="wallet-logo" preview={false} src={wallet.ui.icon} />
+          <div>
+            <div className="wallet-title">
+              <div
+                className="wallet-name"
+                style={{ color: wallet.ui.titleColor }}
+              >
+                {wallet.ui.name}
               </div>
-            </div>
-            {wallet.chainId && (
-              <div className="wallet-info-container">
-                <Image
-                  src={
-                    blockchains.find(
+              <div
+                className="wallet-info-container"
+                style={{ color: wallet.address ? "green" : "red" }}
+              >
+                {wallet.address && <CheckCircleOutlined color="green" />}
+                {!wallet.address && <PauseCircleOutlined color="red" />}
+                <div className="wallet-info">
+                  {wallet.address ? shorten(wallet.address) : "Not Connected"}
+                </div>
+              </div>
+              {wallet.chainId && (
+                <div className="wallet-info-container">
+                  <Image
+                    src={
+                      blockchains.find(
+                        (blockchain) =>
+                          blockchain.chainId === wallet.chainId &&
+                          blockchain.networkCluster === wallet.networkCluster
+                      )?.logo
+                    }
+                    preview={false}
+                    className="wallet-chain-logo"
+                  />
+                  <div className="wallet-info">
+                    {blockchains.find(
                       (blockchain) =>
                         blockchain.chainId === wallet.chainId &&
                         blockchain.networkCluster === wallet.networkCluster
-                    )?.logo
-                  }
-                  preview={false}
-                  className="wallet-chain-logo"
-                />
-                <div className="wallet-info">
-                  {blockchains.find(
-                    (blockchain) =>
-                      blockchain.chainId === wallet.chainId &&
-                      blockchain.networkCluster === wallet.networkCluster
-                  )?.name || `Unknown network (${wallet.chainId})`}
+                    )?.name || `Unknown network (${wallet.chainId})`}
+                  </div>
                 </div>
-              </div>
-            )}
+              )}
+            </div>
           </div>
         </div>
-      </div>
-    </Card>
+      </Card>
+    </>
   );
 };
 
