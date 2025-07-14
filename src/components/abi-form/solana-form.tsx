@@ -77,6 +77,7 @@ const SolanaForm: React.FC<{
     args: any[],
     accounts: Record<string, PublicKey>
   ) => {
+    throw new Error("Availble soon");
     // if (!contractAddress) {
     //   notification.error({
     //     message: "No contract selected",
@@ -199,7 +200,12 @@ const SolanaForm: React.FC<{
               for (const singleAccount of "accounts" in account
                 ? account.accounts
                 : [account])
-                if (singleAccount.signer || singleAccount.writable) {
+                if (
+                  singleAccount.signer ||
+                  singleAccount.writable ||
+                  singleAccount.isMut ||
+                  singleAccount.isSigner
+                ) {
                   isWriteInstruction = true;
                   break;
                 }
