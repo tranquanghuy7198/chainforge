@@ -77,22 +77,21 @@ const SolanaForm: React.FC<{
     args: any[],
     accounts: Record<string, PublicKey>
   ) => {
-    throw new Error("Availble soon");
-    // if (!contractAddress) {
-    //   notification.error({
-    //     message: "No contract selected",
-    //     description: "You must select a contract first",
-    //   });
-    //   return;
-    // }
-    // const response = await wallet.readContract(
-    //   blockchain,
-    //   contractAddress.address,
-    //   contractTemplate.abi,
-    //   instruction.name,
-    //   [args, accounts]
-    // );
-    // setTxResponses({ ...txResponses, [instruction.name]: response });
+    if (!contractAddress) {
+      notification.error({
+        message: "No contract selected",
+        description: "You must select a contract first",
+      });
+      return;
+    }
+    const response = await wallet.readContract(
+      blockchain,
+      contractAddress.address,
+      contractTemplate.abi,
+      instruction.name,
+      [args, accounts]
+    );
+    setTxResponses({ ...txResponses, [instruction.name]: response });
   };
 
   const write = async (

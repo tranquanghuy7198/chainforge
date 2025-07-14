@@ -7,21 +7,9 @@ import { Wallet } from "../wallet";
 import {
   BaseMessageSignerWalletAdapter,
   WalletReadyState,
-  WalletAdapterNetwork,
 } from "@solana/wallet-adapter-base";
-import {
-  AnchorProvider,
-  Idl,
-  Program,
-  Wallet as AnchorWallet,
-} from "@coral-xyz/anchor";
-import {
-  Connection,
-  Keypair,
-  LAMPORTS_PER_SOL,
-  PublicKey,
-  Transaction,
-} from "@solana/web3.js";
+import { AnchorProvider, Idl, Program } from "@coral-xyz/anchor";
+import { Connection, Keypair, PublicKey, Transaction } from "@solana/web3.js";
 import SuperJSON from "superjson";
 import { SolanaExtra } from "./utils";
 import {
@@ -113,30 +101,38 @@ class Solana extends Wallet {
     return { contractAddress: programId.toBase58(), txHash: txSignature };
   }
 
-  // public async readContract(
-  //   blockchain: Blockchain,
-  //   contractAddress: string,
-  //   abi: any,
-  //   method: string,
-  //   args: [any[], Record<string, PublicKey>]
-  // ): Promise<TxResponse> {
-  //   await this.connect(blockchain);
-  //   const [params, accounts] = args;
-  //   const connection = new Connection(blockchain.rpcUrl, "confirmed");
-  //   const program = new Program(
-  //     {
-  //       ...abi,
-  //       address: contractAddress,
-  //     } as Idl,
-  //     { connection }
-  //   );
-  //   const result = await program.methods[method](...params)
-  //     .accounts(accounts)
-  //     .view();
-  //   return {
-  //     data: JSON.stringify(JSON.parse(SuperJSON.stringify(result)).json),
-  //   };
-  // }
+  public async readContract(
+    blockchain: Blockchain,
+    contractAddress: string,
+    abi: any,
+    method: string,
+    args: [any[], Record<string, PublicKey>]
+  ): Promise<TxResponse> {
+    await this.connect(blockchain);
+    const [params, accounts] = args;
+    const program = new Program(
+      { ...abi, address: contractAddress } as Idl,
+      new AnchorProvider(
+        new Connection(blockchain.rpcUrl, "confirmed"),
+        {
+          publicKey: new PublicKey(this.address!),
+          signTransaction: async () => {
+            throw new Error();
+          },
+          signAllTransactions: async () => {
+            throw new Error();
+          },
+        },
+        { commitment: "confirmed" }
+      )
+    );
+    const result = await program.methods[method](...params)
+      .accounts(accounts)
+      .view();
+    return {
+      data: JSON.stringify(JSON.parse(SuperJSON.stringify(result)).json),
+    };
+  }
 
   public async writeContract(
     blockchain: Blockchain,
