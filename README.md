@@ -10,10 +10,6 @@ The platform is designed to enhance developer productivity by reducing context s
 
 Chainforge is an open-source project and we welcome contributions from the community. Whether you're fixing bugs, adding new features, improving documentation, or providing feedback, your contributions help make blockchain development more accessible for everyone.
 
-## License
-
-This project is open source and available under the [MIT License](LICENSE).
-
 ## Support
 
 For questions, feature requests, or bug reports, please open an issue on the project repository or contact me directly.
