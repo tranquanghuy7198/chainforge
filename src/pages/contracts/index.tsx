@@ -119,7 +119,7 @@ const Contracts: React.FC = () => {
     <div className="page">
       {contextHolder}
       <Header
-        header="Contracts"
+        header="Contract Explorer"
         options={Object.values(NetworkCluster).map((cluster) => ({
           value: cluster.toString(),
           label: capitalize(cluster.toString()),

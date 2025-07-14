@@ -9,9 +9,9 @@ import {
   Tag,
 } from "antd";
 import {
-  AppstoreOutlined,
-  FileProtectOutlined,
-  FileTextOutlined,
+  AppstoreFilled,
+  FileTextFilled,
+  SettingFilled,
   WalletOutlined,
 } from "@ant-design/icons";
 import "./dashboard.scss";
@@ -33,17 +33,17 @@ const items: MenuItem[] = [
   {
     key: "blockchains",
     label: "Blockchains",
-    icon: <AppstoreOutlined />,
+    icon: <AppstoreFilled />,
   },
   {
     key: "contract-templates",
     label: "Contract Templates",
-    icon: <FileTextOutlined />,
+    icon: <SettingFilled />,
   },
   {
     key: "contracts",
     label: "Contract Explorer",
-    icon: <FileProtectOutlined />,
+    icon: <FileTextFilled />,
   },
 ];
 
