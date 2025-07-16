@@ -8,16 +8,7 @@ import {
   EvmAbiFunction,
   TxResponse,
 } from "../../utils/constants";
-import {
-  Button,
-  Collapse,
-  Descriptions,
-  Form,
-  Input,
-  Space,
-  Tag,
-  Tooltip,
-} from "antd";
+import { Button, Descriptions, Form, Input, Space, Tag, Tooltip } from "antd";
 import "./abi-form.scss";
 import { Wallet } from "../../utils/wallets/wallet";
 import { capitalize, evmFunctionSelector } from "../../utils/utils";
@@ -29,6 +20,7 @@ import {
 import useNotification from "antd/es/notification/useNotification";
 import Paragraph from "antd/es/typography/Paragraph";
 import { EthereumExtra } from "../../utils/wallets/ethereum/utils";
+import CollapseForm from "./collapse-form";
 
 const PAYABLE_AMOUNT = "payable";
 
@@ -191,8 +183,7 @@ const EvmForm: React.FC<{
   return (
     <>
       {contextHolder}
-      <Collapse
-        accordion
+      <CollapseForm
         items={(contractTemplate.abi as EvmAbi)
           .filter((func) => {
             if (action === AbiAction.Deploy) return func.type === "constructor";

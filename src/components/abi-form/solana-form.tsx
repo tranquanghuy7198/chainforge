@@ -7,7 +7,7 @@ import {
   TxResponse,
 } from "../../utils/constants";
 import { Wallet } from "../../utils/wallets/wallet";
-import { Button, Collapse, Descriptions, Form, Input, Select } from "antd";
+import { Button, Descriptions, Form, Input, Select } from "antd";
 import { Fragment, useState } from "react";
 import { capitalize } from "../../utils/utils";
 import {
@@ -29,6 +29,7 @@ import Paragraph from "antd/es/typography/Paragraph";
 import { PublicKey } from "@solana/web3.js";
 import { SolanaExtra } from "../../utils/wallets/solana/utils";
 import { FormInstance } from "antd/es/form/Form";
+import CollapseForm from "./collapse-form";
 
 enum AccountOption {
   Custom = "custom-account",
@@ -222,8 +223,7 @@ const SolanaForm: React.FC<{
   return (
     <>
       {contextHolder}
-      <Collapse
-        accordion
+      <CollapseForm
         items={getFullInstructions(contractTemplate.abi as Idl)
           .filter((instruction) => {
             if (action === AbiAction.Deploy)
