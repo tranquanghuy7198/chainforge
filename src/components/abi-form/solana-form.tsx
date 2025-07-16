@@ -287,7 +287,7 @@ const SolanaForm: React.FC<{
                           addonAfter={
                             <Select
                               defaultValue={AccountOption.Custom}
-                              onChange={(value) =>
+                              onSelect={(value) =>
                                 updateFormAccount(
                                   instruction.name,
                                   account.name,
