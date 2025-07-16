@@ -4,7 +4,7 @@ import camelCase from "camelcase";
 import { Buffer } from "buffer";
 import { PublicKey } from "@solana/web3.js";
 import { BN } from "@coral-xyz/anchor";
-import { id } from "ethers";
+
 export type Idl = {
   address: string;
   metadata: IdlMetadata;
@@ -266,22 +266,17 @@ interface ParseContext {
 }
 
 export class SolanaIdlParser {
-  private typeDefs: Map<string, IdlTypeDef>;
   private idl: Idl;
 
   constructor(idl: Idl) {
     this.idl = idl;
-    this.typeDefs = new Map(
-      idl.types ? idl.types.map((typeDef) => [typeDef.name, typeDef]) : []
-    );
   }
 
-  parseValue(value: string, idlType: IdlType): any {
+  public parseValue(value: string, idlType: IdlType): any {
     const context: ParseContext = {
       typeDefs: this.idl.types || [],
       generics: new Map(),
     };
-
     return this.parseValueInternal(value, idlType, context);
   }
 
@@ -299,20 +294,17 @@ export class SolanaIdlParser {
     // if ('array' in idlType) {
     //   return this.parseArray(value, idlType.array[0], idlType.array[1], context);
     // }
-
     if ("defined" in idlType)
       return this.parseDefined(value, idlType.defined.name, context);
-
     if ("generic" in idlType) {
       const resolvedType = context.generics?.get(idlType.generic);
       if (resolvedType)
         return this.parseValueInternal(value, resolvedType, context);
     }
-
     throw new Error(`Unsupported IDL type: ${JSON.stringify(idlType)}`);
   }
 
-  private parsePrimitive(value: string, type: string): any {
+  private parsePrimitive(value: string, type: IdlType): any {
     const trimmed = value.trim();
     switch (type) {
       case "bool":
@@ -396,13 +388,8 @@ export class SolanaIdlParser {
     const typeDef = this.idl.types?.find(
       (t) => t.name.toLowerCase() === typeName.toLowerCase()
     );
-
-    if (!typeDef) {
-      throw new Error(`Type definition not found: ${typeName}`);
-    }
-
+    if (!typeDef) throw new Error(`Type definition not found: ${typeName}`);
     const parsed = JSON.parse(value);
-
     if (typeDef.type.kind === "struct") {
       return this.parseStruct(
         parsed,
@@ -415,9 +402,8 @@ export class SolanaIdlParser {
     //   return this.parseEnum(parsed, typeDef.type.variants, context);
     // }
 
-    if (typeDef.type.kind === "type") {
+    if (typeDef.type.kind === "type")
       return this.parseValueInternal(value, typeDef.type.alias, context);
-    }
 
     throw new Error(`Unsupported type definition kind: ${typeDef.type.kind}`);
   }
@@ -429,9 +415,9 @@ export class SolanaIdlParser {
   ): any {
     const result: any = {};
     for (const field of fields) {
-      if (field.name in obj) {
-        result[field.name] = this.parseValueInternal(
-          JSON.stringify(obj[field.name]),
+      if (camelCase(field.name) in obj) {
+        result[camelCase(field.name)] = this.parseValueInternal(
+          JSON.stringify(obj[camelCase(field.name)]),
           field.type,
           context
         );
