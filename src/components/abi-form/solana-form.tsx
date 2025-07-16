@@ -8,7 +8,7 @@ import {
 } from "../../utils/constants";
 import { Wallet } from "../../utils/wallets/wallet";
 import { Button, Collapse, Descriptions, Form, Input } from "antd";
-import { useState } from "react";
+import { Fragment, useState } from "react";
 import { capitalize } from "../../utils/utils";
 import {
   ACCOUNT_PARAM,
@@ -224,14 +224,30 @@ const SolanaForm: React.FC<{
                   onFinish={(values) => execute(instruction, values)}
                 >
                   {instruction.accounts
+                    .map((account) =>
+                      "accounts" in account ? account.accounts : [account]
+                    ) // Flatten single account and complex accounts
+                    .flat()
                     .filter(
                       (account) =>
                         !("pda" in account) && !("address" in account)
-                    )
+                    ) // Ignore unnecessary accounts
                     .map((account) => (
                       <Form.Item
                         key={account.name}
                         name={[ACCOUNT_PARAM, account.name]}
+                        tooltip={
+                          account.docs ? (
+                            <>
+                              {account.docs.map((doc, index) => (
+                                <Fragment key={index}>
+                                  {doc}
+                                  <br />
+                                </Fragment>
+                              ))}
+                            </>
+                          ) : undefined
+                        }
                         label={account.name}
                         required
                       >
