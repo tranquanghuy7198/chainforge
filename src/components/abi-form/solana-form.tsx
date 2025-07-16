@@ -14,6 +14,7 @@ import {
   ACCOUNT_PARAM,
   ARG_PARAM,
   DEPLOYMENT_INSTRUCTION,
+  getAccountRoles,
   getFullInstructions,
   Idl,
   IdlInstruction,
@@ -30,6 +31,7 @@ import { PublicKey } from "@solana/web3.js";
 import { SolanaExtra } from "../../utils/wallets/solana/utils";
 import { FormInstance } from "antd/es/form/Form";
 import CollapseForm from "./collapse-form";
+import "./abi-form.scss";
 
 enum AccountOption {
   Custom = "custom-account",
@@ -279,6 +281,13 @@ const SolanaForm: React.FC<{
                           ) : undefined
                         }
                         label={account.name}
+                        help={
+                          getAccountRoles(account) ? (
+                            <div className="solana-acc-roles">
+                              {getAccountRoles(account).join(" | ")}
+                            </div>
+                          ) : undefined
+                        }
                         required
                       >
                         <Input

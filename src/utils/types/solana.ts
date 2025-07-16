@@ -521,3 +521,10 @@ export const getFullInstructions = (idl: Idl): IdlInstruction[] => {
     },
   ];
 };
+
+export const getAccountRoles = (account: IdlInstructionAccount): string[] => {
+  const roles: string[] = [];
+  if (account.signer) roles.push("Signer");
+  if (account.writable) roles.push("Writable");
+  return roles;
+};
