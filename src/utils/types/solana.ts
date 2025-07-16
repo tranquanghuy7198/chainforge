@@ -293,3 +293,17 @@ export function convertIdlToCamelCase<I extends Idl>(idl: I) {
   recursivelyConvertNamesToCamelCase(camelCasedIdl);
   return camelCasedIdl;
 }
+
+export const DEPLOYMENT_INSTRUCTION = "deploy";
+
+export const getFullInstructions = (idl: Idl): IdlInstruction[] => {
+  return [
+    ...convertIdlToCamelCase(idl).instructions,
+    {
+      name: DEPLOYMENT_INSTRUCTION,
+      discriminator: [],
+      accounts: [],
+      args: [],
+    },
+  ];
+};
