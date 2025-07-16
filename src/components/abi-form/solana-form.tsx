@@ -7,7 +7,7 @@ import {
   TxResponse,
 } from "../../utils/constants";
 import { Wallet } from "../../utils/wallets/wallet";
-import { Button, Collapse, Descriptions, Form, Input } from "antd";
+import { Button, Collapse, Descriptions, Form, Input, Select } from "antd";
 import { Fragment, useState } from "react";
 import { capitalize } from "../../utils/utils";
 import {
@@ -27,6 +27,7 @@ import {
 import Paragraph from "antd/es/typography/Paragraph";
 import { PublicKey } from "@solana/web3.js";
 import { SolanaExtra } from "../../utils/wallets/solana/utils";
+import { FormInstance } from "antd/es/form/Form";
 
 const DEPLOYMENT_INSTRUCTION = "deploy";
 
@@ -36,6 +37,12 @@ const deploymentSimilationInstruction: IdlInstruction = {
   accounts: [],
   args: [],
 };
+
+enum AccountOption {
+  Custom = "custom-account",
+  Wallet = "wallet-account",
+  Program = "program-account",
+}
 
 const SolanaForm: React.FC<{
   action: AbiAction;
@@ -52,6 +59,12 @@ const SolanaForm: React.FC<{
   wallet,
   blockchain,
 }) => {
+  const forms: Record<string, FormInstance> = convertIdlToCamelCase(
+    contractTemplate.abi as Idl
+  ).instructions.reduce((acc, instruction) => {
+    acc[instruction.name] = Form.useForm()[0];
+    return acc;
+  }, {} as Record<string, FormInstance>);
   const [notification, contextHolder] = useNotification();
   const [txResponses, setTxResponses] = useState<Record<string, TxResponse>>(
     {}
@@ -182,6 +195,37 @@ const SolanaForm: React.FC<{
     setLoading(false);
   };
 
+  const updateFormAccount = async (
+    instructionName: string,
+    accountName: string,
+    accountOption: AccountOption
+  ) => {
+    try {
+      // Calculate account value
+      let accountValue = undefined;
+      if (accountOption === AccountOption.Wallet) {
+        if (!wallet) throw new Error("You must select a wallet first");
+        if (!blockchain) throw new Error("You must select a blockchain first");
+        await wallet.connect(blockchain);
+        accountValue = wallet.address;
+      } else if (accountOption === AccountOption.Program) {
+        if (!contractAddress)
+          throw new Error("You must select a contract first");
+        accountValue = contractAddress.address;
+      }
+
+      // Set it in the form
+      forms[instructionName].setFieldValue(
+        [ACCOUNT_PARAM, accountName],
+        accountValue
+      );
+    } catch (e) {
+      notification.error({
+        message: e instanceof Error ? e.message : "Unknown error",
+      });
+    }
+  };
+
   return (
     <>
       {contextHolder}
@@ -219,6 +263,7 @@ const SolanaForm: React.FC<{
             children: (
               <>
                 <Form
+                  form={forms[instruction.name]}
                   name={instruction.name}
                   layout="horizontal"
                   onFinish={(values) => execute(instruction, values)}
@@ -251,7 +296,32 @@ const SolanaForm: React.FC<{
                         label={account.name}
                         required
                       >
-                        <Input placeholder="Public Key" disabled={loading} />
+                        <Input
+                          placeholder="Public Key"
+                          disabled={loading}
+                          addonAfter={
+                            <Select
+                              defaultValue={AccountOption.Custom}
+                              onChange={(value) =>
+                                updateFormAccount(
+                                  instruction.name,
+                                  account.name,
+                                  value
+                                )
+                              }
+                            >
+                              {Object.values(AccountOption).map((option) => (
+                                <Select.Option key={option} value={option}>
+                                  {option
+                                    .replace(/-/g, " ")
+                                    .replace(/\b\w/g, (char) =>
+                                      char.toUpperCase()
+                                    )}
+                                </Select.Option>
+                              ))}
+                            </Select>
+                          }
+                        />
                       </Form.Item>
                     ))}
                   {instruction.args.map((arg) => (
