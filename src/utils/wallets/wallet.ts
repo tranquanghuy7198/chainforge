@@ -32,7 +32,8 @@ export class Wallet {
   }
 
   public async connect(blockchain?: Blockchain) {
-    //
+    console.log(blockchain);
+    throw new Error("Method not implemented.");
   }
 
   public async deploy(
