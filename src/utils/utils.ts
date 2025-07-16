@@ -6,7 +6,7 @@ export const capitalize = (value: string): string => {
 };
 
 export const shorten = (value: string): string => {
-  return `${value.slice(0, 10)}...${value.slice(-8)}`;
+  return `${value.slice(0, 8)}...${value.slice(-6)}`;
 };
 
 export const evmFunctionSelector = (func: EvmAbiFunction): string => {
