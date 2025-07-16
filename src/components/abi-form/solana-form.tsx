@@ -17,7 +17,7 @@ import {
   getFullInstructions,
   Idl,
   IdlInstruction,
-  parseArg,
+  SolanaIdlParser,
   stringifyArgType,
 } from "../../utils/types/solana";
 import {
@@ -155,7 +155,11 @@ const SolanaForm: React.FC<{
     try {
       // Prepare args and accounts
       const args = instruction.args.map((arg) =>
-        parseArg((params[ARG_PARAM] || {})[arg.name], arg.type)
+        // parseArg((params[ARG_PARAM] || {})[arg.name], arg.type)
+        new SolanaIdlParser(contractTemplate.abi as Idl).parseValue(
+          (params[ARG_PARAM] || {})[arg.name],
+          arg.type
+        )
       );
       const accounts = Object.fromEntries(
         Object.entries(params[ACCOUNT_PARAM] || {}).map(([key, value]) => [

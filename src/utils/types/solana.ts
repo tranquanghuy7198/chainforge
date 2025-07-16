@@ -4,6 +4,7 @@ import camelCase from "camelcase";
 import { Buffer } from "buffer";
 import { PublicKey } from "@solana/web3.js";
 import { BN } from "@coral-xyz/anchor";
+import { id } from "ethers";
 export type Idl = {
   address: string;
   metadata: IdlMetadata;
@@ -259,17 +260,246 @@ export const stringifyArgType = (argType: IdlType): string => {
     .join("|");
 };
 
-export const parseArg = (
-  argValue: string,
-  argType: IdlType
-): string | PublicKey | BN => {
-  if (argType === "pubkey") return new PublicKey(argValue);
-  if (
-    ["u64", "u128", "u256", "i64", "i128", "i256"].includes(argType.toString())
-  )
-    return new BN(argValue);
-  return argValue;
-};
+interface ParseContext {
+  typeDefs: IdlTypeDef[];
+  generics?: Map<string, IdlType>;
+}
+
+export class SolanaIdlParser {
+  private typeDefs: Map<string, IdlTypeDef>;
+  private idl: Idl;
+
+  constructor(idl: Idl) {
+    this.idl = idl;
+    this.typeDefs = new Map(
+      idl.types ? idl.types.map((typeDef) => [typeDef.name, typeDef]) : []
+    );
+  }
+
+  parseValue(value: string, idlType: IdlType): any {
+    const context: ParseContext = {
+      typeDefs: this.idl.types || [],
+      generics: new Map(),
+    };
+
+    return this.parseValueInternal(value, idlType, context);
+  }
+
+  private parseValueInternal(
+    value: string,
+    idlType: IdlType,
+    context: ParseContext
+  ): any {
+    if (typeof idlType === "string") return this.parsePrimitive(value, idlType);
+    if ("option" in idlType)
+      return this.parseOption(value, idlType.option, context);
+    if ("coption" in idlType)
+      return this.parseOption(value, idlType.coption, context);
+    if ("vec" in idlType) return this.parseVec(value, idlType.vec, context);
+    // if ('array' in idlType) {
+    //   return this.parseArray(value, idlType.array[0], idlType.array[1], context);
+    // }
+
+    if ("defined" in idlType)
+      return this.parseDefined(value, idlType.defined.name, context);
+
+    if ("generic" in idlType) {
+      const resolvedType = context.generics?.get(idlType.generic);
+      if (resolvedType)
+        return this.parseValueInternal(value, resolvedType, context);
+    }
+
+    throw new Error(`Unsupported IDL type: ${JSON.stringify(idlType)}`);
+  }
+
+  private parsePrimitive(value: string, type: string): any {
+    const trimmed = value.trim();
+    switch (type) {
+      case "bool":
+        return trimmed === "true" || trimmed === "1";
+      case "u8":
+      case "u16":
+      case "u32":
+      case "i8":
+      case "i16":
+      case "i32":
+        return parseInt(trimmed, 10);
+      case "f32":
+      case "f64":
+        return parseFloat(trimmed);
+      case "u64":
+      case "i64":
+      case "u128":
+      case "i128":
+      case "u256":
+      case "i256":
+        return new BN(trimmed);
+      case "string":
+        return trimmed.replace(/^["']|["']$/g, "");
+      case "bytes":
+        if (trimmed.startsWith("0x")) {
+          return Buffer.from(trimmed.slice(2), "hex");
+        }
+        return Buffer.from(trimmed, "base64");
+      case "pubkey":
+        return new PublicKey(trimmed.replace(/^["']|["']$/g, ""));
+      default:
+        throw new Error(`Unsupported primitive type: ${type}`);
+    }
+  }
+
+  private parseOption(
+    value: string,
+    innerType: IdlType,
+    context: ParseContext
+  ): any {
+    const trimmed = value.trim();
+    if (["null", "undefined", ""].includes(trimmed)) return null;
+    return this.parseValueInternal(value, innerType, context);
+  }
+
+  private parseVec(
+    value: string,
+    elementType: IdlType,
+    context: ParseContext
+  ): any[] {
+    const parsed = JSON.parse(value);
+    if (!Array.isArray(parsed))
+      throw new Error(`Expected array for vec type, got: ${typeof parsed}`);
+    return parsed.map((item) =>
+      this.parseValueInternal(JSON.stringify(item), elementType, context)
+    );
+  }
+
+  // private parseArray(
+  //   value: string,
+  //   elementType: IdlType,
+  //   size: number | { generic: string },
+  //   context: ParseContext
+  // ): any[] {
+  //   const result = this.parseVec(value, elementType, context);
+
+  //   if (typeof size === "number" && result.length !== size) {
+  //     throw new Error(
+  //       `Array length mismatch. Expected ${size}, got ${result.length}`
+  //     );
+  //   }
+
+  //   return result;
+  // }
+
+  private parseDefined(
+    value: string,
+    typeName: string,
+    context: ParseContext
+  ): any {
+    const typeDef = this.idl.types?.find(
+      (t) => t.name.toLowerCase() === typeName.toLowerCase()
+    );
+
+    if (!typeDef) {
+      throw new Error(`Type definition not found: ${typeName}`);
+    }
+
+    const parsed = JSON.parse(value);
+
+    if (typeDef.type.kind === "struct") {
+      return this.parseStruct(
+        parsed,
+        (typeDef.type.fields || []) as IdlField[],
+        context
+      ); // TODO
+    }
+
+    // if (typeDef.type.kind === "enum") {
+    //   return this.parseEnum(parsed, typeDef.type.variants, context);
+    // }
+
+    if (typeDef.type.kind === "type") {
+      return this.parseValueInternal(value, typeDef.type.alias, context);
+    }
+
+    throw new Error(`Unsupported type definition kind: ${typeDef.type.kind}`);
+  }
+
+  private parseStruct(
+    obj: any,
+    fields: IdlField[],
+    context: ParseContext
+  ): any {
+    const result: any = {};
+    for (const field of fields) {
+      if (field.name in obj) {
+        result[field.name] = this.parseValueInternal(
+          JSON.stringify(obj[field.name]),
+          field.type,
+          context
+        );
+      }
+    }
+    return result;
+  }
+
+  // private parseEnum(
+  //   obj: any,
+  //   variants: IdlEnumVariant[],
+  //   context: ParseContext
+  // ): any {
+  //   // Handle enum as object with variant name as key
+  //   if (typeof obj === "object" && obj !== null) {
+  //     const variantName = Object.keys(obj)[0];
+  //     const variant = variants.find((v) => v.name === variantName);
+
+  //     if (!variant) {
+  //       throw new Error(`Unknown enum variant: ${variantName}`);
+  //     }
+
+  //     if (variant.fields) {
+  //       if (Array.isArray(variant.fields)) {
+  //         // Named fields
+  //         if (variant.fields.length > 0 && "name" in variant.fields[0]) {
+  //           return {
+  //             [variantName]: this.parseStruct(
+  //               obj[variantName],
+  //               variant.fields as IdlField[],
+  //               context
+  //             ),
+  //           };
+  //         }
+  //         // Tuple fields
+  //         else {
+  //           const tupleFields = variant.fields as IdlType[];
+  //           const values = Array.isArray(obj[variantName])
+  //             ? obj[variantName]
+  //             : [obj[variantName]];
+  //           return {
+  //             [variantName]: values.map((val: any, idx: number) =>
+  //               this.parseValueInternal(
+  //                 JSON.stringify(val),
+  //                 tupleFields[idx],
+  //                 context
+  //               )
+  //             ),
+  //           };
+  //         }
+  //       }
+  //     }
+
+  //     return { [variantName]: obj[variantName] };
+  //   }
+
+  //   // Handle enum as string (unit variant)
+  //   if (typeof obj === "string") {
+  //     const variant = variants.find((v) => v.name === obj);
+  //     if (!variant) {
+  //       throw new Error(`Unknown enum variant: ${obj}`);
+  //     }
+  //     return obj;
+  //   }
+
+  //   throw new Error(`Invalid enum format: ${JSON.stringify(obj)}`);
+  // }
+}
 
 export function convertIdlToCamelCase<I extends Idl>(idl: I) {
   const KEYS_TO_CONVERT = ["name", "path", "account", "relations", "generic"];
