@@ -236,12 +236,7 @@ const SolanaForm: React.FC<{
               for (const singleAccount of "accounts" in account
                 ? account.accounts
                 : [account])
-                if (
-                  singleAccount.signer ||
-                  singleAccount.writable ||
-                  singleAccount.isMut ||
-                  singleAccount.isSigner
-                ) {
+                if (singleAccount.signer || singleAccount.writable) {
                   isWriteInstruction = true;
                   break;
                 }
