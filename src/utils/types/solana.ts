@@ -51,9 +51,7 @@ export type IdlInstructionAccount = {
   name: string;
   docs?: string[];
   writable?: boolean;
-  isMut?: boolean; // Deprecated, backward compatibility for old IDLs
   signer?: boolean;
-  isSigner?: boolean; // Deprecated, backward compatibility for old IDLs
   optional?: boolean;
   address?: string;
   pda?: IdlPda;
