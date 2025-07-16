@@ -323,7 +323,7 @@ export class SolanaIdlParser {
       case "i128":
       case "u256":
       case "i256":
-        return new BN(trimmed);
+        return new BN(parseInt(trimmed, 10));
       case "string":
         return trimmed.replace(/^["']|["']$/g, "");
       case "bytes":

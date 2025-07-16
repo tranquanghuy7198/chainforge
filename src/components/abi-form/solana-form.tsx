@@ -154,12 +154,9 @@ const SolanaForm: React.FC<{
     // Execute
     try {
       // Prepare args and accounts
+      const argParser = new SolanaIdlParser(contractTemplate.abi as Idl);
       const args = instruction.args.map((arg) =>
-        // parseArg((params[ARG_PARAM] || {})[arg.name], arg.type)
-        new SolanaIdlParser(contractTemplate.abi as Idl).parseValue(
-          (params[ARG_PARAM] || {})[arg.name],
-          arg.type
-        )
+        argParser.parseValue((params[ARG_PARAM] || {})[arg.name], arg.type)
       );
       const accounts = Object.fromEntries(
         Object.entries(params[ACCOUNT_PARAM] || {}).map(([key, value]) => [
