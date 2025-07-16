@@ -13,10 +13,11 @@ import { capitalize } from "../../utils/utils";
 import {
   ACCOUNT_PARAM,
   ARG_PARAM,
-  convertIdlToCamelCase,
+  DEPLOYMENT_INSTRUCTION,
+  getFullInstructions,
   Idl,
   IdlInstruction,
-  parseArg,
+  SolanaIdlParser,
   stringifyArgType,
 } from "../../utils/types/solana";
 import {
@@ -28,15 +29,6 @@ import Paragraph from "antd/es/typography/Paragraph";
 import { PublicKey } from "@solana/web3.js";
 import { SolanaExtra } from "../../utils/wallets/solana/utils";
 import { FormInstance } from "antd/es/form/Form";
-
-const DEPLOYMENT_INSTRUCTION = "deploy";
-
-const deploymentSimilationInstruction: IdlInstruction = {
-  name: DEPLOYMENT_INSTRUCTION,
-  discriminator: [],
-  accounts: [],
-  args: [],
-};
 
 enum AccountOption {
   Custom = "custom-account",
@@ -59,9 +51,9 @@ const SolanaForm: React.FC<{
   wallet,
   blockchain,
 }) => {
-  const forms: Record<string, FormInstance> = convertIdlToCamelCase(
+  const forms: Record<string, FormInstance> = getFullInstructions(
     contractTemplate.abi as Idl
-  ).instructions.reduce((acc, instruction) => {
+  ).reduce((acc, instruction) => {
     acc[instruction.name] = Form.useForm()[0];
     return acc;
   }, {} as Record<string, FormInstance>);
@@ -163,7 +155,11 @@ const SolanaForm: React.FC<{
     try {
       // Prepare args and accounts
       const args = instruction.args.map((arg) =>
-        parseArg((params[ARG_PARAM] || {})[arg.name], arg.type)
+        // parseArg((params[ARG_PARAM] || {})[arg.name], arg.type)
+        new SolanaIdlParser(contractTemplate.abi as Idl).parseValue(
+          (params[ARG_PARAM] || {})[arg.name],
+          arg.type
+        )
       );
       const accounts = Object.fromEntries(
         Object.entries(params[ACCOUNT_PARAM] || {}).map(([key, value]) => [
@@ -231,10 +227,7 @@ const SolanaForm: React.FC<{
       {contextHolder}
       <Collapse
         accordion
-        items={[
-          ...convertIdlToCamelCase(contractTemplate.abi as Idl).instructions,
-          deploymentSimilationInstruction,
-        ]
+        items={getFullInstructions(contractTemplate.abi as Idl)
           .filter((instruction) => {
             if (action === AbiAction.Deploy)
               return instruction.name === DEPLOYMENT_INSTRUCTION;
