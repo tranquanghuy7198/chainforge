@@ -32,6 +32,7 @@ import { SolanaExtra } from "../../utils/wallets/solana/utils";
 import { FormInstance } from "antd/es/form/Form";
 import CollapseForm from "./collapse-form";
 import "./abi-form.scss";
+import camelcase from "camelcase";
 
 enum AccountOption {
   Custom = "custom-account",
@@ -107,6 +108,51 @@ const SolanaForm: React.FC<{
           }
 
           // Next loop for dependent accounts
+          for (const singleAccount of singleAccounts)
+            if (
+              singleAccount.pda &&
+              singleAccount.pda.seeds.some((seed) => seed.kind === "account")
+            ) {
+              if (!contractAddress)
+                throw new Error("You must select a contract first");
+
+              // Find all dependees
+              const dependees: Record<string, PublicKey> = {};
+              let notEnoughDependees = false;
+              for (const seed of singleAccount.pda.seeds)
+                if (seed.kind === "account") {
+                  const dependee = forms[instruction.name].getFieldValue([
+                    ACCOUNT_PARAM,
+                    camelcase(seed.path),
+                  ]);
+                  try {
+                    dependees[seed.path] = new PublicKey(dependee);
+                  } catch {
+                    // Not a valid public key, or ot filled yet
+                    notEnoughDependees = true;
+                  }
+                }
+              if (notEnoughDependees)
+                // Not enough dependees to fill this account, skip
+                continue;
+
+              // Calculate derived account from dependees
+              const [derivedAccount] = PublicKey.findProgramAddressSync(
+                singleAccount.pda.seeds.map(
+                  (seed) =>
+                    seed.kind === "const"
+                      ? Buffer.from(seed.value)
+                      : seed.kind === "account"
+                      ? dependees[seed.path].toBuffer()
+                      : Buffer.from([]) // TODO: seed.kind === "args", not handled yet
+                ),
+                new PublicKey(contractAddress.address)
+              );
+              forms[instruction.name].setFieldValue(
+                [ACCOUNT_PARAM, singleAccount.name],
+                derivedAccount.toString()
+              );
+            }
         }
     } catch (err) {
       notification.error({
