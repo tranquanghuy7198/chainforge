@@ -398,6 +398,7 @@ const SolanaForm: React.FC<{
                             account.address !== undefined ||
                             account.pda !== undefined
                           }
+                          onChange={() => autoFillAccounts()}
                           addonAfter={
                             <Select
                               disabled={
