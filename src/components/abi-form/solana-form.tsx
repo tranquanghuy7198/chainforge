@@ -9,7 +9,7 @@ import {
 import { Wallet } from "../../utils/wallets/wallet";
 import { Button, Descriptions, Form, Input, Select } from "antd";
 import { Fragment, useState } from "react";
-import { capitalize } from "../../utils/utils";
+import { capitalize, concat } from "../../utils/utils";
 import {
   ACCOUNT_PARAM,
   ARG_PARAM,
@@ -32,6 +32,7 @@ import { SolanaExtra } from "../../utils/wallets/solana/utils";
 import { FormInstance } from "antd/es/form/Form";
 import CollapseForm from "./collapse-form";
 import "./abi-form.scss";
+import { seed } from "@coral-xyz/anchor/dist/cjs/idl";
 
 enum AccountOption {
   Custom = "custom-account",
@@ -289,7 +290,17 @@ const SolanaForm: React.FC<{
                         required
                       >
                         <Input
-                          placeholder="Public Key"
+                          placeholder={
+                            account.pda?.seeds.some(
+                              (seed) => seed.kind === "account"
+                            )
+                              ? `Derived from ${concat(
+                                  account.pda.seeds
+                                    .filter((seed) => seed.kind === "account")
+                                    .map((seed) => seed.path)
+                                )}`
+                              : "Public Key"
+                          }
                           disabled={
                             loading ||
                             account.address !== undefined ||
