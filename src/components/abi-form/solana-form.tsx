@@ -72,94 +72,85 @@ const SolanaForm: React.FC<{
   useEffect(() => autoFillAccounts(), [forms]);
 
   const autoFillAccounts = () => {
-    try {
-      if (Object.keys(forms).length === 0) return;
-      for (const instruction of getFullInstructions(
-        contractTemplate.abi as Idl
-      )) {
-        const form = forms[instruction.name];
-        for (const account of instruction.accounts) {
-          const singleAccounts =
-            "accounts" in account ? account.accounts : [account];
+    if (Object.keys(forms).length === 0) return;
+    for (const instruction of getFullInstructions(
+      contractTemplate.abi as Idl
+    )) {
+      const form = forms[instruction.name];
+      for (const account of instruction.accounts) {
+        const singleAccounts =
+          "accounts" in account ? account.accounts : [account];
 
-          // First loop for independent accounts
-          for (const singleAccount of singleAccounts) {
-            // First, fill system accounts
-            if (singleAccount.address)
-              form.setFieldValue(
-                [ACCOUNT_PARAM, singleAccount.name],
-                singleAccount.address
-              );
-            // Then, fill seeds-only accounts
-            else if (
-              singleAccount.pda &&
-              singleAccount.pda.seeds.every((seed) => seed.kind === "const")
-            ) {
-              if (!contractAddress)
-                throw new Error("You must select a contract first");
-              const [derivedAccount] = PublicKey.findProgramAddressSync(
-                singleAccount.pda.seeds.map((seed) => Buffer.from(seed.value)),
-                new PublicKey(contractAddress.address)
-              );
-              form.setFieldValue(
-                [ACCOUNT_PARAM, singleAccount.name],
-                derivedAccount.toString()
-              );
-            }
+        // First loop for independent accounts
+        for (const singleAccount of singleAccounts) {
+          // First, fill system accounts
+          if (singleAccount.address)
+            form.setFieldValue(
+              [ACCOUNT_PARAM, singleAccount.name],
+              singleAccount.address
+            );
+          // Then, fill seeds-only accounts
+          else if (
+            contractAddress &&
+            singleAccount.pda &&
+            singleAccount.pda.seeds.every((seed) => seed.kind === "const")
+          ) {
+            const [derivedAccount] = PublicKey.findProgramAddressSync(
+              singleAccount.pda.seeds.map((seed) => Buffer.from(seed.value)),
+              new PublicKey(contractAddress.address)
+            );
+            form.setFieldValue(
+              [ACCOUNT_PARAM, singleAccount.name],
+              derivedAccount.toString()
+            );
           }
-
-          // Next loop for dependent accounts
-          for (const singleAccount of singleAccounts)
-            if (
-              singleAccount.pda &&
-              singleAccount.pda.seeds.some((seed) => seed.kind === "account")
-            ) {
-              if (!contractAddress)
-                throw new Error("You must select a contract first");
-
-              // Find all dependees
-              const dependees: Record<string, PublicKey> = {};
-              let notEnoughDependees = false;
-              for (const seed of singleAccount.pda.seeds)
-                if (seed.kind === "account") {
-                  const dependee = form.getFieldValue([
-                    ACCOUNT_PARAM,
-                    camelcase(seed.path),
-                  ]);
-                  try {
-                    dependees[seed.path] = new PublicKey(dependee);
-                  } catch {
-                    // Not a valid public key, or ot filled yet
-                    notEnoughDependees = true;
-                  }
-                }
-              if (notEnoughDependees)
-                // Not enough dependees to fill this account, skip
-                continue;
-
-              // Calculate derived account from dependees
-              const [derivedAccount] = PublicKey.findProgramAddressSync(
-                singleAccount.pda.seeds.map(
-                  (seed) =>
-                    seed.kind === "const"
-                      ? Buffer.from(seed.value)
-                      : seed.kind === "account"
-                      ? dependees[seed.path].toBuffer()
-                      : Buffer.from([]) // TODO: seed.kind === "args", not handled yet
-                ),
-                new PublicKey(contractAddress.address)
-              );
-              form.setFieldValue(
-                [ACCOUNT_PARAM, singleAccount.name],
-                derivedAccount.toString()
-              );
-            }
         }
+
+        // Next loop for dependent accounts
+        for (const singleAccount of singleAccounts)
+          if (
+            contractAddress &&
+            singleAccount.pda &&
+            singleAccount.pda.seeds.some((seed) => seed.kind === "account")
+          ) {
+            // Find all dependees
+            const dependees: Record<string, PublicKey> = {};
+            let notEnoughDependees = false;
+            for (const seed of singleAccount.pda.seeds)
+              if (seed.kind === "account") {
+                const dependee = form.getFieldValue([
+                  ACCOUNT_PARAM,
+                  camelcase(seed.path),
+                ]);
+                try {
+                  dependees[seed.path] = new PublicKey(dependee);
+                } catch {
+                  // Not a valid public key, or ot filled yet
+                  notEnoughDependees = true;
+                }
+              }
+            if (notEnoughDependees)
+              // Not enough dependees to fill this account, skip
+              continue;
+
+            // Calculate derived account from dependees
+            const [derivedAccount] = PublicKey.findProgramAddressSync(
+              singleAccount.pda.seeds.map(
+                (seed) =>
+                  seed.kind === "const"
+                    ? Buffer.from(seed.value)
+                    : seed.kind === "account"
+                    ? dependees[seed.path].toBuffer()
+                    : Buffer.from([]) // TODO: seed.kind === "args", not handled yet
+              ),
+              new PublicKey(contractAddress.address)
+            );
+            form.setFieldValue(
+              [ACCOUNT_PARAM, singleAccount.name],
+              derivedAccount.toString()
+            );
+          }
       }
-    } catch (err) {
-      notification.error({
-        message: err instanceof Error ? err.message : "Unknown error",
-      });
     }
   };
 
