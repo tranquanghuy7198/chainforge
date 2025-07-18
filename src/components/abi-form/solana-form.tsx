@@ -76,7 +76,8 @@ const SolanaForm: React.FC<{
       if (Object.keys(forms).length === 0) return;
       for (const instruction of getFullInstructions(
         contractTemplate.abi as Idl
-      ))
+      )) {
+        const form = forms[instruction.name];
         for (const account of instruction.accounts) {
           const singleAccounts =
             "accounts" in account ? account.accounts : [account];
@@ -85,7 +86,7 @@ const SolanaForm: React.FC<{
           for (const singleAccount of singleAccounts) {
             // First, fill system accounts
             if (singleAccount.address)
-              forms[instruction.name].setFieldValue(
+              form.setFieldValue(
                 [ACCOUNT_PARAM, singleAccount.name],
                 singleAccount.address
               );
@@ -100,7 +101,7 @@ const SolanaForm: React.FC<{
                 singleAccount.pda.seeds.map((seed) => Buffer.from(seed.value)),
                 new PublicKey(contractAddress.address)
               );
-              forms[instruction.name].setFieldValue(
+              form.setFieldValue(
                 [ACCOUNT_PARAM, singleAccount.name],
                 derivedAccount.toString()
               );
@@ -121,7 +122,7 @@ const SolanaForm: React.FC<{
               let notEnoughDependees = false;
               for (const seed of singleAccount.pda.seeds)
                 if (seed.kind === "account") {
-                  const dependee = forms[instruction.name].getFieldValue([
+                  const dependee = form.getFieldValue([
                     ACCOUNT_PARAM,
                     camelcase(seed.path),
                   ]);
@@ -148,12 +149,13 @@ const SolanaForm: React.FC<{
                 ),
                 new PublicKey(contractAddress.address)
               );
-              forms[instruction.name].setFieldValue(
+              form.setFieldValue(
                 [ACCOUNT_PARAM, singleAccount.name],
                 derivedAccount.toString()
               );
             }
         }
+      }
     } catch (err) {
       notification.error({
         message: err instanceof Error ? err.message : "Unknown error",
@@ -310,6 +312,9 @@ const SolanaForm: React.FC<{
         [ACCOUNT_PARAM, accountName],
         accountValue
       );
+
+      // Check again if we can auto fill something
+      autoFillAccounts();
     } catch (e) {
       notification.error({
         message: e instanceof Error ? e.message : "Unknown error",
