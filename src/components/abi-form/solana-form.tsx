@@ -72,7 +72,6 @@ const SolanaForm: React.FC<{
   useEffect(() => autoFillAccounts(), [forms]);
 
   const autoFillAccounts = () => {
-    if (Object.keys(forms).length === 0) return;
     for (const instruction of getFullInstructions(
       contractTemplate.abi as Idl
     )) {
