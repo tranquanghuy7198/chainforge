@@ -74,7 +74,9 @@ const SolanaForm: React.FC<{
   const autoFillAccounts = () => {
     try {
       if (Object.keys(forms).length === 0) return;
-      for (const instruction of (contractTemplate.abi as Idl).instructions)
+      for (const instruction of getFullInstructions(
+        contractTemplate.abi as Idl
+      ))
         for (const account of instruction.accounts) {
           const singleAccounts =
             "accounts" in account ? account.accounts : [account];
