@@ -37,6 +37,8 @@ enum AccountOption {
   Custom = "custom-account",
   Wallet = "wallet-account",
   Program = "program-account",
+  System = "system-account",
+  Derived = "derived-account",
 }
 
 const SolanaForm: React.FC<{
@@ -260,10 +262,6 @@ const SolanaForm: React.FC<{
                       "accounts" in account ? account.accounts : [account]
                     ) // Flatten single account and complex accounts
                     .flat()
-                    .filter(
-                      (account) =>
-                        !("pda" in account) && !("address" in account)
-                    ) // Ignore unnecessary accounts
                     .map((account) => (
                       <Form.Item
                         key={account.name}
@@ -292,10 +290,26 @@ const SolanaForm: React.FC<{
                       >
                         <Input
                           placeholder="Public Key"
-                          disabled={loading}
+                          disabled={
+                            loading ||
+                            account.address !== undefined ||
+                            account.pda !== undefined
+                          }
+                          defaultValue={account.address}
                           addonAfter={
                             <Select
-                              defaultValue={AccountOption.Custom}
+                              disabled={
+                                loading ||
+                                account.address !== undefined ||
+                                account.pda !== undefined
+                              }
+                              defaultValue={
+                                account.address
+                                  ? AccountOption.System
+                                  : account.pda
+                                  ? AccountOption.Derived
+                                  : AccountOption.Custom
+                              }
                               onSelect={(value) =>
                                 updateFormAccount(
                                   instruction.name,
@@ -305,7 +319,14 @@ const SolanaForm: React.FC<{
                               }
                             >
                               {Object.values(AccountOption).map((option) => (
-                                <Select.Option key={option} value={option}>
+                                <Select.Option
+                                  key={option}
+                                  value={option}
+                                  disabled={[
+                                    AccountOption.System,
+                                    AccountOption.Derived,
+                                  ].includes(option)}
+                                >
                                   {option
                                     .replace(/-/g, " ")
                                     .replace(/\b\w/g, (char) =>
