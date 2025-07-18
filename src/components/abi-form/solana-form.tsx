@@ -8,7 +8,7 @@ import {
 } from "../../utils/constants";
 import { Wallet } from "../../utils/wallets/wallet";
 import { Button, Descriptions, Form, Input, Select } from "antd";
-import { Fragment, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import { capitalize, concat } from "../../utils/utils";
 import {
   ACCOUNT_PARAM,
@@ -68,6 +68,52 @@ const SolanaForm: React.FC<{
     {}
   );
   const [loading, setLoading] = useState<boolean>(false);
+
+  useEffect(() => autoFillAccounts(), [forms]);
+
+  const autoFillAccounts = () => {
+    try {
+      if (Object.keys(forms).length === 0) return;
+      for (const instruction of (contractTemplate.abi as Idl).instructions)
+        for (const account of instruction.accounts) {
+          const singleAccounts =
+            "accounts" in account ? account.accounts : [account];
+
+          // First loop for independent accounts
+          for (const singleAccount of singleAccounts) {
+            // First, fill system accounts
+            if (singleAccount.address)
+              forms[instruction.name].setFieldValue(
+                [ACCOUNT_PARAM, singleAccount.name],
+                singleAccount.address
+              );
+            // Then, fill seeds-only accounts
+            else if (
+              singleAccount.pda &&
+              singleAccount.pda.seeds.every((seed) => seed.kind === "const")
+            ) {
+              if (!contractAddress)
+                throw new Error("You must select a contract first");
+              forms[instruction.name].setFieldValue(
+                [ACCOUNT_PARAM, singleAccount.name],
+                PublicKey.findProgramAddressSync(
+                  singleAccount.pda.seeds.map((seed) =>
+                    Buffer.from(seed.value)
+                  ),
+                  new PublicKey(contractAddress.address)
+                ).toString()
+              );
+            }
+          }
+
+          // Next loop for dependent accounts
+        }
+    } catch (err) {
+      notification.error({
+        message: err instanceof Error ? err.message : "Unknown error",
+      });
+    }
+  };
 
   const deploy = async (wallet: Wallet, blockchain: Blockchain) => {
     const response = await wallet.deploy(
@@ -306,7 +352,6 @@ const SolanaForm: React.FC<{
                             account.address !== undefined ||
                             account.pda !== undefined
                           }
-                          defaultValue={account.address}
                           addonAfter={
                             <Select
                               disabled={
