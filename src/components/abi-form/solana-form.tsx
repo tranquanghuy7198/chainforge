@@ -32,7 +32,6 @@ import { SolanaExtra } from "../../utils/wallets/solana/utils";
 import { FormInstance } from "antd/es/form/Form";
 import CollapseForm from "./collapse-form";
 import "./abi-form.scss";
-import camelcase from "camelcase";
 
 enum AccountOption {
   Custom = "custom-account",
@@ -117,20 +116,21 @@ const SolanaForm: React.FC<{
             let notEnoughDependees = false;
             for (const seed of singleAccount.pda.seeds)
               if (seed.kind === "account") {
-                const dependee = form.getFieldValue([
-                  ACCOUNT_PARAM,
-                  camelcase(seed.path),
-                ]);
+                const dependee = form.getFieldValue([ACCOUNT_PARAM, seed.path]);
                 try {
                   dependees[seed.path] = new PublicKey(dependee);
                 } catch {
-                  // Not a valid public key, or ot filled yet
-                  notEnoughDependees = true;
+                  notEnoughDependees = true; // Not a valid public key, or not filled yet
                 }
               }
-            if (notEnoughDependees)
-              // Not enough dependees to fill this account, skip
+            if (notEnoughDependees) {
+              // Not enough dependees to calculate this account, skip
+              form.setFieldValue(
+                [ACCOUNT_PARAM, singleAccount.name],
+                undefined
+              );
               continue;
+            }
 
             // Calculate derived account from dependees
             const [derivedAccount] = PublicKey.findProgramAddressSync(
