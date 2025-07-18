@@ -32,7 +32,6 @@ import { SolanaExtra } from "../../utils/wallets/solana/utils";
 import { FormInstance } from "antd/es/form/Form";
 import CollapseForm from "./collapse-form";
 import "./abi-form.scss";
-import { seed } from "@coral-xyz/anchor/dist/cjs/idl";
 
 enum AccountOption {
   Custom = "custom-account",
@@ -96,14 +95,13 @@ const SolanaForm: React.FC<{
             ) {
               if (!contractAddress)
                 throw new Error("You must select a contract first");
+              const [derivedAccount] = PublicKey.findProgramAddressSync(
+                singleAccount.pda.seeds.map((seed) => Buffer.from(seed.value)),
+                new PublicKey(contractAddress.address)
+              );
               forms[instruction.name].setFieldValue(
                 [ACCOUNT_PARAM, singleAccount.name],
-                PublicKey.findProgramAddressSync(
-                  singleAccount.pda.seeds.map((seed) =>
-                    Buffer.from(seed.value)
-                  ),
-                  new PublicKey(contractAddress.address)
-                ).toString()
+                derivedAccount.toString()
               );
             }
           }
