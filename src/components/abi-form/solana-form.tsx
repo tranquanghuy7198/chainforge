@@ -75,42 +75,18 @@ const SolanaForm: React.FC<{
       contractTemplate.abi as Idl
     )) {
       const form = forms[instruction.name];
-      for (const account of instruction.accounts) {
-        const singleAccounts =
-          "accounts" in account ? account.accounts : [account];
-
-        // First loop for independent accounts
-        for (const singleAccount of singleAccounts) {
-          // First, fill system accounts
+      for (const account of instruction.accounts)
+        for (const singleAccount of "accounts" in account
+          ? account.accounts
+          : [account]) {
+          // System accounts
           if (singleAccount.address)
             form.setFieldValue(
               [ACCOUNT_PARAM, singleAccount.name],
               singleAccount.address
             );
-          // Then, fill seeds-only accounts
-          else if (
-            contractAddress &&
-            singleAccount.pda &&
-            singleAccount.pda.seeds.every((seed) => seed.kind === "const")
-          ) {
-            const [derivedAccount] = PublicKey.findProgramAddressSync(
-              singleAccount.pda.seeds.map((seed) => Buffer.from(seed.value)),
-              new PublicKey(contractAddress.address)
-            );
-            form.setFieldValue(
-              [ACCOUNT_PARAM, singleAccount.name],
-              derivedAccount.toString()
-            );
-          }
-        }
-
-        // Next loop for dependent accounts
-        for (const singleAccount of singleAccounts)
-          if (
-            contractAddress &&
-            singleAccount.pda &&
-            singleAccount.pda.seeds.some((seed) => seed.kind === "account")
-          ) {
+          // Derived accounts
+          else if (contractAddress && singleAccount.pda) {
             // Find all dependees
             const dependees: Record<string, PublicKey> = {};
             let notEnoughDependees = false;
@@ -149,7 +125,7 @@ const SolanaForm: React.FC<{
               derivedAccount.toString()
             );
           }
-      }
+        }
     }
   };
 
