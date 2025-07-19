@@ -40,6 +40,7 @@ const WalletCard: React.FC<{
         hoverable
         className="wallet-card"
         size="small"
+        variant="borderless"
         style={{ backgroundColor: wallet.ui.backgroundColor }}
         onClick={() => connectWallet(wallet)}
       >
