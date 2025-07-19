@@ -7,7 +7,16 @@ import {
   TxResponse,
 } from "../../utils/constants";
 import { Wallet } from "../../utils/wallets/wallet";
-import { Button, Descriptions, Form, Input, Select } from "antd";
+import {
+  Button,
+  Descriptions,
+  Form,
+  Input,
+  Select,
+  Space,
+  Tag,
+  Tooltip,
+} from "antd";
 import { Fragment, useEffect, useState } from "react";
 import { capitalize, concat } from "../../utils/utils";
 import {
@@ -313,7 +322,16 @@ const SolanaForm: React.FC<{
           })
           .map((instruction) => ({
             key: instruction.name,
-            label: <div className="function-name">{instruction.name}</div>,
+            label: (
+              <Space>
+                <div className="function-name">{instruction.name}</div>
+                <Tooltip title="Instruction Discriminator">
+                  <Tag color="#108ee9">
+                    0x{Buffer.from(instruction.discriminator).toString("hex")}
+                  </Tag>
+                </Tooltip>
+              </Space>
+            ),
             children: (
               <>
                 <Form
