@@ -97,7 +97,7 @@ export default function Dashboard(props: any) {
         title={
           <Space>
             <div>Select a Wallet</div>
-            <Tag color="#108ee9">
+            <Tag color="#0bd300ff">
               {
                 Object.values(wallets).filter(
                   (wallet) => wallet.address != null

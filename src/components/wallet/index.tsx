@@ -1,6 +1,6 @@
 import React from "react";
 import { Wallet } from "../../utils/wallets/wallet";
-import { Card, Image } from "antd";
+import { Card, Image, Tooltip } from "antd";
 import "./wallet.scss";
 import { CheckCircleOutlined, PauseCircleOutlined } from "@ant-design/icons";
 import { useAppSelector } from "../../redux/hook";
@@ -39,31 +39,33 @@ const WalletCard: React.FC<{
       <Card
         hoverable
         className="wallet-card"
+        size="small"
         style={{ backgroundColor: wallet.ui.backgroundColor }}
         onClick={() => connectWallet(wallet)}
       >
         <div className="wallet-card-content">
           <Image className="wallet-logo" preview={false} src={wallet.ui.icon} />
-          <div>
-            <div className="wallet-title">
-              <div
-                className="wallet-name"
-                style={{ color: wallet.ui.titleColor }}
-              >
-                {wallet.ui.name}
-              </div>
-              <div
-                className="wallet-info-container"
-                style={{ color: wallet.address ? "green" : "red" }}
-              >
-                {wallet.address && <CheckCircleOutlined color="green" />}
-                {!wallet.address && <PauseCircleOutlined color="red" />}
-                <div className="wallet-info">
-                  {wallet.address ? shorten(wallet.address) : "Not Connected"}
-                </div>
-              </div>
-              {wallet.chainId && (
-                <div className="wallet-info-container">
+          <div className="wallet-title">
+            <div
+              className="wallet-name"
+              style={{ color: wallet.ui.titleColor }}
+            >
+              {wallet.ui.name}
+            </div>
+            <div
+              className="wallet-info-container"
+              style={{ color: wallet.address ? "green" : "red" }}
+            >
+              {wallet.address && wallet.chainId && (
+                <Tooltip
+                  title={
+                    blockchains.find(
+                      (blockchain) =>
+                        blockchain.chainId === wallet.chainId &&
+                        blockchain.networkCluster === wallet.networkCluster
+                    )?.name || `Unknown network (${wallet.chainId})`
+                  }
+                >
                   <Image
                     src={
                       blockchains.find(
@@ -75,15 +77,15 @@ const WalletCard: React.FC<{
                     preview={false}
                     className="wallet-chain-logo"
                   />
-                  <div className="wallet-info">
-                    {blockchains.find(
-                      (blockchain) =>
-                        blockchain.chainId === wallet.chainId &&
-                        blockchain.networkCluster === wallet.networkCluster
-                    )?.name || `Unknown network (${wallet.chainId})`}
-                  </div>
-                </div>
+                </Tooltip>
               )}
+              {wallet.address && !wallet.chainId && (
+                <CheckCircleOutlined color="green" />
+              )}
+              {!wallet.address && <PauseCircleOutlined color="red" />}
+              <div className="wallet-info">
+                {wallet.address ? shorten(wallet.address) : "Not Connected"}
+              </div>
             </div>
           </div>
         </div>
