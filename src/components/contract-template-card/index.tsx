@@ -85,22 +85,20 @@ const ContractTemplateCard: React.FC<{
               icon: <CodeOutlined className="template-icon" />,
             },
           ].map(({ key, label, value, icon }) => (
-            <div key={key}>
-              <Paragraph copyable={{ text: value, tooltips: false }}>
-                <Space>
-                  {icon}
-                  <a
-                    href={URL.createObjectURL(
-                      new Blob([value], { type: "text/plain" })
-                    )}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    {label}
-                  </a>
-                </Space>
-              </Paragraph>
-            </div>
+            <Paragraph key={key} copyable={{ text: value, tooltips: false }}>
+              <Space>
+                {icon}
+                <a
+                  href={URL.createObjectURL(
+                    new Blob([value], { type: "text/plain" })
+                  )}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {label}
+                </a>
+              </Space>
+            </Paragraph>
           ))}
         </div>
       </Card>
