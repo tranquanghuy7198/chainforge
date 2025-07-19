@@ -104,7 +104,7 @@ const SolanaForm: React.FC<{
             // Find all dependees
             const dependees: Record<string, PublicKey> = {};
             let notEnoughDependees = false;
-            const seeds = singleAccount.pda.seeds;
+            const seeds = [...singleAccount.pda.seeds]; // Copy value, avoid array pointer
             if (singleAccount.pda.program)
               seeds.push(singleAccount.pda.program);
             for (const seed of seeds)
