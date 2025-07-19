@@ -23,6 +23,7 @@ import {
   ACCOUNT_PARAM,
   ARG_PARAM,
   DEPLOYMENT_INSTRUCTION,
+  deriveFrom,
   getAccountRoles,
   getFullInstructions,
   Idl,
@@ -97,13 +98,7 @@ const SolanaForm: React.FC<{
             );
           // Derived accounts
           else if (singleAccount.pda) {
-            if (
-              !(
-                singleAccount.pda.program &&
-                singleAccount.pda.program.kind === "account"
-              ) &&
-              !contractAddress
-            )
+            if (!singleAccount.pda.program && !contractAddress)
               // Must have at least 1 program to derive from
               continue;
 
@@ -142,10 +137,11 @@ const SolanaForm: React.FC<{
                     ? dependees[seed.path].toBuffer()
                     : Buffer.from([]) // TODO: seed.kind === "args", not handled yet
               ),
-              singleAccount.pda.program &&
-                singleAccount.pda.program.kind === "account"
-                ? dependees[singleAccount.pda.program.path]
-                : new PublicKey(contractAddress!.address)
+              deriveFrom(
+                dependees,
+                singleAccount.pda.program,
+                contractAddress?.address
+              )
             );
             form.setFieldValue(
               [ACCOUNT_PARAM, singleAccount.name],

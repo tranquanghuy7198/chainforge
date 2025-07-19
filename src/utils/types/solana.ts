@@ -538,3 +538,19 @@ export const pdaDependees = (pda?: IdlPda): string[] => {
     ...(pda.program?.kind === "account" ? [pda.program.path] : []),
   ];
 };
+
+export const deriveFrom = (
+  dependees: Record<string, PublicKey>,
+  pdaProgramData?: IdlSeed,
+  programId?: string
+): PublicKey => {
+  if (pdaProgramData) {
+    if (pdaProgramData.kind === "account")
+      return dependees[pdaProgramData.path]; // TODO: do we need to use "pdaProgramData.account?" here?
+    if (pdaProgramData.kind === "const")
+      return new PublicKey(pdaProgramData.value);
+    // TODO: How about kind === "arg"?
+  }
+  if (programId) return new PublicKey(programId);
+  throw new Error("Invalid PDA Program");
+};
