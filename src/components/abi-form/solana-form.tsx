@@ -97,7 +97,13 @@ const SolanaForm: React.FC<{
             );
           // Derived accounts
           else if (singleAccount.pda) {
-            if (!singleAccount.pda.program && !contractAddress)
+            if (
+              !(
+                singleAccount.pda.program &&
+                singleAccount.pda.program.kind === "account"
+              ) &&
+              !contractAddress
+            )
               // Must have at least 1 program to derive from
               continue;
 
