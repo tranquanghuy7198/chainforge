@@ -528,3 +528,13 @@ export const getAccountRoles = (account: IdlInstructionAccount): string[] => {
   if (account.writable) roles.push("Writable");
   return roles;
 };
+
+export const pdaDependees = (pda?: IdlPda): string[] => {
+  if (!pda) return [];
+  return [
+    ...pda.seeds
+      .filter((seed) => seed.kind === "account")
+      .map((seed) => seed.path),
+    ...(pda.program?.kind === "account" ? [pda.program.path] : []),
+  ];
+};

@@ -27,6 +27,7 @@ import {
   getFullInstructions,
   Idl,
   IdlInstruction,
+  pdaDependees,
   SolanaIdlParser,
   stringifyArgType,
 } from "../../utils/types/solana";
@@ -95,11 +96,18 @@ const SolanaForm: React.FC<{
               singleAccount.address
             );
           // Derived accounts
-          else if (contractAddress && singleAccount.pda) {
+          else if (singleAccount.pda) {
+            if (!singleAccount.pda.program && !contractAddress)
+              // Must have at least 1 program to derive from
+              continue;
+
             // Find all dependees
             const dependees: Record<string, PublicKey> = {};
             let notEnoughDependees = false;
-            for (const seed of singleAccount.pda.seeds)
+            const seeds = singleAccount.pda.seeds;
+            if (singleAccount.pda.program)
+              seeds.push(singleAccount.pda.program);
+            for (const seed of seeds)
               if (seed.kind === "account") {
                 const dependee = form.getFieldValue([ACCOUNT_PARAM, seed.path]);
                 try {
@@ -128,7 +136,10 @@ const SolanaForm: React.FC<{
                     ? dependees[seed.path].toBuffer()
                     : Buffer.from([]) // TODO: seed.kind === "args", not handled yet
               ),
-              new PublicKey(contractAddress.address)
+              singleAccount.pda.program &&
+                singleAccount.pda.program.kind === "account"
+                ? dependees[singleAccount.pda.program.path]
+                : new PublicKey(contractAddress!.address)
             );
             form.setFieldValue(
               [ACCOUNT_PARAM, singleAccount.name],
@@ -373,13 +384,9 @@ const SolanaForm: React.FC<{
                       >
                         <Input
                           placeholder={
-                            account.pda?.seeds.some(
-                              (seed) => seed.kind === "account"
-                            )
+                            pdaDependees(account.pda).length > 0
                               ? `Derived from ${concat(
-                                  account.pda.seeds
-                                    .filter((seed) => seed.kind === "account")
-                                    .map((seed) => seed.path)
+                                  pdaDependees(account.pda)
                                 )}`
                               : "Public Key"
                           }
