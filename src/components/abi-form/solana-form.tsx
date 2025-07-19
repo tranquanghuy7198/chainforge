@@ -97,6 +97,7 @@ const SolanaForm: React.FC<{
                   dependees[seed.path] = new PublicKey(dependee);
                 } catch {
                   notEnoughDependees = true; // Not a valid public key, or not filled yet
+                  break;
                 }
               }
             if (notEnoughDependees) {
