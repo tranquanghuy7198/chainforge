@@ -320,7 +320,7 @@ const SolanaForm: React.FC<{
       }
 
       // Set it in the form and auto fill others if necessary
-      if (setAccountValue(instructionName, accountName, accountName))
+      if (setAccountValue(instructionName, accountName, accountValue))
         autoFillAccounts();
     } catch (e) {
       notification.error({
