@@ -432,8 +432,10 @@ const SolanaForm: React.FC<{
                     <div key={index}>
                       <Divider
                         size="small"
+                        dashed
                         orientation="left"
                         orientationMargin={0}
+                        className="instruction-divider"
                       >
                         Token Approval [beta]
                       </Divider>
@@ -467,8 +469,10 @@ const SolanaForm: React.FC<{
                   0 && (
                   <Divider
                     size="small"
+                    dashed
                     orientation="left"
                     orientationMargin={0}
+                    className="instruction-divider"
                   >
                     {instruction.name}
                   </Divider>
