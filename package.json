@@ -12,6 +12,7 @@
     "@mysten/wallet-adapter-wallet-standard": "^0.8.0",
     "@mysten/wallet-standard": "^0.16.5",
     "@reduxjs/toolkit": "^2.8.2",
+    "@solana/spl-token": "^0.4.13",
     "@solana/wallet-adapter-base": "^0.9.27",
     "@solana/wallet-adapter-wallets": "^0.19.37",
     "@solana/web3.js": "^1.98.2",

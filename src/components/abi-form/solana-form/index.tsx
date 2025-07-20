@@ -10,6 +10,8 @@ import { Wallet } from "../../../utils/wallets/wallet";
 import {
   Button,
   Descriptions,
+  Divider,
+  Dropdown,
   Form,
   Input,
   Select,
@@ -34,15 +36,18 @@ import {
 } from "../../../utils/types/solana";
 import {
   CloudUploadOutlined,
+  DownOutlined,
   EditOutlined,
   EyeOutlined,
 } from "@ant-design/icons";
 import Paragraph from "antd/es/typography/Paragraph";
-import { PublicKey } from "@solana/web3.js";
+import { PublicKey, TransactionInstruction } from "@solana/web3.js";
 import { SolanaExtra } from "../../../utils/wallets/solana/utils";
-import { FormInstance } from "antd/es/form/Form";
+import { FormInstance, useForm } from "antd/es/form/Form";
 import CollapseForm from "../collapse-form";
-import "../abi-form.scss";
+import "./solana-form.scss";
+import { createApproveInstruction } from "@solana/spl-token";
+import { BN } from "@coral-xyz/anchor";
 
 enum AccountOption {
   Custom = "custom-account",
@@ -51,6 +56,13 @@ enum AccountOption {
   System = "system-account",
   Derived = "derived-account",
 }
+
+type TokenApprovalInstruction = {
+  account: string;
+  delegate: string;
+  owner: string;
+  amount: string;
+};
 
 const SolanaForm: React.FC<{
   action: AbiAction;
@@ -67,6 +79,9 @@ const SolanaForm: React.FC<{
   wallet,
   blockchain,
 }) => {
+  const [supportiveInstructions, setSupportiveInstructions] = useState<
+    Record<string, Partial<TokenApprovalInstruction>[]>
+  >({});
   const forms: Record<string, FormInstance> = getFullInstructions(
     contractTemplate.abi as Idl
   ).reduce((acc, instruction) => {
@@ -216,6 +231,17 @@ const SolanaForm: React.FC<{
     setTxResponses({ ...txResponses, [instruction.name]: response });
   };
 
+  const parseSupportiveInstruction = (
+    rawInstruction: Partial<TokenApprovalInstruction>
+  ): TransactionInstruction => {
+    return createApproveInstruction(
+      new PublicKey(rawInstruction.account!),
+      new PublicKey(rawInstruction.delegate!),
+      new PublicKey(rawInstruction.owner!),
+      new BN(parseInt(rawInstruction.amount!, 10))
+    );
+  };
+
   const write = async (
     wallet: Wallet,
     blockchain: Blockchain,
@@ -237,7 +263,13 @@ const SolanaForm: React.FC<{
       contractTemplate.abi,
       instruction.name,
       [args, accounts],
-      {} as SolanaExtra
+      {
+        supportiveInstructions: (
+          supportiveInstructions[instruction.name] || []
+        ).map((supportiveInstruction) =>
+          parseSupportiveInstruction(supportiveInstruction)
+        ),
+      } as SolanaExtra
     );
 
     setTxResponses({ ...txResponses, [instruction.name]: response });
@@ -334,6 +366,31 @@ const SolanaForm: React.FC<{
     }
   };
 
+  const addTokenApprovalForm = (instructionName: string) => {
+    setSupportiveInstructions({
+      ...supportiveInstructions,
+      [instructionName]: [
+        ...(supportiveInstructions[instructionName] || []),
+        {},
+      ],
+    });
+  };
+
+  const setTokenApproval = (
+    instructionName: string,
+    index: number,
+    values: TokenApprovalInstruction
+  ) => {
+    setSupportiveInstructions({
+      ...supportiveInstructions,
+      [instructionName]: [
+        ...(supportiveInstructions[instructionName] || []).slice(0, index),
+        values,
+        ...(supportiveInstructions[instructionName] || []).slice(index + 1),
+      ],
+    });
+  };
+
   return (
     <>
       {contextHolder}
@@ -370,6 +427,52 @@ const SolanaForm: React.FC<{
             ),
             children: (
               <>
+                {(supportiveInstructions[instruction.name] || []).map(
+                  (supportiveInstruction, index) => (
+                    <div key={index}>
+                      <Divider
+                        size="small"
+                        orientation="left"
+                        orientationMargin={0}
+                      >
+                        Token Approval [beta]
+                      </Divider>
+                      <Form
+                        onFinish={(values) =>
+                          setTokenApproval(instruction.name, index, values)
+                        }
+                      >
+                        <Form.Item name="account" label="Account">
+                          <Input defaultValue={supportiveInstruction.account} />
+                        </Form.Item>
+                        <Form.Item name="delegate" label="Delegate">
+                          <Input
+                            defaultValue={supportiveInstruction.delegate}
+                          />
+                        </Form.Item>
+                        <Form.Item name="owner" label="Owner">
+                          <Input defaultValue={supportiveInstruction.owner} />
+                        </Form.Item>
+                        <Form.Item name="amount" label="Amount">
+                          <Input defaultValue={supportiveInstruction.amount} />
+                        </Form.Item>
+                        <Form.Item>
+                          <Button htmlType="submit">Confirm</Button>
+                        </Form.Item>
+                      </Form>
+                    </div>
+                  )
+                )}
+                {(supportiveInstructions[instruction.name] || []).length >
+                  0 && (
+                  <Divider
+                    size="small"
+                    orientation="left"
+                    orientationMargin={0}
+                  >
+                    {instruction.name}
+                  </Divider>
+                )}
                 <Form
                   form={forms[instruction.name]}
                   name={instruction.name}
@@ -478,22 +581,63 @@ const SolanaForm: React.FC<{
                     </Form.Item>
                   ))}
                   <Form.Item>
-                    <Button
-                      type="primary"
-                      htmlType="submit"
-                      loading={loading}
-                      icon={
-                        action === AbiAction.Deploy ? (
-                          <CloudUploadOutlined />
-                        ) : action === AbiAction.Read ? (
-                          <EyeOutlined />
-                        ) : (
-                          <EditOutlined />
-                        )
-                      }
-                    >
-                      {capitalize(action.toString())}
-                    </Button>
+                    <div className="instruction-actions">
+                      <Button
+                        type="primary"
+                        htmlType="submit"
+                        loading={loading}
+                        icon={
+                          action === AbiAction.Deploy ? (
+                            <CloudUploadOutlined />
+                          ) : action === AbiAction.Read ? (
+                            <EyeOutlined />
+                          ) : (
+                            <EditOutlined />
+                          )
+                        }
+                      >
+                        {capitalize(action.toString())}
+                      </Button>
+                      {action === AbiAction.Write && (
+                        <Dropdown
+                          menu={{
+                            items: [
+                              {
+                                key: "1",
+                                label: "Approve Tokens",
+                                children: [
+                                  {
+                                    key: "top",
+                                    label: "Add to beginning",
+                                  },
+                                  {
+                                    key: "bottom",
+                                    label: "Add to last (available soon)",
+                                    disabled: true,
+                                  },
+                                ],
+                              },
+                              {
+                                key: "2",
+                                label: "Initialize Account (available soon)",
+                                disabled: true,
+                              },
+                            ],
+                          }}
+                        >
+                          <a
+                            onClick={() =>
+                              addTokenApprovalForm(instruction.name)
+                            }
+                          >
+                            <Space>
+                              Supportive Actions
+                              <DownOutlined />
+                            </Space>
+                          </a>
+                        </Dropdown>
+                      )}
+                    </div>
                   </Form.Item>
                 </Form>
                 {Object.keys(txResponses).includes(instruction.name) && (

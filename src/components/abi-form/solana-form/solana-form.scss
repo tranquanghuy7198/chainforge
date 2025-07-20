@@ -1,0 +1,12 @@
+@use "../../../styles.scss" as *;
+
+.solana-acc-roles {
+  font-size: 10px;
+}
+
+.instruction-actions {
+  display: flex;
+  flex-flow: row;
+  justify-content: space-between;
+  align-items: center;
+}
