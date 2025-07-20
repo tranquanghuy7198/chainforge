@@ -95,13 +95,18 @@ const SolanaForm: React.FC<{
     return false;
   };
 
-  const autoFillAccounts = () => {
+  const autoFillAccounts = (changedInstruction?: string) => {
     for (const instruction of getFullInstructions(
       contractTemplate.abi as Idl
     )) {
+      if (changedInstruction && instruction.name !== changedInstruction)
+        // Only rerun for changed instruction
+        continue;
+
       let changed = false;
       const form = forms[instruction.name];
       do {
+        changed = false; // Reset and try once more
         for (const account of instruction.accounts)
           for (const singleAccount of "accounts" in account
             ? account.accounts
@@ -321,7 +326,7 @@ const SolanaForm: React.FC<{
 
       // Set it in the form and auto fill others if necessary
       if (setAccountValue(instructionName, accountName, accountValue))
-        autoFillAccounts();
+        autoFillAccounts(instructionName);
     } catch (e) {
       notification.error({
         message: e instanceof Error ? e.message : "Unknown error",
@@ -415,7 +420,7 @@ const SolanaForm: React.FC<{
                             account.address !== undefined ||
                             account.pda !== undefined
                           }
-                          onChange={() => autoFillAccounts()}
+                          onChange={() => autoFillAccounts(instruction.name)}
                           addonAfter={
                             <Select
                               disabled={
