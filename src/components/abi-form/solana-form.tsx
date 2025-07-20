@@ -81,74 +81,97 @@ const SolanaForm: React.FC<{
 
   useEffect(() => autoFillAccounts(), [forms]);
 
+  const setAccountValue = (
+    instructionName: string,
+    accountName: string,
+    accountValue?: string
+  ): boolean => {
+    const form = forms[instructionName];
+    const currentValue = form.getFieldValue([ACCOUNT_PARAM, accountName]);
+    if (currentValue !== accountValue) {
+      form.setFieldValue([ACCOUNT_PARAM, accountName], accountValue);
+      return true;
+    }
+    return false;
+  };
+
   const autoFillAccounts = () => {
     for (const instruction of getFullInstructions(
       contractTemplate.abi as Idl
     )) {
+      let changed = false;
       const form = forms[instruction.name];
-      for (const account of instruction.accounts)
-        for (const singleAccount of "accounts" in account
-          ? account.accounts
-          : [account]) {
-          // System accounts
-          if (singleAccount.address)
-            form.setFieldValue(
-              [ACCOUNT_PARAM, singleAccount.name],
-              singleAccount.address
-            );
-          // Derived accounts
-          else if (singleAccount.pda) {
-            if (!singleAccount.pda.program && !contractAddress)
-              // Must have at least 1 program to derive from
-              continue;
-
-            // Find all dependees
-            const dependees: Record<string, PublicKey> = {};
-            let notEnoughDependees = false;
-            const seeds = [...singleAccount.pda.seeds]; // Copy value, avoid array pointer
-            if (singleAccount.pda.program)
-              seeds.push(singleAccount.pda.program);
-            for (const seed of seeds)
-              if (seed.kind === "account") {
-                const dependee = form.getFieldValue([ACCOUNT_PARAM, seed.path]);
-                try {
-                  dependees[seed.path] = new PublicKey(dependee);
-                } catch {
-                  notEnoughDependees = true; // Not a valid public key, or not filled yet
-                  break;
-                }
-              }
-            if (notEnoughDependees) {
-              // Not enough dependees to calculate this account, skip
-              form.setFieldValue(
-                [ACCOUNT_PARAM, singleAccount.name],
-                undefined
+      do {
+        for (const account of instruction.accounts)
+          for (const singleAccount of "accounts" in account
+            ? account.accounts
+            : [account]) {
+            // System accounts
+            if (singleAccount.address)
+              changed ||= setAccountValue(
+                instruction.name,
+                singleAccount.name,
+                singleAccount.address
               );
-              continue;
-            }
+            // Derived accounts
+            else if (singleAccount.pda) {
+              if (!singleAccount.pda.program && !contractAddress)
+                // Must have at least 1 program to derive from
+                continue;
 
-            // Calculate derived account from dependees
-            const [derivedAccount] = PublicKey.findProgramAddressSync(
-              singleAccount.pda.seeds.map(
-                (seed) =>
-                  seed.kind === "const"
-                    ? Buffer.from(seed.value)
-                    : seed.kind === "account"
-                    ? dependees[seed.path].toBuffer()
-                    : Buffer.from([]) // TODO: seed.kind === "args", not handled yet
-              ),
-              deriveFrom(
-                dependees,
-                singleAccount.pda.program,
-                contractAddress?.address
-              )
-            );
-            form.setFieldValue(
-              [ACCOUNT_PARAM, singleAccount.name],
-              derivedAccount.toString()
-            );
+              // Find all dependees
+              const dependees: Record<string, PublicKey> = {};
+              let notEnoughDependees = false;
+              const seeds = [...singleAccount.pda.seeds]; // Copy value, avoid array pointer
+              if (singleAccount.pda.program)
+                seeds.push(singleAccount.pda.program);
+              for (const seed of seeds)
+                if (seed.kind === "account") {
+                  const dependee = form.getFieldValue([
+                    ACCOUNT_PARAM,
+                    seed.path,
+                  ]);
+                  try {
+                    dependees[seed.path] = new PublicKey(dependee);
+                  } catch {
+                    notEnoughDependees = true; // Not a valid public key, or not filled yet
+                    break;
+                  }
+                }
+              if (notEnoughDependees) {
+                // Not enough dependees to calculate this account, clear current value
+                changed ||= setAccountValue(
+                  instruction.name,
+                  singleAccount.name,
+                  undefined
+                );
+                continue;
+              }
+
+              // Calculate derived account from dependees
+              const [derivedAccount] = PublicKey.findProgramAddressSync(
+                singleAccount.pda.seeds.map(
+                  (seed) =>
+                    seed.kind === "const"
+                      ? Buffer.from(seed.value)
+                      : seed.kind === "account"
+                      ? dependees[seed.path].toBuffer()
+                      : Buffer.from([]) // TODO: seed.kind === "args", not handled yet
+                ),
+                deriveFrom(
+                  dependees,
+                  singleAccount.pda.program,
+                  contractAddress?.address
+                )
+              );
+              changed ||= setAccountValue(
+                instruction.name,
+                singleAccount.name,
+                derivedAccount.toString()
+              );
+            }
           }
-        }
+      } while (changed);
     }
   };
 
