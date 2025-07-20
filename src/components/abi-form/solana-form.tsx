@@ -319,14 +319,9 @@ const SolanaForm: React.FC<{
         accountValue = contractAddress.address;
       }
 
-      // Set it in the form
-      forms[instructionName].setFieldValue(
-        [ACCOUNT_PARAM, accountName],
-        accountValue
-      );
-
-      // Check again if we can auto fill something
-      autoFillAccounts();
+      // Set it in the form and auto fill others if necessary
+      if (setAccountValue(instructionName, accountName, accountName))
+        autoFillAccounts();
     } catch (e) {
       notification.error({
         message: e instanceof Error ? e.message : "Unknown error",
