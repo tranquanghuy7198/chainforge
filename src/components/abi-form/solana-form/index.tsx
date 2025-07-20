@@ -5,8 +5,8 @@ import {
   ContractAddress,
   ContractTemplate,
   TxResponse,
-} from "../../utils/constants";
-import { Wallet } from "../../utils/wallets/wallet";
+} from "../../../utils/constants";
+import { Wallet } from "../../../utils/wallets/wallet";
 import {
   Button,
   Descriptions,
@@ -18,7 +18,7 @@ import {
   Tooltip,
 } from "antd";
 import { Fragment, useEffect, useState } from "react";
-import { capitalize, concat } from "../../utils/utils";
+import { capitalize, concat } from "../../../utils/utils";
 import {
   ACCOUNT_PARAM,
   ARG_PARAM,
@@ -31,7 +31,7 @@ import {
   pdaDependees,
   SolanaIdlParser,
   stringifyArgType,
-} from "../../utils/types/solana";
+} from "../../../utils/types/solana";
 import {
   CloudUploadOutlined,
   EditOutlined,
@@ -39,10 +39,10 @@ import {
 } from "@ant-design/icons";
 import Paragraph from "antd/es/typography/Paragraph";
 import { PublicKey } from "@solana/web3.js";
-import { SolanaExtra } from "../../utils/wallets/solana/utils";
+import { SolanaExtra } from "../../../utils/wallets/solana/utils";
 import { FormInstance } from "antd/es/form/Form";
-import CollapseForm from "./collapse-form";
-import "./abi-form.scss";
+import CollapseForm from "../collapse-form";
+import "../abi-form.scss";
 
 enum AccountOption {
   Custom = "custom-account",
