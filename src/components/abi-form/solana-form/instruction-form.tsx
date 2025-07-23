@@ -147,7 +147,10 @@ const SolanaInstructionForm: React.FC<{
     }
   };
 
-  const deploy = async (wallet: Wallet, blockchain: Blockchain) => {
+  const deploy = async (
+    wallet: Wallet,
+    blockchain: Blockchain
+  ): Promise<TxResponse> => {
     const response = await wallet.deploy(
       blockchain,
       contractTemplate.abi,
@@ -155,8 +158,8 @@ const SolanaInstructionForm: React.FC<{
       null,
       { programKeypair: contractTemplate.programKeypair } as SolanaExtra
     );
-    setTxResponse(response);
     saveDeployedContract(blockchain, response.contractAddress!);
+    return response;
   };
 
   const read = async (
@@ -165,7 +168,7 @@ const SolanaInstructionForm: React.FC<{
     instruction: IdlInstruction,
     args: any[],
     accounts: Record<string, PublicKey>
-  ) => {
+  ): Promise<TxResponse | undefined> => {
     if (!contractAddress) {
       notification.error({
         message: "No contract selected",
@@ -173,14 +176,13 @@ const SolanaInstructionForm: React.FC<{
       });
       return;
     }
-    const response = await wallet.readContract(
+    return await wallet.readContract(
       blockchain,
       contractAddress.address,
       contractTemplate.abi,
       instruction.name,
       [args, accounts]
     );
-    setTxResponse(response);
   };
 
   const write = async (
@@ -189,7 +191,7 @@ const SolanaInstructionForm: React.FC<{
     instruction: IdlInstruction,
     args: any[],
     accounts: Record<string, PublicKey>
-  ) => {
+  ): Promise<TxResponse | undefined> => {
     if (!contractAddress) {
       notification.error({
         message: "No contract selected",
@@ -197,8 +199,7 @@ const SolanaInstructionForm: React.FC<{
       });
       return;
     }
-
-    const response = await wallet.writeContract(
+    return await wallet.writeContract(
       blockchain,
       contractAddress.address,
       contractTemplate.abi,
@@ -206,7 +207,6 @@ const SolanaInstructionForm: React.FC<{
       [args, accounts],
       {} as SolanaExtra
     );
-    setTxResponse(response);
   };
 
   const execute = async (
@@ -248,11 +248,14 @@ const SolanaInstructionForm: React.FC<{
       );
 
       // Execute in wallet
-      if (action === AbiAction.Deploy) await deploy(wallet, blockchain);
+      let response: TxResponse | undefined;
+      if (action === AbiAction.Deploy)
+        response = await deploy(wallet, blockchain);
       else if (action === AbiAction.Read)
-        await read(wallet, blockchain, instruction, args, accounts);
+        response = await read(wallet, blockchain, instruction, args, accounts);
       else if (action === AbiAction.Write)
-        await write(wallet, blockchain, instruction, args, accounts);
+        response = await write(wallet, blockchain, instruction, args, accounts);
+      setTxResponse(response);
     } catch (e) {
       notification.error({
         message: "Execution Failed",
