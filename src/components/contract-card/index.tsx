@@ -5,7 +5,7 @@ import {
   ContractAddress,
   DeployedContract,
 } from "../../utils/constants";
-import { Card, Drawer, Image, Tooltip } from "antd";
+import { Card, Drawer, Image, Space, Tooltip } from "antd";
 import { useAppSelector } from "../../redux/hook";
 import {
   DeleteOutlined,
@@ -46,7 +46,7 @@ const ContractCard: React.FC<{
               (chain) => chain.id === address.blockchainId
             );
             return (
-              <div
+              <Space
                 key={`${address.blockchainId}-${address.address}`}
                 className="contract-address"
                 onClick={() => setContractAddress(address)}
@@ -65,7 +65,7 @@ const ContractCard: React.FC<{
                 <a>
                   {shorten(address.address)} <ExportOutlined />
                 </a>
-              </div>
+              </Space>
             );
           })}
         </div>
@@ -73,8 +73,17 @@ const ContractCard: React.FC<{
       <Drawer
         width={700}
         title={
-          <div>
-            {contract.template.name}{" "}
+          <Space>
+            {contract.template.name}
+            <Image
+              preview={false}
+              className="contract-chain"
+              src={
+                blockchains.find(
+                  (chain) => chain.id === contractAddress?.blockchainId
+                )?.logo
+              }
+            />
             <a
               href={blockchains
                 .find((chain) => chain.id === contractAddress?.blockchainId)
@@ -87,7 +96,7 @@ const ContractCard: React.FC<{
             >
               {shorten(contractAddress?.address ?? "")} <ExportOutlined />
             </a>
-          </div>
+          </Space>
         }
         open={contractAddress !== undefined}
         closable={true}
