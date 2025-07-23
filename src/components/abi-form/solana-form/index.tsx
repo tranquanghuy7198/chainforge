@@ -48,6 +48,7 @@ import CollapseForm from "../collapse-form";
 import "./solana-form.scss";
 import { createApproveInstruction } from "@solana/spl-token";
 import { BN } from "@coral-xyz/anchor";
+import SolanaAccountInput from "./account-input";
 
 enum AccountOption {
   Custom = "custom-account",
@@ -489,87 +490,21 @@ const SolanaForm: React.FC<{
                     ) // Flatten single account and complex accounts
                     .flat()
                     .map((account) => (
-                      <Form.Item
+                      <SolanaAccountInput
                         key={account.name}
-                        name={[ACCOUNT_PARAM, account.name]}
-                        tooltip={
-                          account.docs ? (
-                            <>
-                              {account.docs.map((doc, index) => (
-                                <Fragment key={index}>
-                                  {doc}
-                                  <br />
-                                </Fragment>
-                              ))}
-                            </>
-                          ) : undefined
+                        account={account}
+                        disabled={loading}
+                        onInputChanged={() =>
+                          autoFillAccounts(instruction.name)
                         }
-                        label={account.name}
-                        help={
-                          getAccountRoles(account) ? (
-                            <div className="solana-acc-roles">
-                              {getAccountRoles(account).join(" | ")}
-                            </div>
-                          ) : undefined
+                        onAccountOptionChanged={(option) =>
+                          updateFormAccount(
+                            instruction.name,
+                            account.name,
+                            option
+                          )
                         }
-                        required
-                      >
-                        <Input
-                          placeholder={
-                            pdaDependees(account.pda).length > 0
-                              ? `Derived from ${concat(
-                                  pdaDependees(account.pda)
-                                )}`
-                              : "Public Key"
-                          }
-                          disabled={
-                            loading ||
-                            account.address !== undefined ||
-                            account.pda !== undefined
-                          }
-                          onChange={() => autoFillAccounts(instruction.name)}
-                          addonAfter={
-                            <Select
-                              disabled={
-                                loading ||
-                                account.address !== undefined ||
-                                account.pda !== undefined
-                              }
-                              defaultValue={
-                                account.address
-                                  ? AccountOption.System
-                                  : account.pda
-                                  ? AccountOption.Derived
-                                  : AccountOption.Custom
-                              }
-                              onSelect={(value) =>
-                                updateFormAccount(
-                                  instruction.name,
-                                  account.name,
-                                  value
-                                )
-                              }
-                            >
-                              {Object.values(AccountOption).map((option) => (
-                                <Select.Option
-                                  key={option}
-                                  value={option}
-                                  disabled={[
-                                    AccountOption.System,
-                                    AccountOption.Derived,
-                                  ].includes(option)}
-                                >
-                                  {option
-                                    .replace(/-/g, " ")
-                                    .replace(/\b\w/g, (char) =>
-                                      char.toUpperCase()
-                                    )}
-                                </Select.Option>
-                              ))}
-                            </Select>
-                          }
-                        />
-                      </Form.Item>
+                      />
                     ))}
                   {instruction.args.map((arg) => (
                     <Form.Item
