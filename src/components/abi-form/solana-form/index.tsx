@@ -18,6 +18,7 @@ import "./solana-form.scss";
 import { createApproveInstruction } from "@solana/spl-token";
 import { BN } from "@coral-xyz/anchor";
 import SolanaInstructionForm from "./instruction-form";
+import { ThunderboltTwoTone } from "@ant-design/icons";
 
 type TokenApprovalInstruction = {
   account: string;
@@ -114,6 +115,12 @@ const SolanaForm: React.FC<{
                 </Tooltip>
               </Space>
             ),
+            extra:
+              action === AbiAction.Write ? (
+                <Tooltip title="Supportive Instruction" placement="left">
+                  <ThunderboltTwoTone />
+                </Tooltip>
+              ) : undefined,
             children: (
               <>
                 {(supportiveInstructions[instruction.name] || []).map(

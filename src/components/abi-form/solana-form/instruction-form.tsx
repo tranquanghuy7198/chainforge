@@ -21,7 +21,10 @@ import {
 import {
   CloudUploadOutlined,
   EditOutlined,
+  ExpandOutlined,
   EyeOutlined,
+  ThunderboltFilled,
+  ThunderboltOutlined,
 } from "@ant-design/icons";
 import { capitalize } from "../../../utils/utils";
 import useNotification from "antd/es/notification/useNotification";
@@ -358,7 +361,11 @@ const SolanaInstructionForm: React.FC<{
             >
               {capitalize(action.toString())}
             </Button>
-            {action === AbiAction.Write && <></>}
+            {action === AbiAction.Write && (
+              <Button type="link" icon={<ThunderboltOutlined />}>
+                Supportive Instruction
+              </Button>
+            )}
           </div>
         </Form.Item>
       </Form>
