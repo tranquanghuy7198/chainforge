@@ -117,7 +117,7 @@ const SolanaForm: React.FC<{
             ),
             extra:
               action === AbiAction.Write ? (
-                <Tooltip title="Supportive Instruction" placement="left">
+                <Tooltip title="Supportive Instructions" placement="left">
                   <ThunderboltTwoTone />
                 </Tooltip>
               ) : undefined,

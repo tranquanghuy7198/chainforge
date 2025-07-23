@@ -363,7 +363,7 @@ const SolanaInstructionForm: React.FC<{
             </Button>
             {action === AbiAction.Write && (
               <Button type="link" icon={<ThunderboltOutlined />}>
-                Supportive Instruction
+                Supportive Instructions
               </Button>
             )}
           </div>
