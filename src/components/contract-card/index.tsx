@@ -16,6 +16,7 @@ import {
 import "./contract-card.scss";
 import { shorten } from "../../utils/utils";
 import AbiForm from "../abi-form";
+import AbiTitle from "../abi-form/abi-title";
 
 const ContractCard: React.FC<{
   contract: DeployedContract;
@@ -73,30 +74,13 @@ const ContractCard: React.FC<{
       <Drawer
         width={700}
         title={
-          <Space>
-            {contract.template.name}
-            <Image
-              preview={false}
-              className="contract-chain"
-              src={
-                blockchains.find(
-                  (chain) => chain.id === contractAddress?.blockchainId
-                )?.logo
-              }
-            />
-            <a
-              href={blockchains
-                .find((chain) => chain.id === contractAddress?.blockchainId)
-                ?.addressUrl?.replaceAll(
-                  ADDRESS_PATTERN,
-                  contractAddress?.address || ""
-                )}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              {shorten(contractAddress?.address ?? "")} <ExportOutlined />
-            </a>
-          </Space>
+          <AbiTitle
+            name={contract.template.name}
+            address={contractAddress?.address ?? ""}
+            blockchain={blockchains.find(
+              (chain) => chain.id === contractAddress?.blockchainId
+            )}
+          />
         }
         open={contractAddress !== undefined}
         closable={true}
