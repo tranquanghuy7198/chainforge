@@ -7,11 +7,7 @@ import {
 import { Wallet } from "../../../utils/wallets/wallet";
 import { Button, Divider, Form, Input, Space, Tag, Tooltip } from "antd";
 import { useState } from "react";
-import {
-  DEPLOYMENT_INSTRUCTION,
-  getFullInstructions,
-  Idl,
-} from "../../../utils/types/solana";
+import { Idl } from "../../../utils/types/solana";
 import { PublicKey, TransactionInstruction } from "@solana/web3.js";
 import CollapseForm from "../collapse-form";
 import "./solana-form.scss";
@@ -19,6 +15,7 @@ import { createApproveInstruction } from "@solana/spl-token";
 import { BN } from "@coral-xyz/anchor";
 import SolanaInstructionForm from "./instruction-form";
 import { ThunderboltTwoTone } from "@ant-design/icons";
+import { DEPLOYMENT_INSTRUCTION, getFullInstructions } from "./utils";
 
 type TokenApprovalInstruction = {
   account: string;

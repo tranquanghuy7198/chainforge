@@ -1,13 +1,13 @@
 import React, { Fragment } from "react";
-import {
-  ACCOUNT_PARAM,
-  getAccountRoles,
-  IdlInstructionAccount,
-  pdaDependees,
-} from "../../../utils/types/solana";
+import { IdlInstructionAccount } from "../../../utils/types/solana";
 import { Form, Input, Select } from "antd";
 import { concat } from "../../../utils/utils";
-import { AccountOption } from "./utils";
+import {
+  ACCOUNT_PARAM,
+  AccountOption,
+  getAccountRoles,
+  pdaDependees,
+} from "./utils";
 
 const SolanaAccountInput: React.FC<{
   account: IdlInstructionAccount;
