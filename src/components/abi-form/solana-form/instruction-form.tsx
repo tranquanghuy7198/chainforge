@@ -21,9 +21,7 @@ import {
 import {
   CloudUploadOutlined,
   EditOutlined,
-  ExpandOutlined,
   EyeOutlined,
-  ThunderboltFilled,
   ThunderboltOutlined,
 } from "@ant-design/icons";
 import { capitalize } from "../../../utils/utils";
