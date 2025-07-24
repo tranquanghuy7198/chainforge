@@ -410,15 +410,13 @@ export class SolanaIdlParser {
     context: ParseContext
   ): any {
     const result: any = {};
-    for (const field of fields) {
-      if (camelCase(field.name) in obj) {
+    for (const field of fields)
+      if (field.name in obj)
         result[camelCase(field.name)] = this.parseValueInternal(
-          JSON.stringify(obj[camelCase(field.name)]),
+          JSON.stringify(obj[field.name]),
           field.type,
           context
         );
-      }
-    }
     return result;
   }
 
