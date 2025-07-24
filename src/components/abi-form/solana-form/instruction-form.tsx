@@ -33,6 +33,7 @@ import { AccountOption, deserializeAccountData } from "./utils";
 import { SolanaExtra } from "../../../utils/wallets/solana/utils";
 import lodash from "lodash";
 import "./solana-form.scss";
+import camelcase from "camelcase";
 
 const SolanaInstructionForm: React.FC<{
   action: AbiAction;
@@ -245,7 +246,7 @@ const SolanaInstructionForm: React.FC<{
       );
       const accounts = Object.fromEntries(
         Object.entries(params[ACCOUNT_PARAM] || {}).map(([key, value]) => [
-          key,
+          camelcase(key),
           new PublicKey(value),
         ])
       );
