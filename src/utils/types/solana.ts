@@ -383,9 +383,7 @@ export class SolanaIdlParser {
     typeName: string,
     context: ParseContext
   ): any {
-    const typeDef = this.idl.types?.find(
-      (t) => t.name.toLowerCase() === typeName.toLowerCase()
-    );
+    const typeDef = this.idl.types?.find((t) => t.name === typeName);
     if (!typeDef) throw new Error(`Type definition not found: ${typeName}`);
     const parsed = JSON.parse(value);
     if (typeDef.type.kind === "struct") {
@@ -412,15 +410,13 @@ export class SolanaIdlParser {
     context: ParseContext
   ): any {
     const result: any = {};
-    for (const field of fields) {
-      if (camelCase(field.name) in obj) {
+    for (const field of fields)
+      if (field.name in obj)
         result[camelCase(field.name)] = this.parseValueInternal(
-          JSON.stringify(obj[camelCase(field.name)]),
+          JSON.stringify(obj[field.name]),
           field.type,
           context
         );
-      }
-    }
     return result;
   }
 
@@ -512,7 +508,7 @@ export const DEPLOYMENT_INSTRUCTION = "deploy";
 
 export const getFullInstructions = (idl: Idl): IdlInstruction[] => {
   return [
-    ...convertIdlToCamelCase(idl).instructions,
+    ...idl.instructions,
     {
       name: DEPLOYMENT_INSTRUCTION,
       discriminator: [],

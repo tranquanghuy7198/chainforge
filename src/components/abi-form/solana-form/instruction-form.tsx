@@ -4,7 +4,6 @@ import {
   ACCOUNT_PARAM,
   ARG_PARAM,
   deriveFrom,
-  getFullInstructions,
   Idl,
   IdlInstruction,
   SolanaIdlParser,
@@ -30,9 +29,11 @@ import { PublicKey } from "@solana/web3.js";
 import { Wallet } from "../../../utils/wallets/wallet";
 import { useForm } from "antd/es/form/Form";
 import Paragraph from "antd/es/typography/Paragraph";
-import { AccountOption } from "./utils";
+import { AccountOption, deserializeAccountData } from "./utils";
 import { SolanaExtra } from "../../../utils/wallets/solana/utils";
+import lodash from "lodash";
 import "./solana-form.scss";
+import camelcase from "camelcase";
 
 const SolanaInstructionForm: React.FC<{
   action: AbiAction;
@@ -56,7 +57,9 @@ const SolanaInstructionForm: React.FC<{
   const [loading, setLoading] = useState<boolean>(false);
   const [txResponse, setTxResponse] = useState<TxResponse>();
 
-  useEffect(() => autoFillAccounts(), [form]);
+  useEffect(() => {
+    autoFillAccounts();
+  }, [form]);
 
   const setAccountValue = (
     accountName: string,
@@ -70,82 +73,82 @@ const SolanaInstructionForm: React.FC<{
     return false;
   };
 
-  const autoFillAccounts = (changedInstruction?: string) => {
-    for (const instruction of getFullInstructions(
-      contractTemplate.abi as Idl
-    )) {
-      if (changedInstruction && instruction.name !== changedInstruction)
-        // Only rerun for changed instruction
-        continue;
+  const autoFillAccounts = async () => {
+    let changed = false;
+    do {
+      changed = false; // Reset and try once more
+      for (const account of instruction.accounts)
+        for (const singleAccount of "accounts" in account
+          ? account.accounts
+          : [account]) {
+          // System accounts
+          if (singleAccount.address)
+            changed ||= setAccountValue(
+              singleAccount.name,
+              singleAccount.address
+            );
+          // Derived accounts
+          else if (singleAccount.pda) {
+            if (!singleAccount.pda.program && !contractAddress)
+              // Must have at least 1 program to derive from
+              continue;
 
-      let changed = false;
-      do {
-        changed = false; // Reset and try once more
-        for (const account of instruction.accounts)
-          for (const singleAccount of "accounts" in account
-            ? account.accounts
-            : [account]) {
-            // System accounts
-            if (singleAccount.address)
-              changed ||= setAccountValue(
-                singleAccount.name,
-                singleAccount.address
-              );
-            // Derived accounts
-            else if (singleAccount.pda) {
-              if (!singleAccount.pda.program && !contractAddress)
-                // Must have at least 1 program to derive from
-                continue;
-
-              // Find all dependees
-              const dependees: Record<string, PublicKey> = {};
-              let notEnoughDependees = false;
-              const seeds = [...singleAccount.pda.seeds]; // Copy value, avoid array pointer
-              if (singleAccount.pda.program)
-                seeds.push(singleAccount.pda.program);
-              for (const seed of seeds)
-                if (seed.kind === "account") {
-                  const dependee = form.getFieldValue([
-                    ACCOUNT_PARAM,
-                    seed.path,
-                  ]);
-                  try {
-                    dependees[seed.path] = new PublicKey(dependee);
-                  } catch {
-                    notEnoughDependees = true; // Not a valid public key, or not filled yet
-                    break;
-                  }
+            // Find all dependees
+            const dependees: Record<string, PublicKey> = {};
+            let notEnoughDependees = false;
+            const seeds = [...singleAccount.pda.seeds]; // Copy value, avoid array pointer
+            if (singleAccount.pda.program)
+              seeds.push(singleAccount.pda.program);
+            for (const seed of seeds)
+              if (seed.kind === "account")
+                try {
+                  const path = seed.path.split(".");
+                  if (path.length === 1)
+                    dependees[seed.path] = new PublicKey(
+                      form.getFieldValue([ACCOUNT_PARAM, seed.path])
+                    );
+                  else if (seed.account) {
+                    const accData = await deserializeAccountData(
+                      form.getFieldValue([ACCOUNT_PARAM, path[0]]),
+                      seed.account,
+                      contractTemplate.abi as Idl,
+                      blockchain
+                    );
+                    dependees[seed.path] = lodash.get(accData, path.slice(1));
+                  } else throw new Error("Invalid account path");
+                } catch {
+                  notEnoughDependees = true; // Not a valid public key, or not filled yet
+                  break;
                 }
-              if (notEnoughDependees) {
-                // Not enough dependees to calculate this account, clear current value
-                changed ||= setAccountValue(singleAccount.name, undefined);
-                continue;
-              }
-
-              // Calculate derived account from dependees
-              const [derivedAccount] = PublicKey.findProgramAddressSync(
-                singleAccount.pda.seeds.map(
-                  (seed) =>
-                    seed.kind === "const"
-                      ? Buffer.from(seed.value)
-                      : seed.kind === "account"
-                      ? dependees[seed.path].toBuffer()
-                      : Buffer.from([]) // TODO: seed.kind === "args", not handled yet
-                ),
-                deriveFrom(
-                  dependees,
-                  singleAccount.pda.program,
-                  contractAddress?.address
-                )
-              );
-              changed ||= setAccountValue(
-                singleAccount.name,
-                derivedAccount.toString()
-              );
+            if (notEnoughDependees) {
+              // Not enough dependees to calculate this account, clear current value
+              changed ||= setAccountValue(singleAccount.name, undefined);
+              continue;
             }
+
+            // Calculate derived account from dependees
+            const [derivedAccount] = PublicKey.findProgramAddressSync(
+              singleAccount.pda.seeds.map(
+                (seed) =>
+                  seed.kind === "const"
+                    ? Buffer.from(seed.value)
+                    : seed.kind === "account"
+                    ? dependees[seed.path].toBuffer()
+                    : Buffer.from([]) // TODO: seed.kind === "args", not handled yet
+              ),
+              deriveFrom(
+                dependees,
+                singleAccount.pda.program,
+                contractAddress?.address
+              )
+            );
+            changed ||= setAccountValue(
+              singleAccount.name,
+              derivedAccount.toString()
+            );
           }
-      } while (changed);
-    }
+        }
+    } while (changed);
   };
 
   const deploy = async (
@@ -243,7 +246,7 @@ const SolanaInstructionForm: React.FC<{
       );
       const accounts = Object.fromEntries(
         Object.entries(params[ACCOUNT_PARAM] || {}).map(([key, value]) => [
-          key,
+          camelcase(key),
           new PublicKey(value),
         ])
       );
@@ -275,7 +278,6 @@ const SolanaInstructionForm: React.FC<{
   };
 
   const updateFormAccount = async (
-    instructionName: string,
     accountName: string,
     accountOption: AccountOption
   ) => {
@@ -294,8 +296,7 @@ const SolanaInstructionForm: React.FC<{
       }
 
       // Set it in the form and auto fill others if necessary
-      if (setAccountValue(accountName, accountValue))
-        autoFillAccounts(instructionName);
+      if (setAccountValue(accountName, accountValue)) autoFillAccounts();
     } catch (e) {
       notification.error({
         message: e instanceof Error ? e.message : "Unknown error",
@@ -322,9 +323,9 @@ const SolanaInstructionForm: React.FC<{
               key={account.name}
               account={account}
               disabled={loading}
-              onInputChanged={() => autoFillAccounts(instruction.name)}
+              onInputChanged={() => autoFillAccounts()}
               onAccountOptionChanged={(option) =>
-                updateFormAccount(instruction.name, account.name, option)
+                updateFormAccount(account.name, option)
               }
             />
           ))}
