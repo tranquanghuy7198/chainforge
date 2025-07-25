@@ -42,6 +42,7 @@ const SolanaInstructionForm: React.FC<{
   wallet?: Wallet;
   blockchain?: Blockchain;
   instruction: IdlInstruction;
+  setFormData: (formData: Record<string, Record<string, string>>) => void;
   saveDeployedContract: (blockchain: Blockchain, address: string) => void;
 }> = ({
   action,
@@ -50,6 +51,7 @@ const SolanaInstructionForm: React.FC<{
   wallet,
   blockchain,
   instruction,
+  setFormData,
   saveDeployedContract,
 }) => {
   const [form] = useForm();
@@ -149,6 +151,7 @@ const SolanaInstructionForm: React.FC<{
           }
         }
     } while (changed);
+    setFormData(form.getFieldsValue());
   };
 
   const deploy = async (
