@@ -13,30 +13,22 @@ const SolanaFullInstructionForm: React.FC<{
   contractAddress?: ContractAddress;
   wallet?: Wallet;
   blockchain?: Blockchain;
-  instruction: IdlInstruction;
-  writeFull: boolean;
-  setWriteFull: () => void;
-}> = ({
-  contractAddress,
-  wallet,
-  blockchain,
-  instruction,
-  writeFull,
-  setWriteFull,
-}) => {
+  instruction?: IdlInstruction;
+  onClose: () => void;
+}> = ({ contractAddress, wallet, blockchain, instruction, onClose }) => {
   return (
     <Drawer
       width={1000}
       closable={true}
       title={
         <AbiTitle
-          name={instruction.name}
+          name={instruction?.name ?? ""}
           address={contractAddress?.address ?? ""}
           blockchain={blockchain}
         />
       }
-      open={writeFull}
-      onClose={() => setWriteFull()}
+      open={instruction !== undefined}
+      onClose={onClose}
     ></Drawer>
   );
 };

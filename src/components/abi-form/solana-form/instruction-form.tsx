@@ -34,7 +34,6 @@ import { SolanaExtra } from "../../../utils/wallets/solana/utils";
 import lodash from "lodash";
 import "./solana-form.scss";
 import camelcase from "camelcase";
-import SolanaFullInstructionForm from "./full-instruction-form";
 
 const SolanaInstructionForm: React.FC<{
   action: AbiAction;
@@ -57,7 +56,6 @@ const SolanaInstructionForm: React.FC<{
   const [notification, contextHolder] = useNotification();
   const [loading, setLoading] = useState<boolean>(false);
   const [txResponse, setTxResponse] = useState<TxResponse>();
-  const [writeFull, setWriteFull] = useState<boolean>(false);
 
   useEffect(() => {
     autoFillAccounts();
@@ -366,7 +364,7 @@ const SolanaInstructionForm: React.FC<{
               <Button
                 type="link"
                 icon={<ThunderboltOutlined />}
-                onClick={() => setWriteFull(true)}
+                // onClick={() => setWriteFull(true)}
               >
                 Supportive Instructions
               </Button>
@@ -385,14 +383,6 @@ const SolanaInstructionForm: React.FC<{
           }))}
         />
       )}
-      <SolanaFullInstructionForm
-        contractAddress={contractAddress}
-        wallet={wallet}
-        blockchain={blockchain}
-        instruction={instruction}
-        writeFull={writeFull}
-        setWriteFull={() => setWriteFull(false)}
-      />
     </>
   );
 };

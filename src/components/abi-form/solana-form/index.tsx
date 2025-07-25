@@ -5,9 +5,9 @@ import {
   ContractTemplate,
 } from "../../../utils/constants";
 import { Wallet } from "../../../utils/wallets/wallet";
-import { Button, Divider, Form, Input, Space, Tag, Tooltip } from "antd";
+import { Space, Tag, Tooltip } from "antd";
 import { useState } from "react";
-import { Idl } from "../../../utils/types/solana";
+import { Idl, IdlInstruction } from "../../../utils/types/solana";
 import { PublicKey, TransactionInstruction } from "@solana/web3.js";
 import CollapseForm from "../collapse-form";
 import "./solana-form.scss";
@@ -16,6 +16,7 @@ import { BN } from "@coral-xyz/anchor";
 import SolanaInstructionForm from "./instruction-form";
 import { ThunderboltTwoTone } from "@ant-design/icons";
 import { DEPLOYMENT_INSTRUCTION, getFullInstructions } from "./utils";
+import SolanaFullInstructionForm from "./full-instruction-form";
 
 type TokenApprovalInstruction = {
   account: string;
@@ -39,6 +40,7 @@ const SolanaForm: React.FC<{
   wallet,
   blockchain,
 }) => {
+  const [writeFull, setWriteFull] = useState<IdlInstruction>();
   const [supportiveInstructions, setSupportiveInstructions] = useState<
     Record<string, Partial<TokenApprovalInstruction>[]>
   >({});
@@ -115,73 +117,30 @@ const SolanaForm: React.FC<{
             extra:
               action === AbiAction.Write ? (
                 <Tooltip title="Supportive Instructions" placement="left">
-                  <ThunderboltTwoTone />
+                  <ThunderboltTwoTone
+                    onClick={() => setWriteFull(instruction)}
+                  />
                 </Tooltip>
               ) : undefined,
             children: (
-              <>
-                {(supportiveInstructions[instruction.name] || []).map(
-                  (supportiveInstruction, index) => (
-                    <div key={index}>
-                      <Divider
-                        size="small"
-                        dashed
-                        orientation="left"
-                        orientationMargin={0}
-                        className="instruction-divider"
-                      >
-                        Token Approval [beta]
-                      </Divider>
-                      <Form
-                        onFinish={(values) =>
-                          setTokenApproval(instruction.name, index, values)
-                        }
-                      >
-                        <Form.Item name="account" label="Account">
-                          <Input defaultValue={supportiveInstruction.account} />
-                        </Form.Item>
-                        <Form.Item name="delegate" label="Delegate">
-                          <Input
-                            defaultValue={supportiveInstruction.delegate}
-                          />
-                        </Form.Item>
-                        <Form.Item name="owner" label="Owner">
-                          <Input defaultValue={supportiveInstruction.owner} />
-                        </Form.Item>
-                        <Form.Item name="amount" label="Amount">
-                          <Input defaultValue={supportiveInstruction.amount} />
-                        </Form.Item>
-                        <Form.Item>
-                          <Button htmlType="submit">Confirm</Button>
-                        </Form.Item>
-                      </Form>
-                    </div>
-                  )
-                )}
-                {(supportiveInstructions[instruction.name] || []).length >
-                  0 && (
-                  <Divider
-                    size="small"
-                    dashed
-                    orientation="left"
-                    orientationMargin={0}
-                    className="instruction-divider"
-                  >
-                    {instruction.name}
-                  </Divider>
-                )}
-                <SolanaInstructionForm
-                  action={action}
-                  contractTemplate={contractTemplate}
-                  contractAddress={contractAddress}
-                  wallet={wallet}
-                  blockchain={blockchain}
-                  instruction={instruction}
-                  saveDeployedContract={saveDeployedContract}
-                />
-              </>
+              <SolanaInstructionForm
+                action={action}
+                contractTemplate={contractTemplate}
+                contractAddress={contractAddress}
+                wallet={wallet}
+                blockchain={blockchain}
+                instruction={instruction}
+                saveDeployedContract={saveDeployedContract}
+              />
             ),
           }))}
+      />
+      <SolanaFullInstructionForm
+        contractAddress={contractAddress}
+        wallet={wallet}
+        blockchain={blockchain}
+        instruction={writeFull}
+        onClose={() => setWriteFull(undefined)}
       />
     </>
   );
