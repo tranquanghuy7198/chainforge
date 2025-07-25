@@ -34,6 +34,7 @@ import { SolanaExtra } from "../../../utils/wallets/solana/utils";
 import useNotification from "antd/es/notification/useNotification";
 import camelcase from "camelcase";
 import Paragraph from "antd/es/typography/Paragraph";
+import TransactionResult from "../tx-response";
 
 type TokenApprovalInstruction = {
   account: string;
@@ -60,6 +61,7 @@ const SolanaForm: React.FC<{
   const [writeFull, setWriteFull] = useState<IdlInstruction>();
   const [loading, setLoading] = useState<boolean>(false);
   const [notification, contextHolder] = useNotification();
+  const [txResps, setTxResps] = useState<Record<string, TxResponse>>({});
   const [supportiveInstructions, setSupportiveInstructions] = useState<
     Record<string, Partial<TokenApprovalInstruction>[]>
   >({});
@@ -184,7 +186,8 @@ const SolanaForm: React.FC<{
 
     // Pre-tx UI handling
     setLoading(true);
-    setTxResponse(undefined);
+    const { [instruction.name]: _, ...newTxResponses } = txResps;
+    setTxResps(newTxResponses);
 
     // Execute
     try {
@@ -208,7 +211,7 @@ const SolanaForm: React.FC<{
         response = await read(wallet, blockchain, instruction, args, accounts);
       else if (action === AbiAction.Write)
         response = await write(wallet, blockchain, instruction, args, accounts);
-      setTxResponse(response);
+      if (response) setTxResps({ ...txResps, [instruction.name]: response });
     } catch (e) {
       notification.error({
         message: "Execution Failed",
@@ -284,7 +287,7 @@ const SolanaForm: React.FC<{
                 <Button
                   type="primary"
                   htmlType="submit"
-                  // loading={loading}
+                  loading={loading}
                   icon={
                     action === AbiAction.Deploy ? (
                       <CloudUploadOutlined />
@@ -297,16 +300,8 @@ const SolanaForm: React.FC<{
                 >
                   {capitalize(action.toString())}
                 </Button>
-                {txResponse && (
-                  <Descriptions
-                    bordered
-                    size="small"
-                    items={Object.entries(txResponse).map(([key, value]) => ({
-                      key,
-                      label: capitalize(key),
-                      children: value,
-                    }))}
-                  />
+                {instruction.name in txResps && (
+                  <TransactionResult txResponse={txResps[instruction.name]} />
                 )}
               </>
             ),
