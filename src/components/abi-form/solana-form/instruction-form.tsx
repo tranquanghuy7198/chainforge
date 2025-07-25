@@ -1,63 +1,44 @@
-import { Button, Descriptions, Form, Input } from "antd";
-import React, { useEffect, useState } from "react";
+import { Form, Input } from "antd";
+import React, { useEffect } from "react";
 import { Idl, IdlInstruction } from "../../../utils/types/solana";
 import SolanaAccountInput from "./account-input";
 import {
-  AbiAction,
   Blockchain,
   ContractAddress,
   ContractTemplate,
-  TxResponse,
 } from "../../../utils/constants";
-import {
-  CloudUploadOutlined,
-  EditOutlined,
-  EyeOutlined,
-  ThunderboltOutlined,
-} from "@ant-design/icons";
-import { capitalize } from "../../../utils/utils";
 import useNotification from "antd/es/notification/useNotification";
 import { PublicKey } from "@solana/web3.js";
 import { Wallet } from "../../../utils/wallets/wallet";
 import { useForm } from "antd/es/form/Form";
-import Paragraph from "antd/es/typography/Paragraph";
 import {
   ACCOUNT_PARAM,
   AccountOption,
   ARG_PARAM,
   deriveFrom,
   deserializeAccountData,
-  SolanaIdlParser,
   stringifyArgType,
 } from "./utils";
-import { SolanaExtra } from "../../../utils/wallets/solana/utils";
 import lodash from "lodash";
 import "./solana-form.scss";
-import camelcase from "camelcase";
 
 const SolanaInstructionForm: React.FC<{
-  action: AbiAction;
   contractTemplate: ContractTemplate;
   contractAddress?: ContractAddress;
   wallet?: Wallet;
   blockchain?: Blockchain;
   instruction: IdlInstruction;
-  setFormData: (formData: Record<string, Record<string, string>>) => void;
-  saveDeployedContract: (blockchain: Blockchain, address: string) => void;
+  disabled: boolean;
 }> = ({
-  action,
   contractTemplate,
   contractAddress,
   wallet,
   blockchain,
   instruction,
-  setFormData,
-  saveDeployedContract,
+  disabled,
 }) => {
   const [form] = useForm();
   const [notification, contextHolder] = useNotification();
-  const [loading, setLoading] = useState<boolean>(false);
-  const [txResponse, setTxResponse] = useState<TxResponse>();
 
   useEffect(() => {
     autoFillAccounts();
@@ -151,133 +132,6 @@ const SolanaInstructionForm: React.FC<{
           }
         }
     } while (changed);
-    setFormData(form.getFieldsValue());
-  };
-
-  const deploy = async (
-    wallet: Wallet,
-    blockchain: Blockchain
-  ): Promise<TxResponse> => {
-    const response = await wallet.deploy(
-      blockchain,
-      contractTemplate.abi,
-      contractTemplate.bytecode,
-      null,
-      { programKeypair: contractTemplate.programKeypair } as SolanaExtra
-    );
-    saveDeployedContract(blockchain, response.contractAddress!);
-    return response;
-  };
-
-  const read = async (
-    wallet: Wallet,
-    blockchain: Blockchain,
-    instruction: IdlInstruction,
-    args: any[],
-    accounts: Record<string, PublicKey>
-  ): Promise<TxResponse | undefined> => {
-    if (!contractAddress) {
-      notification.error({
-        message: "No contract selected",
-        description: "You must select a contract first",
-      });
-      return;
-    }
-    return await wallet.readContract(
-      blockchain,
-      contractAddress.address,
-      contractTemplate.abi,
-      camelcase(instruction.name),
-      [args, accounts]
-    );
-  };
-
-  const write = async (
-    wallet: Wallet,
-    blockchain: Blockchain,
-    instruction: IdlInstruction,
-    args: any[],
-    accounts: Record<string, PublicKey>
-  ): Promise<TxResponse | undefined> => {
-    if (!contractAddress) {
-      notification.error({
-        message: "No contract selected",
-        description: "You must select a contract first",
-      });
-      return;
-    }
-    return await wallet.writeContract(
-      blockchain,
-      contractAddress.address,
-      contractTemplate.abi,
-      camelcase(instruction.name),
-      [args, accounts],
-      {} as SolanaExtra
-    );
-  };
-
-  const execute = async (
-    instruction: IdlInstruction,
-    params: Record<string, Record<string, string>>
-  ) => {
-    // Check for necessary information
-    if (!wallet) {
-      notification.error({
-        message: "No wallet selected",
-        description: "You must select a wallet first",
-      });
-      return;
-    }
-    if (!blockchain) {
-      notification.error({
-        message: "No blockchain selected",
-        description: "You must select a blockchain first",
-      });
-      return;
-    }
-
-    // Pre-tx UI handling
-    setLoading(true);
-    setTxResponse(undefined);
-
-    // Execute
-    try {
-      // Prepare args and accounts
-      const argParser = new SolanaIdlParser(contractTemplate.abi as Idl);
-      const args = instruction.args.map((arg) =>
-        argParser.parseValue((params[ARG_PARAM] || {})[arg.name], arg.type)
-      );
-      const accounts = Object.fromEntries(
-        Object.entries(params[ACCOUNT_PARAM] || {}).map(([key, value]) => [
-          camelcase(key),
-          new PublicKey(value),
-        ])
-      );
-
-      // Execute in wallet
-      let response: TxResponse | undefined;
-      if (action === AbiAction.Deploy)
-        response = await deploy(wallet, blockchain);
-      else if (action === AbiAction.Read)
-        response = await read(wallet, blockchain, instruction, args, accounts);
-      else if (action === AbiAction.Write)
-        response = await write(wallet, blockchain, instruction, args, accounts);
-      setTxResponse(response);
-    } catch (e) {
-      notification.error({
-        message: "Execution Failed",
-        description: (
-          <Paragraph
-            ellipsis={{ rows: 4, expandable: true, symbol: "View Full" }}
-          >
-            {e instanceof Error ? e.message : String(e)}
-          </Paragraph>
-        ),
-      });
-    }
-
-    // Post-tx UI handling
-    setLoading(false);
   };
 
   const updateFormAccount = async (
@@ -310,12 +164,7 @@ const SolanaInstructionForm: React.FC<{
   return (
     <>
       {contextHolder}
-      <Form
-        form={form}
-        name={instruction.name}
-        layout="horizontal"
-        onFinish={(values) => execute(instruction, values)}
-      >
+      <Form form={form} name={instruction.name} layout="horizontal">
         {instruction.accounts
           .map((account) =>
             "accounts" in account ? account.accounts : [account]
@@ -325,7 +174,7 @@ const SolanaInstructionForm: React.FC<{
             <SolanaAccountInput
               key={account.name}
               account={account}
-              disabled={loading}
+              disabled={disabled}
               onInputChanged={() => autoFillAccounts()}
               onAccountOptionChanged={(option) =>
                 updateFormAccount(account.name, option)
@@ -341,51 +190,11 @@ const SolanaInstructionForm: React.FC<{
           >
             <Input
               placeholder={stringifyArgType(arg.type)}
-              disabled={loading}
+              disabled={disabled}
             />
           </Form.Item>
         ))}
-        <Form.Item>
-          <div className="instruction-actions">
-            <Button
-              type="primary"
-              htmlType="submit"
-              loading={loading}
-              icon={
-                action === AbiAction.Deploy ? (
-                  <CloudUploadOutlined />
-                ) : action === AbiAction.Read ? (
-                  <EyeOutlined />
-                ) : (
-                  <EditOutlined />
-                )
-              }
-            >
-              {capitalize(action.toString())}
-            </Button>
-            {action === AbiAction.Write && (
-              <Button
-                type="link"
-                icon={<ThunderboltOutlined />}
-                // onClick={() => setWriteFull(true)}
-              >
-                Supportive Instructions
-              </Button>
-            )}
-          </div>
-        </Form.Item>
       </Form>
-      {txResponse && (
-        <Descriptions
-          bordered
-          size="small"
-          items={Object.entries(txResponse).map(([key, value]) => ({
-            key,
-            label: capitalize(key),
-            children: value,
-          }))}
-        />
-      )}
     </>
   );
 };
