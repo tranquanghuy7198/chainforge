@@ -184,7 +184,7 @@ const SolanaInstructionForm: React.FC<{
       blockchain,
       contractAddress.address,
       contractTemplate.abi,
-      instruction.name,
+      camelcase(instruction.name),
       [args, accounts]
     );
   };
@@ -207,7 +207,7 @@ const SolanaInstructionForm: React.FC<{
       blockchain,
       contractAddress.address,
       contractTemplate.abi,
-      instruction.name,
+      camelcase(instruction.name),
       [args, accounts],
       {} as SolanaExtra
     );
