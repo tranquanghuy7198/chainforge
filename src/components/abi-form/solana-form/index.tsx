@@ -3,6 +3,7 @@ import {
   Blockchain,
   ContractAddress,
   ContractTemplate,
+  TxResponse,
 } from "../../../utils/constants";
 import { Wallet } from "../../../utils/wallets/wallet";
 import { Button, Space, Tag, Tooltip } from "antd";
@@ -23,6 +24,9 @@ import {
 import { DEPLOYMENT_INSTRUCTION, getFullInstructions } from "./utils";
 import SolanaFullInstructionForm from "./full-instruction-form";
 import { capitalize } from "../../../utils/utils";
+import { SolanaExtra } from "../../../utils/wallets/solana/utils";
+import useNotification from "antd/es/notification/useNotification";
+import camelcase from "camelcase";
 
 type TokenApprovalInstruction = {
   account: string;
@@ -47,6 +51,8 @@ const SolanaForm: React.FC<{
   blockchain,
 }) => {
   const [writeFull, setWriteFull] = useState<IdlInstruction>();
+  const [loading, setLoading] = useState<boolean>(false);
+  const [notification, contextHolder] = useNotification();
   const [supportiveInstructions, setSupportiveInstructions] = useState<
     Record<string, Partial<TokenApprovalInstruction>[]>
   >({});
@@ -87,43 +93,43 @@ const SolanaForm: React.FC<{
     });
   };
 
-  // const deploy = async (
-  //   wallet: Wallet,
-  //   blockchain: Blockchain
-  // ): Promise<TxResponse> => {
-  //   const response = await wallet.deploy(
-  //     blockchain,
-  //     contractTemplate.abi,
-  //     contractTemplate.bytecode,
-  //     null,
-  //     { programKeypair: contractTemplate.programKeypair } as SolanaExtra
-  //   );
-  //   saveDeployedContract(blockchain, response.contractAddress!);
-  //   return response;
-  // };
+  const deploy = async (
+    wallet: Wallet,
+    blockchain: Blockchain
+  ): Promise<TxResponse> => {
+    const response = await wallet.deploy(
+      blockchain,
+      contractTemplate.abi,
+      contractTemplate.bytecode,
+      null,
+      { programKeypair: contractTemplate.programKeypair } as SolanaExtra
+    );
+    saveDeployedContract(blockchain, response.contractAddress!);
+    return response;
+  };
 
-  // const read = async (
-  //   wallet: Wallet,
-  //   blockchain: Blockchain,
-  //   instruction: IdlInstruction,
-  //   args: any[],
-  //   accounts: Record<string, PublicKey>
-  // ): Promise<TxResponse | undefined> => {
-  //   if (!contractAddress) {
-  //     notification.error({
-  //       message: "No contract selected",
-  //       description: "You must select a contract first",
-  //     });
-  //     return;
-  //   }
-  //   return await wallet.readContract(
-  //     blockchain,
-  //     contractAddress.address,
-  //     contractTemplate.abi,
-  //     camelcase(instruction.name),
-  //     [args, accounts]
-  //   );
-  // };
+  const read = async (
+    wallet: Wallet,
+    blockchain: Blockchain,
+    instruction: IdlInstruction,
+    args: any[],
+    accounts: Record<string, PublicKey>
+  ): Promise<TxResponse | undefined> => {
+    if (!contractAddress) {
+      notification.error({
+        message: "No contract selected",
+        description: "You must select a contract first",
+      });
+      return;
+    }
+    return await wallet.readContract(
+      blockchain,
+      contractAddress.address,
+      contractTemplate.abi,
+      camelcase(instruction.name),
+      [args, accounts]
+    );
+  };
 
   // const write = async (
   //   wallet: Wallet,
@@ -215,6 +221,7 @@ const SolanaForm: React.FC<{
 
   return (
     <>
+      {contextHolder}
       <CollapseForm
         items={getFullInstructions(contractTemplate.abi as Idl)
           .filter((instruction) => {
@@ -265,7 +272,7 @@ const SolanaForm: React.FC<{
                   wallet={wallet}
                   blockchain={blockchain}
                   instruction={instruction}
-                  disabled
+                  disabled={loading}
                 />
                 <Button
                   type="primary"

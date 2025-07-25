@@ -8,7 +8,7 @@ import {
   EvmAbiFunction,
   TxResponse,
 } from "../../utils/constants";
-import { Button, Descriptions, Form, Input, Space, Tag, Tooltip } from "antd";
+import { Button, Form, Input, Space, Tag, Tooltip } from "antd";
 import "./abi-form.scss";
 import { Wallet } from "../../utils/wallets/wallet";
 import { capitalize, evmFunctionSelector } from "../../utils/utils";
@@ -21,6 +21,7 @@ import useNotification from "antd/es/notification/useNotification";
 import Paragraph from "antd/es/typography/Paragraph";
 import { EthereumExtra } from "../../utils/wallets/ethereum/utils";
 import CollapseForm from "./collapse-form";
+import TransactionResult from "./tx-response";
 
 const PAYABLE_AMOUNT = "payable";
 
@@ -246,16 +247,8 @@ const EvmForm: React.FC<{
                   </Form.Item>
                 </Form>
                 {Object.keys(txResponses).includes(func.name || func.type) && (
-                  <Descriptions
-                    bordered
-                    size="small"
-                    items={Object.entries(
-                      txResponses[func.name || func.type]
-                    ).map(([key, value]) => ({
-                      key,
-                      label: capitalize(key),
-                      children: value,
-                    }))}
+                  <TransactionResult
+                    txResponse={txResponses[func.name || func.type]}
                   />
                 )}
               </>
