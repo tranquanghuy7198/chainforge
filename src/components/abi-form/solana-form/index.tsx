@@ -21,12 +21,19 @@ import {
   EyeOutlined,
   ThunderboltTwoTone,
 } from "@ant-design/icons";
-import { DEPLOYMENT_INSTRUCTION, getFullInstructions } from "./utils";
+import {
+  ACCOUNT_PARAM,
+  ARG_PARAM,
+  DEPLOYMENT_INSTRUCTION,
+  getFullInstructions,
+  SolanaIdlParser,
+} from "./utils";
 import SolanaFullInstructionForm from "./full-instruction-form";
 import { capitalize } from "../../../utils/utils";
 import { SolanaExtra } from "../../../utils/wallets/solana/utils";
 import useNotification from "antd/es/notification/useNotification";
 import camelcase from "camelcase";
+import Paragraph from "antd/es/typography/Paragraph";
 
 type TokenApprovalInstruction = {
   account: string;
@@ -131,93 +138,93 @@ const SolanaForm: React.FC<{
     );
   };
 
-  // const write = async (
-  //   wallet: Wallet,
-  //   blockchain: Blockchain,
-  //   instruction: IdlInstruction,
-  //   args: any[],
-  //   accounts: Record<string, PublicKey>
-  // ): Promise<TxResponse | undefined> => {
-  //   if (!contractAddress) {
-  //     notification.error({
-  //       message: "No contract selected",
-  //       description: "You must select a contract first",
-  //     });
-  //     return;
-  //   }
-  //   return await wallet.writeContract(
-  //     blockchain,
-  //     contractAddress.address,
-  //     contractTemplate.abi,
-  //     camelcase(instruction.name),
-  //     [args, accounts],
-  //     {} as SolanaExtra
-  //   );
-  // };
+  const write = async (
+    wallet: Wallet,
+    blockchain: Blockchain,
+    instruction: IdlInstruction,
+    args: any[],
+    accounts: Record<string, PublicKey>
+  ): Promise<TxResponse | undefined> => {
+    if (!contractAddress) {
+      notification.error({
+        message: "No contract selected",
+        description: "You must select a contract first",
+      });
+      return;
+    }
+    return await wallet.writeContract(
+      blockchain,
+      contractAddress.address,
+      contractTemplate.abi,
+      camelcase(instruction.name),
+      [args, accounts],
+      {} as SolanaExtra
+    );
+  };
 
-  // const execute = async (
-  //   instruction: IdlInstruction,
-  //   params: Record<string, Record<string, string>>
-  // ) => {
-  //   // Check for necessary information
-  //   if (!wallet) {
-  //     notification.error({
-  //       message: "No wallet selected",
-  //       description: "You must select a wallet first",
-  //     });
-  //     return;
-  //   }
-  //   if (!blockchain) {
-  //     notification.error({
-  //       message: "No blockchain selected",
-  //       description: "You must select a blockchain first",
-  //     });
-  //     return;
-  //   }
+  const execute = async (
+    instruction: IdlInstruction,
+    params: Record<string, Record<string, string>>
+  ) => {
+    // Check for necessary information
+    if (!wallet) {
+      notification.error({
+        message: "No wallet selected",
+        description: "You must select a wallet first",
+      });
+      return;
+    }
+    if (!blockchain) {
+      notification.error({
+        message: "No blockchain selected",
+        description: "You must select a blockchain first",
+      });
+      return;
+    }
 
-  //   // Pre-tx UI handling
-  //   setLoading(true);
-  //   setTxResponse(undefined);
+    // Pre-tx UI handling
+    setLoading(true);
+    setTxResponse(undefined);
 
-  //   // Execute
-  //   try {
-  //     // Prepare args and accounts
-  //     const argParser = new SolanaIdlParser(contractTemplate.abi as Idl);
-  //     const args = instruction.args.map((arg) =>
-  //       argParser.parseValue((params[ARG_PARAM] || {})[arg.name], arg.type)
-  //     );
-  //     const accounts = Object.fromEntries(
-  //       Object.entries(params[ACCOUNT_PARAM] || {}).map(([key, value]) => [
-  //         camelcase(key),
-  //         new PublicKey(value),
-  //       ])
-  //     );
+    // Execute
+    try {
+      // Prepare args and accounts
+      const argParser = new SolanaIdlParser(contractTemplate.abi as Idl);
+      const args = instruction.args.map((arg) =>
+        argParser.parseValue((params[ARG_PARAM] || {})[arg.name], arg.type)
+      );
+      const accounts = Object.fromEntries(
+        Object.entries(params[ACCOUNT_PARAM] || {}).map(([key, value]) => [
+          camelcase(key),
+          new PublicKey(value),
+        ])
+      );
 
-  //     // Execute in wallet
-  //     let response: TxResponse | undefined;
-  //     if (action === AbiAction.Deploy)
-  //       response = await deploy(wallet, blockchain);
-  //     else if (action === AbiAction.Read)
-  //       response = await read(wallet, blockchain, instruction, args, accounts);
-  //     else if (action === AbiAction.Write)
-  //       response = await write(wallet, blockchain, instruction, args, accounts);
-  //     setTxResponse(response);
-  //   } catch (e) {
-  //     notification.error({
-  //       message: "Execution Failed",
-  //       description: (
-  //         <Paragraph
-  //           ellipsis={{ rows: 4, expandable: true, symbol: "View Full" }}
-  //         >
-  //           {e instanceof Error ? e.message : String(e)}
-  //         </Paragraph>
-  //       ),
-  //     });
-  //   }
+      // Execute in wallet
+      let response: TxResponse | undefined;
+      if (action === AbiAction.Deploy)
+        response = await deploy(wallet, blockchain);
+      else if (action === AbiAction.Read)
+        response = await read(wallet, blockchain, instruction, args, accounts);
+      else if (action === AbiAction.Write)
+        response = await write(wallet, blockchain, instruction, args, accounts);
+      setTxResponse(response);
+    } catch (e) {
+      notification.error({
+        message: "Execution Failed",
+        description: (
+          <Paragraph
+            ellipsis={{ rows: 4, expandable: true, symbol: "View Full" }}
+          >
+            {e instanceof Error ? e.message : String(e)}
+          </Paragraph>
+        ),
+      });
+    }
 
-  //   // Post-tx UI handling
-  //   setLoading(false);
-  // };
+    // Post-tx UI handling
+    setLoading(false);
+  };
 
   return (
     <>
@@ -290,7 +297,7 @@ const SolanaForm: React.FC<{
                 >
                   {capitalize(action.toString())}
                 </Button>
-                {/* {txResponse && (
+                {txResponse && (
                   <Descriptions
                     bordered
                     size="small"
@@ -300,7 +307,7 @@ const SolanaForm: React.FC<{
                       children: value,
                     }))}
                   />
-                )} */}
+                )}
               </>
             ),
           }))}
