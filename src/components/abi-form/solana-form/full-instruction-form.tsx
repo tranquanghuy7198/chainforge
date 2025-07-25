@@ -10,19 +10,27 @@ import { Wallet } from "../../../utils/wallets/wallet";
 import { IdlInstruction } from "../../../utils/types/solana";
 
 const SolanaFullInstructionForm: React.FC<{
+  contractTemplate: ContractTemplate;
   contractAddress?: ContractAddress;
   wallet?: Wallet;
   blockchain?: Blockchain;
   instruction?: IdlInstruction;
   onClose: () => void;
-}> = ({ contractAddress, wallet, blockchain, instruction, onClose }) => {
+}> = ({
+  contractTemplate,
+  contractAddress,
+  wallet,
+  blockchain,
+  instruction,
+  onClose,
+}) => {
   return (
     <Drawer
       width={1000}
       closable={true}
       title={
         <AbiTitle
-          name={instruction?.name ?? ""}
+          name={`${instruction?.name}@${contractTemplate.name}`}
           address={contractAddress?.address ?? ""}
           blockchain={blockchain}
         />

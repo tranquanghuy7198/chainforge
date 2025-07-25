@@ -118,7 +118,10 @@ const SolanaForm: React.FC<{
               action === AbiAction.Write ? (
                 <Tooltip title="Supportive Instructions" placement="left">
                   <ThunderboltTwoTone
-                    onClick={() => setWriteFull(instruction)}
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      setWriteFull(instruction);
+                    }}
                   />
                 </Tooltip>
               ) : undefined,
@@ -136,6 +139,7 @@ const SolanaForm: React.FC<{
           }))}
       />
       <SolanaFullInstructionForm
+        contractTemplate={contractTemplate}
         contractAddress={contractAddress}
         wallet={wallet}
         blockchain={blockchain}
