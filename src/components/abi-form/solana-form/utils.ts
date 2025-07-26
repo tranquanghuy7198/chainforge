@@ -17,6 +17,8 @@ export const DEPLOYMENT_INSTRUCTION = "deploy";
 export const ACCOUNT_PARAM = "account";
 export const ARG_PARAM = "arg";
 
+export type IxRawData = Record<string, Record<string, string>>;
+
 export enum AccountOption {
   Custom = "custom-account",
   Wallet = "wallet-account",

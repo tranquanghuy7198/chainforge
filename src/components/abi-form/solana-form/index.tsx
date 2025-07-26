@@ -26,6 +26,7 @@ import {
   ARG_PARAM,
   DEPLOYMENT_INSTRUCTION,
   getFullInstructions,
+  IxRawData,
   SolanaIdlParser,
 } from "./utils";
 import SolanaFullInstructionForm from "./full-instruction-form";
@@ -164,10 +165,7 @@ const SolanaForm: React.FC<{
     );
   };
 
-  const execute = async (
-    instruction: IdlInstruction,
-    params: Record<string, Record<string, string>>
-  ) => {
+  const execute = async (instruction: IdlInstruction, params: IxRawData) => {
     // Check for necessary information
     if (!wallet) {
       notification.error({
