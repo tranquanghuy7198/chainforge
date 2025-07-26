@@ -46,7 +46,7 @@ const SolanaAdvancedInstructionForm: React.FC<{
   const [notification, contextHolder] = useNotification();
   const [selectedWallet, setWallet] = useState<Wallet | undefined>(wallet);
   const [instructions, setInstructions] = useState<SolanaInstruction[]>([]);
-  const [displayedIx, setDisplayedIx] = useState<string>();
+  const [selectedIx, setSelectedIx] = useState<string>();
   const [loading, setLoading] = useState<boolean>(false);
   const [txResp, setTxResp] = useState<TxResponse>();
 
@@ -72,7 +72,7 @@ const SolanaAdvancedInstructionForm: React.FC<{
   const resetAndClose = () => {
     setWallet(wallet);
     setInstructions([]);
-    setDisplayedIx(undefined);
+    setSelectedIx(undefined);
     setLoading(false);
     setTxResp(undefined);
     onClose();
@@ -81,20 +81,24 @@ const SolanaAdvancedInstructionForm: React.FC<{
   const addInstruction = (ix: SolanaInstruction) => {
     const newId = ix.id || v4();
     setInstructions([{ ...ix, id: newId }, ...instructions]);
-    setDisplayedIx(newId); // auto focus on this new inxtruction
+    setSelectedIx(newId); // auto focus on this new instruction
   };
 
   const removeInstruction = (id: string) => {
     setInstructions(instructions.filter((ix) => ix.id !== id));
-    setDisplayedIx(
-      instructions.length > 0 ? instructions[0].id : instruction?.name
+    setSelectedIx(
+      id !== selectedIx
+        ? selectedIx
+        : instructions.length > 0
+        ? instructions[0].id
+        : instruction?.name
     );
   };
 
   const setIxRawData = (data: IxRawData) => {
     setInstructions(
       instructions.map((instruction) =>
-        instruction.id === displayedIx
+        instruction.id === selectedIx
           ? { ...instruction, rawData: data }
           : instruction
       )
@@ -146,9 +150,9 @@ const SolanaAdvancedInstructionForm: React.FC<{
                     key={ix.id}
                     id={ix.id}
                     name={ix.name}
-                    selected={ix.id === displayedIx}
+                    selected={ix.id === selectedIx}
                     deletable={ix.id !== instruction?.name}
-                    onSelect={() => setDisplayedIx(ix.id)}
+                    onSelect={() => setSelectedIx(ix.id)}
                     onDelete={() => removeInstruction(ix.id)}
                   />
                 ))}
@@ -182,7 +186,7 @@ const SolanaAdvancedInstructionForm: React.FC<{
                 disabled={loading}
                 onIxDataChange={(data) => setIxRawData(data)}
                 instruction={
-                  instructions.find((ix) => ix.id === displayedIx)
+                  instructions.find((ix) => ix.id === selectedIx)
                     ?.idlInstruction || instruction
                 }
               />
