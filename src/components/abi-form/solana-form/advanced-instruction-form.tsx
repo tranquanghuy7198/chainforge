@@ -142,15 +142,15 @@ const SolanaAdvancedInstructionForm: React.FC<{
                 strategy={verticalListSortingStrategy}
               >
                 {instructions.map((ix) => (
-                  <div key={ix.id} onClick={() => setDisplayedIx(ix.id)}>
-                    <InstructionController
-                      key={ix.id}
-                      id={ix.id}
-                      name={ix.name}
-                      deletable={ix.id !== instruction?.name}
-                      onDelete={() => removeInstruction(ix.id)}
-                    />
-                  </div>
+                  <InstructionController
+                    key={ix.id}
+                    id={ix.id}
+                    name={ix.name}
+                    selected={ix.id === displayedIx}
+                    deletable={ix.id !== instruction?.name}
+                    onSelect={() => setDisplayedIx(ix.id)}
+                    onDelete={() => removeInstruction(ix.id)}
+                  />
                 ))}
               </SortableContext>
             </DndContext>

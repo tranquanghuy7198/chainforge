@@ -8,15 +8,18 @@ import { CloseOutlined, HolderOutlined } from "@ant-design/icons";
 const InstructionController: React.FC<{
   id: string;
   name: string;
+  selected: boolean;
   deletable: boolean;
+  onSelect: () => void;
   onDelete: () => void;
-}> = ({ id, name, deletable, onDelete }) => {
+}> = ({ id, name, selected, deletable, onSelect, onDelete }) => {
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id });
 
-  const style = {
+  const style: React.CSSProperties = {
     transform: CSS.Transform.toString(transform),
     transition,
+    backgroundColor: selected ? "#e6f4ff" : "#fff",
   };
 
   return (
@@ -26,6 +29,7 @@ const InstructionController: React.FC<{
       ref={setNodeRef}
       className="ix-controller"
       style={style}
+      onClick={onSelect}
       {...attributes}
     >
       <Flex align="center">
