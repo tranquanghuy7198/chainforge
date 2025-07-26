@@ -17,6 +17,7 @@ import {
   ARG_PARAM,
   deriveFrom,
   deserializeAccountData,
+  IxRawData,
   stringifyArgType,
 } from "./utils";
 import lodash from "lodash";
@@ -29,6 +30,7 @@ const SolanaInstructionForm: React.FC<{
   blockchain?: Blockchain;
   instruction: IdlInstruction;
   disabled: boolean;
+  onIxDataChange: (data: IxRawData) => void;
 }> = ({
   contractTemplate,
   contractAddress,
@@ -36,6 +38,7 @@ const SolanaInstructionForm: React.FC<{
   blockchain,
   instruction,
   disabled,
+  onIxDataChange,
 }) => {
   const [form] = useForm();
   const [notification, contextHolder] = useNotification();
@@ -132,6 +135,7 @@ const SolanaInstructionForm: React.FC<{
           }
         }
     } while (changed);
+    onIxDataChange(form.getFieldsValue());
   };
 
   const updateFormAccount = async (
