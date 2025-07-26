@@ -4,6 +4,22 @@
   font-size: 10px;
 }
 
+.ix-form {
+  width: 100%;
+}
+
+.inner-advanced-ix-form {
+  flex: 1;
+  height: 100%;
+  overflow-y: auto;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* Internet Explorer 10+ */
+
+  &::-webkit-scrollbar {
+    display: none; /* Safari and Chrome */
+  }
+}
+
 .instruction-actions {
   display: flex;
   flex-flow: row;

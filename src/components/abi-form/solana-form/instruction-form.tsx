@@ -166,7 +166,7 @@ const SolanaInstructionForm: React.FC<{
   };
 
   return (
-    <>
+    <div className="ix-form">
       {contextHolder}
       <Form form={form} name={instruction.name} layout="horizontal">
         {instruction.accounts
@@ -199,7 +199,7 @@ const SolanaInstructionForm: React.FC<{
           </Form.Item>
         ))}
       </Form>
-    </>
+    </div>
   );
 };
 

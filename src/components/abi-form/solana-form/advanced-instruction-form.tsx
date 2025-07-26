@@ -172,20 +172,22 @@ const SolanaAdvancedInstructionForm: React.FC<{
               </Button>
             </Dropdown>
           </Flex>
-          {instruction && (
-            <SolanaInstructionForm
-              contractTemplate={contractTemplate}
-              contractAddress={contractAddress}
-              wallet={selectedWallet}
-              blockchain={blockchain}
-              disabled={loading}
-              onIxDataChange={(data) => setIxRawData(data)}
-              instruction={
-                instructions.find((ix) => ix.id === displayedIx)
-                  ?.idlInstruction || instruction
-              }
-            />
-          )}
+          <div className="inner-advanced-ix-form">
+            {instruction && (
+              <SolanaInstructionForm
+                contractTemplate={contractTemplate}
+                contractAddress={contractAddress}
+                wallet={selectedWallet}
+                blockchain={blockchain}
+                disabled={loading}
+                onIxDataChange={(data) => setIxRawData(data)}
+                instruction={
+                  instructions.find((ix) => ix.id === displayedIx)
+                    ?.idlInstruction || instruction
+                }
+              />
+            )}
+          </div>
         </Flex>
       </Drawer>
     </>
