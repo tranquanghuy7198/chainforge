@@ -1,5 +1,5 @@
 import { Button, Drawer, Dropdown, Flex, Space } from "antd";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import AbiTitle from "../abi-title";
 import {
   AbiAction,
@@ -17,7 +17,7 @@ import AbiWalletForm from "../abi-wallet-form";
 import { EditOutlined, PlusOutlined } from "@ant-design/icons";
 import { capitalize } from "../../../utils/utils";
 import TransactionResult from "../tx-response";
-import { SupportiveInstruction, SUPPORTIVE_IXS } from "./supportive-ixs";
+import { SolanaInstruction, SUPPORTIVE_IXS } from "./supportive-ixs";
 import { v4 } from "uuid";
 import SolanaInstructionForm from "./instruction-form";
 import { closestCenter, DndContext, DragEndEvent } from "@dnd-kit/core";
@@ -45,15 +45,24 @@ const SolanaAdvancedInstructionForm: React.FC<{
 }) => {
   const [notification, contextHolder] = useNotification();
   const [selectedWallet, setWallet] = useState<Wallet | undefined>(wallet);
-  const [mainIxRawData, setMainIxRawData] = useState<IxRawData>({});
-  const [supportIxs, setSupportIxs] = useState<SupportiveInstruction[]>([]);
+  const [instructions, setInstructions] = useState<SolanaInstruction[]>([]);
   const [displayedIx, setDisplayedIx] = useState<string>();
   const [loading, setLoading] = useState<boolean>(false);
   const [txResp, setTxResp] = useState<TxResponse>();
 
+  useEffect(() => {
+    if (instruction)
+      addInstruction({
+        id: instruction.name,
+        name: instruction.name,
+        idlInstruction: instruction,
+        rawData: {},
+      });
+  }, [instruction]);
+
   const reorderTxs = (event: DragEndEvent) => {
     if (event.over && event.active.id !== event.over.id)
-      setSupportIxs((ixs) => {
+      setInstructions((ixs) => {
         const oldIndex = ixs.findIndex((ix) => ix.id === event.active.id);
         const newIndex = ixs.findIndex((ix) => ix.id === event.over?.id);
         return arrayMove(ixs, oldIndex, newIndex);
@@ -62,29 +71,27 @@ const SolanaAdvancedInstructionForm: React.FC<{
 
   const resetAndClose = () => {
     setWallet(wallet);
-    setMainIxRawData({});
-    setSupportIxs([]);
+    setInstructions([]);
+    setDisplayedIx(undefined);
     setLoading(false);
     setTxResp(undefined);
     onClose();
   };
 
-  const addSupportiveIx = (ix: SupportiveInstruction) => {
-    const newId = v4();
-    setSupportIxs([...supportIxs, { ...ix, id: newId }]);
+  const addInstruction = (ix: SolanaInstruction) => {
+    const newId = ix.id || v4();
+    setInstructions([{ ...ix, id: newId }, ...instructions]);
     setDisplayedIx(newId); // auto focus on this new inxtruction
   };
 
   const setIxRawData = (data: IxRawData) => {
-    if (displayedIx === instruction?.name) setMainIxRawData(data);
-    else
-      setSupportIxs(
-        supportIxs.map((instruction) =>
-          instruction.id === displayedIx
-            ? { ...instruction, rawData: data }
-            : instruction
-        )
-      );
+    setInstructions(
+      instructions.map((instruction) =>
+        instruction.id === displayedIx
+          ? { ...instruction, rawData: data }
+          : instruction
+      )
+    );
   };
 
   return (
@@ -124,33 +131,27 @@ const SolanaAdvancedInstructionForm: React.FC<{
               onDragEnd={reorderTxs}
             >
               <SortableContext
-                items={supportIxs}
+                items={instructions}
                 strategy={verticalListSortingStrategy}
               >
-                {supportIxs.map((supportIx) => (
-                  <div
-                    key={supportIx.id}
-                    onClick={() => setDisplayedIx(supportIx.id)}
-                  >
+                {instructions.map((ix) => (
+                  <div key={ix.id} onClick={() => setDisplayedIx(ix.id)}>
                     <InstructionController
-                      key={supportIx.id}
-                      id={supportIx.id}
-                      name={supportIx.name}
+                      key={ix.id}
+                      id={ix.id}
+                      name={ix.name}
                     />
                   </div>
                 ))}
               </SortableContext>
             </DndContext>
-            <div onClick={() => setDisplayedIx(instruction?.name)}>
-              {instruction?.name}
-            </div>
             <Dropdown
               trigger={["click"]}
               menu={{
                 items: SUPPORTIVE_IXS.map((ix) => ({
                   key: ix.id,
                   label: ix.name,
-                  onClick: () => addSupportiveIx(ix),
+                  onClick: () => addInstruction(ix),
                 })),
               }}
             >
@@ -171,7 +172,7 @@ const SolanaAdvancedInstructionForm: React.FC<{
               disabled={loading}
               onIxDataChange={(data) => setIxRawData(data)}
               instruction={
-                supportIxs.find((instruction) => instruction.id === displayedIx)
+                instructions.find((ix) => ix.id === displayedIx)
                   ?.idlInstruction || instruction
               }
             />

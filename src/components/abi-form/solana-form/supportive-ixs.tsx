@@ -1,5 +1,5 @@
 import { PublicKey, TransactionInstruction } from "@solana/web3.js";
-import { Idl, IdlInstruction } from "../../../utils/types/solana";
+import { IdlInstruction } from "../../../utils/types/solana";
 import { ACCOUNT_PARAM, ARG_PARAM, IxRawData } from "./utils";
 import {
   ASSOCIATED_TOKEN_PROGRAM_ID,
@@ -8,15 +8,15 @@ import {
 } from "@solana/spl-token";
 import { BN } from "@coral-xyz/anchor";
 
-export type SupportiveInstruction = {
+export type SolanaInstruction = {
   id: string;
   name: string;
   idlInstruction: IdlInstruction;
   rawData: IxRawData;
-  parseIx: (data: IxRawData) => TransactionInstruction;
+  parseIx?: (data: IxRawData) => TransactionInstruction;
 };
 
-const ApproveSplTokenIx: SupportiveInstruction = {
+const ApproveSplTokenIx: SolanaInstruction = {
   id: "",
   name: "Approve SPL Token",
   idlInstruction: {
