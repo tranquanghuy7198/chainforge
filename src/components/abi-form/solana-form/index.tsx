@@ -5,7 +5,7 @@ import {
   ContractTemplate,
 } from "../../../utils/constants";
 import { Wallet } from "../../../utils/wallets/wallet";
-import { Drawer, Space, Tag, Tooltip } from "antd";
+import { Space, Tag, Tooltip } from "antd";
 import { useState } from "react";
 import { Idl, IdlInstruction } from "../../../utils/types/solana";
 import { PublicKey, TransactionInstruction } from "@solana/web3.js";
@@ -17,7 +17,6 @@ import { ThunderboltTwoTone } from "@ant-design/icons";
 import { DEPLOYMENT_INSTRUCTION, getFullInstructions } from "./utils";
 import SolanaAdvancedInstructionForm from "./advanced-instruction-form";
 import SolanaBasicInstructionForm from "./basic-instruction-form";
-import AbiTitle from "../abi-title";
 
 type TokenApprovalInstruction = {
   account: string;
@@ -139,27 +138,14 @@ const SolanaForm: React.FC<{
             ),
           }))}
       />
-      <Drawer
-        width={1000}
-        closable={true}
-        title={
-          <AbiTitle
-            name={`${advancedIx?.name}@${contractTemplate.name}`}
-            address={contractAddress?.address ?? ""}
-            blockchain={blockchain}
-          />
-        }
-        open={advancedIx !== undefined}
+      <SolanaAdvancedInstructionForm
+        contractTemplate={contractTemplate}
+        contractAddress={contractAddress}
+        wallet={wallet}
+        blockchain={blockchain}
+        instruction={advancedIx}
         onClose={() => setAdvancedIx(undefined)}
-      >
-        <SolanaAdvancedInstructionForm
-          contractTemplate={contractTemplate}
-          contractAddress={contractAddress}
-          wallet={wallet}
-          blockchain={blockchain}
-          instruction={advancedIx}
-        />
-      </Drawer>
+      />
     </>
   );
 };
