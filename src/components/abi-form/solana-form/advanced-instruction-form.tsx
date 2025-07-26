@@ -14,12 +14,19 @@ import useNotification from "antd/es/notification/useNotification";
 import { IxRawData } from "./utils";
 import "./solana-form.scss";
 import AbiWalletForm from "../abi-wallet-form";
-import { DownOutlined, EditOutlined, PlusOutlined } from "@ant-design/icons";
+import { EditOutlined, PlusOutlined } from "@ant-design/icons";
 import { capitalize } from "../../../utils/utils";
 import TransactionResult from "../tx-response";
 import { SupportiveInstruction, SUPPORTIVE_IXS } from "./supportive-ixs";
 import { v4 } from "uuid";
 import SolanaInstructionForm from "./instruction-form";
+import { closestCenter, DndContext, DragEndEvent } from "@dnd-kit/core";
+import {
+  arrayMove,
+  SortableContext,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
+import InstructionController from "./ix-controller";
 
 const SolanaAdvancedInstructionForm: React.FC<{
   contractTemplate: ContractTemplate;
@@ -39,17 +46,24 @@ const SolanaAdvancedInstructionForm: React.FC<{
   const [notification, contextHolder] = useNotification();
   const [selectedWallet, setWallet] = useState<Wallet | undefined>(wallet);
   const [mainIxRawData, setMainIxRawData] = useState<IxRawData>({});
-  const [supportIxs, setSupportIxs] = useState<
-    Record<string, SupportiveInstruction>
-  >({});
+  const [supportIxs, setSupportIxs] = useState<SupportiveInstruction[]>([]);
   const [displayedIx, setDisplayedIx] = useState<string>();
   const [loading, setLoading] = useState<boolean>(false);
   const [txResp, setTxResp] = useState<TxResponse>();
 
+  const reorderTxs = (event: DragEndEvent) => {
+    if (event.over && event.active.id !== event.over.id)
+      setSupportIxs((ixs) => {
+        const oldIndex = ixs.findIndex((ix) => ix.id === event.active.id);
+        const newIndex = ixs.findIndex((ix) => ix.id === event.over?.id);
+        return arrayMove(ixs, oldIndex, newIndex);
+      });
+  };
+
   const resetAndClose = () => {
     setWallet(wallet);
     setMainIxRawData({});
-    setSupportIxs({});
+    setSupportIxs([]);
     setLoading(false);
     setTxResp(undefined);
     onClose();
@@ -57,17 +71,20 @@ const SolanaAdvancedInstructionForm: React.FC<{
 
   const addSupportiveIx = (ix: SupportiveInstruction) => {
     const newId = v4();
-    setSupportIxs({ ...supportIxs, [newId]: { ...ix, id: newId } });
+    setSupportIxs([...supportIxs, { ...ix, id: newId }]);
     setDisplayedIx(newId); // auto focus on this new inxtruction
   };
 
   const setIxRawData = (data: IxRawData) => {
-    if (displayedIx && displayedIx in supportIxs)
-      setSupportIxs({
-        ...supportIxs,
-        [displayedIx]: { ...supportIxs[displayedIx], rawData: data },
-      });
-    else if (displayedIx === instruction?.name) setMainIxRawData(data);
+    if (displayedIx === instruction?.name) setMainIxRawData(data);
+    else
+      setSupportIxs(
+        supportIxs.map((instruction) =>
+          instruction.id === displayedIx
+            ? { ...instruction, rawData: data }
+            : instruction
+        )
+      );
   };
 
   return (
@@ -102,14 +119,28 @@ const SolanaAdvancedInstructionForm: React.FC<{
               onWalletSelected={setWallet}
               onBlockchainSelected={() => {}} // no need to choose blockchain anymore
             />
-            {Object.values(supportIxs).map((supportIx) => (
-              <div
-                key={supportIx.id}
-                onClick={() => setDisplayedIx(supportIx.id)}
+            <DndContext
+              collisionDetection={closestCenter}
+              onDragEnd={reorderTxs}
+            >
+              <SortableContext
+                items={supportIxs}
+                strategy={verticalListSortingStrategy}
               >
-                {supportIx.name}
-              </div>
-            ))}
+                {supportIxs.map((supportIx) => (
+                  <div
+                    key={supportIx.id}
+                    onClick={() => setDisplayedIx(supportIx.id)}
+                  >
+                    <InstructionController
+                      key={supportIx.id}
+                      id={supportIx.id}
+                      name={supportIx.name}
+                    />
+                  </div>
+                ))}
+              </SortableContext>
+            </DndContext>
             <div onClick={() => setDisplayedIx(instruction?.name)}>
               {instruction?.name}
             </div>
@@ -137,13 +168,12 @@ const SolanaAdvancedInstructionForm: React.FC<{
               contractAddress={contractAddress}
               wallet={selectedWallet}
               blockchain={blockchain}
-              instruction={
-                displayedIx && displayedIx in supportIxs
-                  ? supportIxs[displayedIx].idlInstruction
-                  : instruction
-              }
               disabled={loading}
               onIxDataChange={(data) => setIxRawData(data)}
+              instruction={
+                supportIxs.find((instruction) => instruction.id === displayedIx)
+                  ?.idlInstruction || instruction
+              }
             />
           )}
         </Flex>

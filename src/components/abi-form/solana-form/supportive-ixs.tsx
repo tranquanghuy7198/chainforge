@@ -1,6 +1,6 @@
 import { PublicKey, TransactionInstruction } from "@solana/web3.js";
-import { Idl, IdlInstruction } from "../../../../utils/types/solana";
-import { ACCOUNT_PARAM, ARG_PARAM, IxRawData } from "../utils";
+import { Idl, IdlInstruction } from "../../../utils/types/solana";
+import { ACCOUNT_PARAM, ARG_PARAM, IxRawData } from "./utils";
 import {
   ASSOCIATED_TOKEN_PROGRAM_ID,
   createApproveInstruction,
