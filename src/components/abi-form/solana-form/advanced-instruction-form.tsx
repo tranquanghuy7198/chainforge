@@ -9,7 +9,7 @@ import {
 import { Wallet } from "../../../utils/wallets/wallet";
 import { IdlInstruction } from "../../../utils/types/solana";
 
-const SolanaFullInstructionForm: React.FC<{
+const SolanaAdvancedInstructionForm: React.FC<{
   contractTemplate: ContractTemplate;
   contractAddress?: ContractAddress;
   wallet?: Wallet;
@@ -41,4 +41,4 @@ const SolanaFullInstructionForm: React.FC<{
   );
 };
 
-export default SolanaFullInstructionForm;
+export default SolanaAdvancedInstructionForm;

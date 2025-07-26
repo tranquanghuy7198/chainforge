@@ -6,7 +6,7 @@ import {
   TxResponse,
 } from "../../../utils/constants";
 import { Wallet } from "../../../utils/wallets/wallet";
-import { Button, Space, Tag, Tooltip } from "antd";
+import { Space, Tag, Tooltip } from "antd";
 import { useState } from "react";
 import { Idl, IdlInstruction } from "../../../utils/types/solana";
 import { PublicKey, TransactionInstruction } from "@solana/web3.js";
@@ -14,13 +14,7 @@ import CollapseForm from "../collapse-form";
 import "./solana-form.scss";
 import { createApproveInstruction } from "@solana/spl-token";
 import { BN } from "@coral-xyz/anchor";
-import SolanaInstructionForm from "./instruction-form";
-import {
-  CloudUploadOutlined,
-  EditOutlined,
-  EyeOutlined,
-  ThunderboltTwoTone,
-} from "@ant-design/icons";
+import { ThunderboltTwoTone } from "@ant-design/icons";
 import {
   ACCOUNT_PARAM,
   ARG_PARAM,
@@ -29,13 +23,12 @@ import {
   IxRawData,
   SolanaIdlParser,
 } from "./utils";
-import SolanaFullInstructionForm from "./full-instruction-form";
-import { capitalize } from "../../../utils/utils";
+import SolanaAdvancedInstructionForm from "./advanced-instruction-form";
 import { SolanaExtra } from "../../../utils/wallets/solana/utils";
 import useNotification from "antd/es/notification/useNotification";
 import camelcase from "camelcase";
 import Paragraph from "antd/es/typography/Paragraph";
-import TransactionResult from "../tx-response";
+import SolanaBasicInstructionForm from "./basic-instruction-form";
 
 type TokenApprovalInstruction = {
   account: string;
@@ -273,39 +266,18 @@ const SolanaForm: React.FC<{
                 </Tooltip>
               ) : undefined,
             children: (
-              <>
-                <SolanaInstructionForm
-                  contractTemplate={contractTemplate}
-                  contractAddress={contractAddress}
-                  wallet={wallet}
-                  blockchain={blockchain}
-                  instruction={instruction}
-                  disabled={loading}
-                />
-                <Button
-                  type="primary"
-                  htmlType="submit"
-                  loading={loading}
-                  icon={
-                    action === AbiAction.Deploy ? (
-                      <CloudUploadOutlined />
-                    ) : action === AbiAction.Read ? (
-                      <EyeOutlined />
-                    ) : (
-                      <EditOutlined />
-                    )
-                  }
-                >
-                  {capitalize(action.toString())}
-                </Button>
-                {instruction.name in txResps && (
-                  <TransactionResult txResponse={txResps[instruction.name]} />
-                )}
-              </>
+              <SolanaBasicInstructionForm
+                action={action}
+                contractTemplate={contractTemplate}
+                contractAddress={contractAddress}
+                wallet={wallet}
+                blockchain={blockchain}
+                instruction={instruction}
+              />
             ),
           }))}
       />
-      <SolanaFullInstructionForm
+      <SolanaAdvancedInstructionForm
         contractTemplate={contractTemplate}
         contractAddress={contractAddress}
         wallet={wallet}
