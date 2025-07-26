@@ -3,10 +3,9 @@ import {
   Blockchain,
   ContractAddress,
   ContractTemplate,
-  TxResponse,
 } from "../../../utils/constants";
 import { Wallet } from "../../../utils/wallets/wallet";
-import { Space, Tag, Tooltip } from "antd";
+import { Drawer, Space, Tag, Tooltip } from "antd";
 import { useState } from "react";
 import { Idl, IdlInstruction } from "../../../utils/types/solana";
 import { PublicKey, TransactionInstruction } from "@solana/web3.js";
@@ -15,20 +14,10 @@ import "./solana-form.scss";
 import { createApproveInstruction } from "@solana/spl-token";
 import { BN } from "@coral-xyz/anchor";
 import { ThunderboltTwoTone } from "@ant-design/icons";
-import {
-  ACCOUNT_PARAM,
-  ARG_PARAM,
-  DEPLOYMENT_INSTRUCTION,
-  getFullInstructions,
-  IxRawData,
-  SolanaIdlParser,
-} from "./utils";
+import { DEPLOYMENT_INSTRUCTION, getFullInstructions } from "./utils";
 import SolanaAdvancedInstructionForm from "./advanced-instruction-form";
-import { SolanaExtra } from "../../../utils/wallets/solana/utils";
-import useNotification from "antd/es/notification/useNotification";
-import camelcase from "camelcase";
-import Paragraph from "antd/es/typography/Paragraph";
 import SolanaBasicInstructionForm from "./basic-instruction-form";
+import AbiTitle from "../abi-title";
 
 type TokenApprovalInstruction = {
   account: string;
@@ -52,10 +41,7 @@ const SolanaForm: React.FC<{
   wallet,
   blockchain,
 }) => {
-  const [writeFull, setWriteFull] = useState<IdlInstruction>();
-  const [loading, setLoading] = useState<boolean>(false);
-  const [notification, contextHolder] = useNotification();
-  const [txResps, setTxResps] = useState<Record<string, TxResponse>>({});
+  const [advancedIx, setAdvancedIx] = useState<IdlInstruction>();
   const [supportiveInstructions, setSupportiveInstructions] = useState<
     Record<string, Partial<TokenApprovalInstruction>[]>
   >({});
@@ -96,133 +82,8 @@ const SolanaForm: React.FC<{
     });
   };
 
-  const deploy = async (
-    wallet: Wallet,
-    blockchain: Blockchain
-  ): Promise<TxResponse> => {
-    const response = await wallet.deploy(
-      blockchain,
-      contractTemplate.abi,
-      contractTemplate.bytecode,
-      null,
-      { programKeypair: contractTemplate.programKeypair } as SolanaExtra
-    );
-    saveDeployedContract(blockchain, response.contractAddress!);
-    return response;
-  };
-
-  const read = async (
-    wallet: Wallet,
-    blockchain: Blockchain,
-    instruction: IdlInstruction,
-    args: any[],
-    accounts: Record<string, PublicKey>
-  ): Promise<TxResponse | undefined> => {
-    if (!contractAddress) {
-      notification.error({
-        message: "No contract selected",
-        description: "You must select a contract first",
-      });
-      return;
-    }
-    return await wallet.readContract(
-      blockchain,
-      contractAddress.address,
-      contractTemplate.abi,
-      camelcase(instruction.name),
-      [args, accounts]
-    );
-  };
-
-  const write = async (
-    wallet: Wallet,
-    blockchain: Blockchain,
-    instruction: IdlInstruction,
-    args: any[],
-    accounts: Record<string, PublicKey>
-  ): Promise<TxResponse | undefined> => {
-    if (!contractAddress) {
-      notification.error({
-        message: "No contract selected",
-        description: "You must select a contract first",
-      });
-      return;
-    }
-    return await wallet.writeContract(
-      blockchain,
-      contractAddress.address,
-      contractTemplate.abi,
-      camelcase(instruction.name),
-      [args, accounts],
-      {} as SolanaExtra
-    );
-  };
-
-  const execute = async (instruction: IdlInstruction, params: IxRawData) => {
-    // Check for necessary information
-    if (!wallet) {
-      notification.error({
-        message: "No wallet selected",
-        description: "You must select a wallet first",
-      });
-      return;
-    }
-    if (!blockchain) {
-      notification.error({
-        message: "No blockchain selected",
-        description: "You must select a blockchain first",
-      });
-      return;
-    }
-
-    // Pre-tx UI handling
-    setLoading(true);
-    const { [instruction.name]: _, ...newTxResponses } = txResps;
-    setTxResps(newTxResponses);
-
-    // Execute
-    try {
-      // Prepare args and accounts
-      const argParser = new SolanaIdlParser(contractTemplate.abi as Idl);
-      const args = instruction.args.map((arg) =>
-        argParser.parseValue((params[ARG_PARAM] || {})[arg.name], arg.type)
-      );
-      const accounts = Object.fromEntries(
-        Object.entries(params[ACCOUNT_PARAM] || {}).map(([key, value]) => [
-          camelcase(key),
-          new PublicKey(value),
-        ])
-      );
-
-      // Execute in wallet
-      let response: TxResponse | undefined;
-      if (action === AbiAction.Deploy)
-        response = await deploy(wallet, blockchain);
-      else if (action === AbiAction.Read)
-        response = await read(wallet, blockchain, instruction, args, accounts);
-      else if (action === AbiAction.Write)
-        response = await write(wallet, blockchain, instruction, args, accounts);
-      if (response) setTxResps({ ...txResps, [instruction.name]: response });
-    } catch (e) {
-      notification.error({
-        message: "Execution Failed",
-        description: (
-          <Paragraph
-            ellipsis={{ rows: 4, expandable: true, symbol: "View Full" }}
-          >
-            {e instanceof Error ? e.message : String(e)}
-          </Paragraph>
-        ),
-      });
-    }
-
-    // Post-tx UI handling
-    setLoading(false);
-  };
-
   return (
     <>
-      {contextHolder}
       <CollapseForm
         items={getFullInstructions(contractTemplate.abi as Idl)
           .filter((instruction) => {
@@ -260,7 +121,7 @@ const SolanaForm: React.FC<{
                   <ThunderboltTwoTone
                     onClick={(event) => {
                       event.stopPropagation();
-                      setWriteFull(instruction);
+                      setAdvancedIx(instruction);
                     }}
                   />
                 </Tooltip>
@@ -273,18 +134,32 @@ const SolanaForm: React.FC<{
                 wallet={wallet}
                 blockchain={blockchain}
                 instruction={instruction}
+                saveDeployedContract={saveDeployedContract}
               />
             ),
           }))}
       />
-      <SolanaAdvancedInstructionForm
-        contractTemplate={contractTemplate}
-        contractAddress={contractAddress}
-        wallet={wallet}
-        blockchain={blockchain}
-        instruction={writeFull}
-        onClose={() => setWriteFull(undefined)}
-      />
+      <Drawer
+        width={1000}
+        closable={true}
+        title={
+          <AbiTitle
+            name={`${advancedIx?.name}@${contractTemplate.name}`}
+            address={contractAddress?.address ?? ""}
+            blockchain={blockchain}
+          />
+        }
+        open={advancedIx !== undefined}
+        onClose={() => setAdvancedIx(undefined)}
+      >
+        <SolanaAdvancedInstructionForm
+          contractTemplate={contractTemplate}
+          contractAddress={contractAddress}
+          wallet={wallet}
+          blockchain={blockchain}
+          instruction={advancedIx}
+        />
+      </Drawer>
     </>
   );
 };
