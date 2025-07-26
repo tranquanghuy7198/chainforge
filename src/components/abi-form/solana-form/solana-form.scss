@@ -27,3 +27,31 @@
 .advanced-ix-footer {
   height: 50px;
 }
+
+.ix-controller {
+  margin-bottom: 10px;
+  color: $gray;
+  cursor: default;
+}
+
+.ix-drag {
+  margin-right: 10px;
+  height: max-content;
+  cursor: grab;
+  :active {
+    cursor: grabbing;
+  }
+}
+
+.ix-title {
+  flex: 1;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+  color: black;
+}
+
+.ix-close {
+  margin-left: 10px;
+  cursor: pointer;
+}

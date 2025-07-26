@@ -116,7 +116,7 @@ const SolanaForm: React.FC<{
             ),
             extra:
               action === AbiAction.Write ? (
-                <Tooltip title="Supportive Instructions" placement="left">
+                <Tooltip title="Advanced Mode">
                   <ThunderboltTwoTone
                     onClick={(event) => {
                       event.stopPropagation();

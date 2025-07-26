@@ -84,6 +84,13 @@ const SolanaAdvancedInstructionForm: React.FC<{
     setDisplayedIx(newId); // auto focus on this new inxtruction
   };
 
+  const removeInstruction = (id: string) => {
+    setInstructions(instructions.filter((ix) => ix.id !== id));
+    setDisplayedIx(
+      instructions.length > 0 ? instructions[0].id : instruction?.name
+    );
+  };
+
   const setIxRawData = (data: IxRawData) => {
     setInstructions(
       instructions.map((instruction) =>
@@ -140,6 +147,8 @@ const SolanaAdvancedInstructionForm: React.FC<{
                       key={ix.id}
                       id={ix.id}
                       name={ix.name}
+                      deletable={ix.id !== instruction?.name}
+                      onDelete={() => removeInstruction(ix.id)}
                     />
                   </div>
                 ))}
