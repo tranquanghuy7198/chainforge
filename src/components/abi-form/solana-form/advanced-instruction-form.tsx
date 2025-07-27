@@ -264,7 +264,7 @@ const SolanaAdvancedInstructionForm: React.FC<{
               trigger={["click"]}
               menu={{
                 items: SUPPORTIVE_IXS.map((ix) => ({
-                  key: ix.id,
+                  key: ix.idlInstruction.name,
                   label: ix.name,
                   onClick: () => addInstruction(ix),
                 })),

@@ -4,6 +4,7 @@ import { ACCOUNT_PARAM, ARG_PARAM, IxRawData } from "./utils";
 import {
   ASSOCIATED_TOKEN_PROGRAM_ID,
   createApproveInstruction,
+  createAssociatedTokenAccountInstruction,
   TOKEN_PROGRAM_ID,
 } from "@solana/spl-token";
 import { BN } from "@coral-xyz/anchor";
@@ -16,7 +17,7 @@ export type SolanaInstruction = {
   parseIx?: (data: IxRawData) => TransactionInstruction;
 };
 
-const ApproveSplTokenIx: SolanaInstruction = {
+const APPROVE_SPL_TOKEN_IX: SolanaInstruction = {
   id: "",
   name: "Approve SPL Token",
   idlInstruction: {
@@ -55,4 +56,43 @@ const ApproveSplTokenIx: SolanaInstruction = {
     ),
 };
 
-export const SUPPORTIVE_IXS = [ApproveSplTokenIx];
+const CREATE_ATA_IX: SolanaInstruction = {
+  id: "",
+  name: "Create Associated Token Account",
+  idlInstruction: {
+    name: "createAssociatedTokenAccount",
+    discriminator: [1, 2, 3, 4, 5, 6, 7, 8], // TODO
+    accounts: [
+      { name: "payer", signer: true, writable: false },
+      { name: "owner", signer: false, writable: false },
+      { name: "mint", signer: false, writable: false },
+      {
+        name: "token",
+        signer: false,
+        writable: true,
+        pda: {
+          seeds: [
+            { kind: "account", path: "owner" },
+            { kind: "const", value: Array.from(TOKEN_PROGRAM_ID.toBytes()) },
+            { kind: "account", path: "mint" },
+          ],
+          program: {
+            kind: "const",
+            value: Array.from(ASSOCIATED_TOKEN_PROGRAM_ID.toBytes()),
+          },
+        },
+      },
+    ],
+    args: [],
+  },
+  rawData: {},
+  parseIx: (data: IxRawData) =>
+    createAssociatedTokenAccountInstruction(
+      new PublicKey(data[ACCOUNT_PARAM]["payer"]),
+      new PublicKey(data[ACCOUNT_PARAM]["token"]),
+      new PublicKey(data[ACCOUNT_PARAM]["owner"]),
+      new PublicKey(data[ACCOUNT_PARAM]["mint"])
+    ),
+};
+
+export const SUPPORTIVE_IXS = [APPROVE_SPL_TOKEN_IX, CREATE_ATA_IX];
