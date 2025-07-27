@@ -31,6 +31,10 @@ import camelcase from "camelcase";
 import { PublicKey, TransactionInstruction } from "@solana/web3.js";
 import { SolanaExtra } from "../../../utils/wallets/solana/utils";
 import Paragraph from "antd/es/typography/Paragraph";
+import {
+  restrictToVerticalAxis,
+  restrictToWindowEdges,
+} from "@dnd-kit/modifiers";
 
 const SolanaAdvancedInstructionForm: React.FC<{
   contractTemplate: ContractTemplate;
@@ -241,6 +245,7 @@ const SolanaAdvancedInstructionForm: React.FC<{
             />
             <DndContext
               collisionDetection={closestCenter}
+              modifiers={[restrictToVerticalAxis, restrictToWindowEdges]}
               onDragEnd={reorderTxs}
             >
               <SortableContext
