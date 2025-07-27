@@ -104,7 +104,7 @@ const SolanaBasicInstructionForm: React.FC<{
       contractTemplate.abi,
       camelcase(instruction.name),
       [args, accounts],
-      {} as SolanaExtra // For basic, no extra instructions
+      { instructions: [null] } as SolanaExtra // For basic, no extra instructions
     );
   };
 

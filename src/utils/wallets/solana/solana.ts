@@ -162,8 +162,9 @@ class Solana extends Wallet {
 
     // Prepare transaction
     const tx = new Transaction();
-    // TODO: first or last...
-    tx.add(...(extra.supportiveInstructions || []), programInstruction);
+    for (const ix of extra.instructions)
+      if (ix) tx.add(ix);
+      else tx.add(programInstruction);
 
     // Send transaction
     const signature = await this.provider.sendTransaction(tx, connection);

@@ -28,7 +28,7 @@ import {
 } from "@dnd-kit/sortable";
 import InstructionController from "./ix-controller";
 import camelcase from "camelcase";
-import { PublicKey } from "@solana/web3.js";
+import { PublicKey, TransactionInstruction } from "@solana/web3.js";
 import { SolanaExtra } from "../../../utils/wallets/solana/utils";
 import Paragraph from "antd/es/typography/Paragraph";
 
@@ -136,6 +136,13 @@ const SolanaAdvancedInstructionForm: React.FC<{
       });
       return;
     }
+    if (!instruction) {
+      notification.error({
+        message: "No instruction",
+        description: "Cannot find main instruction",
+      });
+      return;
+    }
 
     // Pre-tx UI handling
     setLoading(true);
@@ -143,26 +150,30 @@ const SolanaAdvancedInstructionForm: React.FC<{
 
     // Execute
     try {
-      // Find main instruction
-      const mainIxRawData = instructions.find(
-        (ix) => ix.id === instruction?.name
-      )?.rawData;
-      if (!instruction || !mainIxRawData)
-        throw new Error("Main instruction not found");
+      let args: any = null;
+      let accounts: Record<string, PublicKey> = {};
+      const parsedIsx: (TransactionInstruction | null)[] = [];
+      for (const ix of instructions)
+        if (ix.id !== instruction.name && ix.parseIx)
+          parsedIsx.push(ix.parseIx(ix.rawData));
+        else {
+          // Reserve slot for main instruction
+          parsedIsx.push(null);
 
-      // Prepare args and accounts
-      const argParser = new SolanaIdlParser(contractTemplate.abi as Idl);
-      const args = instruction.args.map((arg) =>
-        argParser.parseValue(
-          (mainIxRawData[ARG_PARAM] || {})[arg.name],
-          arg.type
-        )
-      );
-      const accounts = Object.fromEntries(
-        Object.entries(mainIxRawData[ACCOUNT_PARAM] || {}).map(
-          ([key, value]) => [camelcase(key), new PublicKey(value)]
-        )
-      );
+          // Prepare args and accounts
+          const argParser = new SolanaIdlParser(contractTemplate.abi as Idl);
+          args = instruction.args.map((arg) =>
+            argParser.parseValue(
+              (ix.rawData[ARG_PARAM] || {})[arg.name],
+              arg.type
+            )
+          );
+          accounts = Object.fromEntries(
+            Object.entries(ix.rawData[ACCOUNT_PARAM] || {}).map(
+              ([key, value]) => [camelcase(key), new PublicKey(value)]
+            )
+          );
+        }
 
       // Execute in wallet
       const response = await wallet.writeContract(
@@ -171,7 +182,7 @@ const SolanaAdvancedInstructionForm: React.FC<{
         contractTemplate.abi,
         camelcase(instruction.name),
         [args, accounts],
-        {} as SolanaExtra
+        { instructions: parsedIsx } as SolanaExtra
       );
       setTxResp(response);
     } catch (e) {
