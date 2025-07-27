@@ -3,7 +3,7 @@ import { CSS } from "@dnd-kit/utilities";
 import { Card, Flex } from "antd";
 import React from "react";
 import "./solana-form.scss";
-import { CloseOutlined, HolderOutlined } from "@ant-design/icons";
+import { CloseOutlined, MenuOutlined } from "@ant-design/icons";
 
 const InstructionController: React.FC<{
   id: string;
@@ -33,7 +33,7 @@ const InstructionController: React.FC<{
       {...attributes}
     >
       <Flex align="center">
-        <HolderOutlined {...listeners} className="ix-drag" />
+        <MenuOutlined {...listeners} className="ix-drag" />
         <div className="ix-title">{name}</div>
         {deletable && (
           <CloseOutlined
