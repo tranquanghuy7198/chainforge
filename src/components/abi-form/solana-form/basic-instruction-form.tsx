@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import SolanaInstructionForm from "./instruction-form";
-import { Button } from "antd";
+import { Button, Flex } from "antd";
 import {
   AbiAction,
   Blockchain,
@@ -181,23 +181,25 @@ const SolanaBasicInstructionForm: React.FC<{
         disabled={loading}
         onIxDataChange={(data) => setIxRawData(data)}
       />
-      <Button
-        type="primary"
-        loading={loading}
-        onClick={() => execute()}
-        icon={
-          action === AbiAction.Deploy ? (
-            <CloudUploadOutlined />
-          ) : action === AbiAction.Read ? (
-            <EyeOutlined />
-          ) : (
-            <EditOutlined />
-          )
-        }
-      >
-        {capitalize(action.toString())}
-      </Button>
-      {txResp && <TransactionResult txResponse={txResp} />}
+      <Flex vertical align="start" gap="middle">
+        <Button
+          type="primary"
+          loading={loading}
+          onClick={() => execute()}
+          icon={
+            action === AbiAction.Deploy ? (
+              <CloudUploadOutlined />
+            ) : action === AbiAction.Read ? (
+              <EyeOutlined />
+            ) : (
+              <EditOutlined />
+            )
+          }
+        >
+          {capitalize(action.toString())}
+        </Button>
+        {txResp && <TransactionResult txResponse={txResp} />}
+      </Flex>
     </>
   );
 };
