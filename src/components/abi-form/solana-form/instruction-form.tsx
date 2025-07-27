@@ -46,8 +46,12 @@ const SolanaInstructionForm: React.FC<{
   const [notification, contextHolder] = useNotification();
 
   useEffect(() => {
-    autoFillAccounts(defaultValue);
-  }, [form]);
+    if (!lodash.isEqual(defaultValue, form.getFieldsValue())) {
+      form.resetFields();
+      form.setFieldsValue(defaultValue);
+      autoFillAccounts();
+    }
+  }, [form, defaultValue]);
 
   const setAccountValue = (
     accountName: string,
@@ -61,8 +65,7 @@ const SolanaInstructionForm: React.FC<{
     return false;
   };
 
-  const autoFillAccounts = async (defaultFormValues?: IxRawData) => {
-    if (defaultFormValues) form.setFieldsValue(defaultFormValues);
+  const autoFillAccounts = async () => {
     let changed = false;
     do {
       changed = false; // Reset and try once more
