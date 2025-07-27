@@ -115,7 +115,7 @@ const SolanaAdvancedInstructionForm: React.FC<{
 
   const execute = async () => {
     // Check for necessary information
-    if (!wallet) {
+    if (!selectedWallet) {
       notification.error({
         message: "No wallet selected",
         description: "You must select a wallet first",
@@ -176,7 +176,7 @@ const SolanaAdvancedInstructionForm: React.FC<{
         }
 
       // Execute in wallet
-      const response = await wallet.writeContract(
+      const response = await selectedWallet.writeContract(
         blockchain,
         contractAddress.address,
         contractTemplate.abi,
