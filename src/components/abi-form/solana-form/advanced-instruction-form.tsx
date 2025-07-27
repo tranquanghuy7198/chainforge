@@ -9,9 +9,9 @@ import {
   TxResponse,
 } from "../../../utils/constants";
 import { Wallet } from "../../../utils/wallets/wallet";
-import { IdlInstruction } from "../../../utils/types/solana";
+import { Idl, IdlInstruction } from "../../../utils/types/solana";
 import useNotification from "antd/es/notification/useNotification";
-import { IxRawData } from "./utils";
+import { ACCOUNT_PARAM, ARG_PARAM, IxRawData, SolanaIdlParser } from "./utils";
 import "./solana-form.scss";
 import AbiWalletForm from "../abi-wallet-form";
 import { EditOutlined, PlusOutlined } from "@ant-design/icons";
@@ -27,6 +27,10 @@ import {
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import InstructionController from "./ix-controller";
+import camelcase from "camelcase";
+import { PublicKey } from "@solana/web3.js";
+import { SolanaExtra } from "../../../utils/wallets/solana/utils";
+import Paragraph from "antd/es/typography/Paragraph";
 
 const SolanaAdvancedInstructionForm: React.FC<{
   contractTemplate: ContractTemplate;
@@ -109,6 +113,84 @@ const SolanaAdvancedInstructionForm: React.FC<{
       });
   };
 
+  const execute = async () => {
+    // Check for necessary information
+    if (!wallet) {
+      notification.error({
+        message: "No wallet selected",
+        description: "You must select a wallet first",
+      });
+      return;
+    }
+    if (!blockchain) {
+      notification.error({
+        message: "No blockchain selected",
+        description: "You must select a blockchain first",
+      });
+      return;
+    }
+    if (!contractAddress) {
+      notification.error({
+        message: "No contract selected",
+        description: "You must select a contract first",
+      });
+      return;
+    }
+
+    // Pre-tx UI handling
+    setLoading(true);
+    setTxResp(undefined);
+
+    // Execute
+    try {
+      // Find main instruction
+      const mainIxRawData = instructions.find(
+        (ix) => ix.id === instruction?.name
+      )?.rawData;
+      if (!instruction || !mainIxRawData)
+        throw new Error("Main instruction not found");
+
+      // Prepare args and accounts
+      const argParser = new SolanaIdlParser(contractTemplate.abi as Idl);
+      const args = instruction.args.map((arg) =>
+        argParser.parseValue(
+          (mainIxRawData[ARG_PARAM] || {})[arg.name],
+          arg.type
+        )
+      );
+      const accounts = Object.fromEntries(
+        Object.entries(mainIxRawData[ACCOUNT_PARAM] || {}).map(
+          ([key, value]) => [camelcase(key), new PublicKey(value)]
+        )
+      );
+
+      // Execute in wallet
+      const response = await wallet.writeContract(
+        blockchain,
+        contractAddress.address,
+        contractTemplate.abi,
+        camelcase(instruction.name),
+        [args, accounts],
+        {} as SolanaExtra
+      );
+      setTxResp(response);
+    } catch (e) {
+      notification.error({
+        message: "Execution Failed",
+        description: (
+          <Paragraph
+            ellipsis={{ rows: 4, expandable: true, symbol: "View Full" }}
+          >
+            {e instanceof Error ? e.message : String(e)}
+          </Paragraph>
+        ),
+      });
+    }
+
+    // Post-tx UI handling
+    setLoading(false);
+  };
+
   return (
     <>
       {contextHolder}
@@ -124,7 +206,12 @@ const SolanaAdvancedInstructionForm: React.FC<{
         }
         footer={
           <Flex align="center" gap="middle" className="advanced-ix-footer">
-            <Button type="primary" loading={loading} icon={<EditOutlined />}>
+            <Button
+              type="primary"
+              loading={loading}
+              icon={<EditOutlined />}
+              onClick={() => execute()}
+            >
               {capitalize(AbiAction.Write)}
             </Button>
             {txResp && <TransactionResult txResponse={txResp} />}
