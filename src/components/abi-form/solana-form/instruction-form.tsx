@@ -30,6 +30,7 @@ const SolanaInstructionForm: React.FC<{
   blockchain?: Blockchain;
   instruction: IdlInstruction;
   disabled: boolean;
+  defaultValue?: IxRawData;
   onIxDataChange: (data: IxRawData) => void;
 }> = ({
   contractTemplate,
@@ -38,13 +39,14 @@ const SolanaInstructionForm: React.FC<{
   blockchain,
   instruction,
   disabled,
+  defaultValue,
   onIxDataChange,
 }) => {
   const [form] = useForm();
   const [notification, contextHolder] = useNotification();
 
   useEffect(() => {
-    autoFillAccounts();
+    autoFillAccounts(defaultValue);
   }, [form]);
 
   const setAccountValue = (
@@ -59,7 +61,8 @@ const SolanaInstructionForm: React.FC<{
     return false;
   };
 
-  const autoFillAccounts = async () => {
+  const autoFillAccounts = async (defaultFormValues?: IxRawData) => {
+    if (defaultFormValues) form.setFieldsValue(defaultFormValues);
     let changed = false;
     do {
       changed = false; // Reset and try once more

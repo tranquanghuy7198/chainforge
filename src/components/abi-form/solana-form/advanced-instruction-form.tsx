@@ -1,5 +1,5 @@
 import { Button, Drawer, Dropdown, Flex, Space } from "antd";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import AbiTitle from "../abi-title";
 import {
   AbiAction,
@@ -50,16 +50,6 @@ const SolanaAdvancedInstructionForm: React.FC<{
   const [loading, setLoading] = useState<boolean>(false);
   const [txResp, setTxResp] = useState<TxResponse>();
 
-  useEffect(() => {
-    if (instruction)
-      addInstruction({
-        id: instruction.name,
-        name: instruction.name,
-        idlInstruction: instruction,
-        rawData: {},
-      });
-  }, [instruction]);
-
   const reorderTxs = (event: DragEndEvent) => {
     if (event.over && event.active.id !== event.over.id)
       setInstructions((ixs) => {
@@ -80,8 +70,10 @@ const SolanaAdvancedInstructionForm: React.FC<{
 
   const addInstruction = (ix: SolanaInstruction) => {
     const newId = ix.id || v4();
-    setInstructions([{ ...ix, id: newId }, ...instructions]);
-    setSelectedIx(newId); // auto focus on this new instruction
+    if (instructions.every((ix) => ix.id !== newId)) {
+      setInstructions([{ ...ix, id: newId }, ...instructions]);
+      setSelectedIx(newId); // auto focus on this new instruction
+    }
   };
 
   const removeInstruction = (id: string) => {
@@ -96,13 +88,25 @@ const SolanaAdvancedInstructionForm: React.FC<{
   };
 
   const setIxRawData = (data: IxRawData) => {
-    setInstructions(
-      instructions.map((instruction) =>
-        instruction.id === selectedIx
-          ? { ...instruction, rawData: data }
-          : instruction
-      )
-    );
+    let exists = false;
+    const newInstructions: SolanaInstruction[] = [];
+
+    // Normal case: instruction updated
+    for (const ix of instructions)
+      if (ix.id === selectedIx) {
+        exists = true;
+        newInstructions.push({ ...ix, rawData: data });
+      } else newInstructions.push(ix);
+    setInstructions(newInstructions);
+
+    // Initial case: first initialization of the main instruction
+    if (!exists && instruction)
+      addInstruction({
+        id: instruction.name,
+        name: instruction.name,
+        rawData: data,
+        idlInstruction: instruction,
+      });
   };
 
   return (
@@ -184,6 +188,9 @@ const SolanaAdvancedInstructionForm: React.FC<{
                 wallet={selectedWallet}
                 blockchain={blockchain}
                 disabled={loading}
+                defaultValue={
+                  instructions.find((ix) => ix.id === selectedIx)?.rawData
+                }
                 onIxDataChange={(data) => setIxRawData(data)}
                 instruction={
                   instructions.find((ix) => ix.id === selectedIx)
