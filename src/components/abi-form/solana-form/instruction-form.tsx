@@ -197,6 +197,7 @@ const SolanaInstructionForm: React.FC<{
           >
             <Input
               placeholder={stringifyArgType(arg.type)}
+              onChange={() => onIxDataChange(form.getFieldsValue())}
               disabled={disabled}
             />
           </Form.Item>
