@@ -50,7 +50,7 @@ const AbiWalletForm: React.FC<{
               <div>{option.data.label}</div>
             </Space>
           )}
-          onChange={(walletKey: string) => onWalletSelected(wallets[walletKey])}
+          onSelect={(walletKey: string) => onWalletSelected(wallets[walletKey])}
         />
       </Form.Item>
       <Form.Item name="blockchain" label="Blockchain" required>

@@ -9,7 +9,7 @@ import { v4 } from "uuid";
 import { parseContractTemplateForm } from "../contract-template-form";
 import { useForm, useWatch } from "antd/es/form/Form";
 import { Button, Form, Image, Input, Select, Space } from "antd";
-import { MinusCircleOutlined, PlusOutlined } from "@ant-design/icons";
+import { CloseOutlined, PlusOutlined } from "@ant-design/icons";
 import "./contract-form.scss";
 import { useAppSelector } from "../../redux/hook";
 
@@ -117,7 +117,7 @@ const ContractForm: React.FC<{
                         <Input placeholder="Package" />
                       </Form.Item>
                     )}
-                  <MinusCircleOutlined onClick={() => remove(field.name)} />
+                  <CloseOutlined onClick={() => remove(field.name)} />
                 </Space>
               ))}
               <Button type="dashed" onClick={() => add()} block>

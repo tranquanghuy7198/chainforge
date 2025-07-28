@@ -6,7 +6,7 @@ import {
   EXTRA_SIGNER,
   EXTRA_WRITABLE,
 } from "./utils";
-import { MinusCircleOutlined, PlusOutlined } from "@ant-design/icons";
+import { CloseOutlined, PlusOutlined } from "@ant-design/icons";
 
 const SolanaExtraAccountInput: React.FC<{
   disabled: boolean;
@@ -42,7 +42,7 @@ const SolanaExtraAccountInput: React.FC<{
                     onChange={onChange}
                   />
                 </Form.Item>
-                <MinusCircleOutlined
+                <CloseOutlined
                   onClick={() => {
                     remove(field.name);
                     onChange();
