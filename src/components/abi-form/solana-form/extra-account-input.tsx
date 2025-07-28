@@ -42,7 +42,12 @@ const SolanaExtraAccountInput: React.FC<{
                     onChange={onChange}
                   />
                 </Form.Item>
-                <MinusCircleOutlined onClick={() => remove(field.name)} />
+                <MinusCircleOutlined
+                  onClick={() => {
+                    remove(field.name);
+                    onChange();
+                  }}
+                />
               </Space>
             ))}
             <Button type="dashed" onClick={() => add()} block>
