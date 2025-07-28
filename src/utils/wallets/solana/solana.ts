@@ -158,6 +158,7 @@ class Solana extends Wallet {
     const [params, accounts] = args;
     const programInstruction = await program.methods[method](...params)
       .accounts(accounts)
+      .remainingAccounts(extra.remainingAccounts || [])
       .instruction();
 
     // Prepare transaction
