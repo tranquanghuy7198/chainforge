@@ -11,7 +11,16 @@ import {
 import { Wallet } from "../../../utils/wallets/wallet";
 import { Idl, IdlInstruction } from "../../../utils/types/solana";
 import useNotification from "antd/es/notification/useNotification";
-import { ACCOUNT_PARAM, ARG_PARAM, IxRawData, SolanaIdlParser } from "./utils";
+import {
+  ACCOUNT_PARAM,
+  ARG_PARAM,
+  EXTRA_ACCOUNT,
+  EXTRA_ACCOUNT_PARAM,
+  EXTRA_SIGNER,
+  EXTRA_WRITABLE,
+  IxRawData,
+  SolanaIdlParser,
+} from "./utils";
 import "./solana-form.scss";
 import AbiWalletForm from "../abi-wallet-form";
 import { EditOutlined, PlusOutlined } from "@ant-design/icons";
@@ -28,7 +37,11 @@ import {
 } from "@dnd-kit/sortable";
 import InstructionController from "./ix-controller";
 import camelcase from "camelcase";
-import { PublicKey, TransactionInstruction } from "@solana/web3.js";
+import {
+  AccountMeta,
+  PublicKey,
+  TransactionInstruction,
+} from "@solana/web3.js";
 import { SolanaExtra } from "../../../utils/wallets/solana/utils";
 import Paragraph from "antd/es/typography/Paragraph";
 import {
@@ -156,6 +169,7 @@ const SolanaAdvancedInstructionForm: React.FC<{
     try {
       let args: any = null;
       let accounts: Record<string, PublicKey> = {};
+      let extraAccounts: AccountMeta[] = [];
       const parsedIsx: (TransactionInstruction | null)[] = [];
       for (const ix of instructions)
         if (ix.id !== instruction.name && ix.parseIx)
@@ -179,6 +193,18 @@ const SolanaAdvancedInstructionForm: React.FC<{
               ([key, value]) => [camelcase(key), new PublicKey(value)]
             )
           );
+          extraAccounts = (
+            (ix.rawData[EXTRA_ACCOUNT_PARAM] || []) as Array<
+              Record<string, string | boolean>
+            >
+          ).map(
+            (extraAccount) =>
+              ({
+                pubkey: new PublicKey(extraAccount[EXTRA_ACCOUNT]),
+                isSigner: extraAccount[EXTRA_SIGNER] ?? false,
+                isWritable: extraAccount[EXTRA_WRITABLE] ?? false,
+              } as AccountMeta)
+          );
         }
 
       // Execute in wallet
@@ -188,7 +214,10 @@ const SolanaAdvancedInstructionForm: React.FC<{
         contractTemplate.abi,
         camelcase(instruction.name),
         [args, accounts],
-        { instructions: parsedIsx } as SolanaExtra
+        {
+          remainingAccounts: extraAccounts,
+          instructions: parsedIsx,
+        } as SolanaExtra
       );
       setTxResp(response);
     } catch (e) {

@@ -23,7 +23,7 @@ export const ARG_PARAM = "arg";
 
 export type IxRawData = Record<
   string,
-  Record<string, string> | Array<Record<string, string>>
+  Record<string, string> | Array<Record<string, string | boolean>>
 >;
 
 export enum AccountOption {

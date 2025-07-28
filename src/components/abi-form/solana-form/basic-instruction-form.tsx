@@ -20,13 +20,16 @@ import TransactionResult from "../tx-response";
 import {
   ACCOUNT_PARAM,
   ARG_PARAM,
+  EXTRA_ACCOUNT,
   EXTRA_ACCOUNT_PARAM,
+  EXTRA_SIGNER,
+  EXTRA_WRITABLE,
   IxRawData,
   SolanaIdlParser,
 } from "./utils";
 import useNotification from "antd/es/notification/useNotification";
 import camelcase from "camelcase";
-import { PublicKey } from "@solana/web3.js";
+import { AccountMeta, PublicKey } from "@solana/web3.js";
 import { SolanaExtra } from "../../../utils/wallets/solana/utils";
 import Paragraph from "antd/es/typography/Paragraph";
 
@@ -95,7 +98,8 @@ const SolanaBasicInstructionForm: React.FC<{
     blockchain: Blockchain,
     instruction: IdlInstruction,
     args: any[],
-    accounts: Record<string, PublicKey>
+    accounts: Record<string, PublicKey>,
+    extraAccounts: AccountMeta[]
   ): Promise<TxResponse | undefined> => {
     if (!contractAddress) {
       notification.error({
@@ -110,7 +114,7 @@ const SolanaBasicInstructionForm: React.FC<{
       contractTemplate.abi,
       camelcase(instruction.name),
       [args, accounts],
-      { instructions: [null] } as SolanaExtra // For basic, no extra instructions
+      { remainingAccounts: extraAccounts, instructions: [null] } as SolanaExtra // For basic, no extra instructions
     );
   };
 
@@ -137,7 +141,6 @@ const SolanaBasicInstructionForm: React.FC<{
 
     // Execute
     try {
-      console.log(ixRawData);
       // Prepare args and accounts
       const argParser = new SolanaIdlParser(contractTemplate.abi as Idl);
       const args = instruction.args.map((arg) =>
@@ -152,6 +155,18 @@ const SolanaBasicInstructionForm: React.FC<{
           new PublicKey(value),
         ])
       );
+      const extraAccounts = (
+        (ixRawData[EXTRA_ACCOUNT_PARAM] || []) as Array<
+          Record<string, string | boolean>
+        >
+      ).map(
+        (extraAccount) =>
+          ({
+            pubkey: new PublicKey(extraAccount[EXTRA_ACCOUNT]),
+            isSigner: extraAccount[EXTRA_SIGNER] ?? false,
+            isWritable: extraAccount[EXTRA_WRITABLE] ?? false,
+          } as AccountMeta)
+      );
 
       // Execute in wallet
       let response: TxResponse | undefined;
@@ -160,7 +175,14 @@ const SolanaBasicInstructionForm: React.FC<{
       else if (action === AbiAction.Read)
         response = await read(wallet, blockchain, instruction, args, accounts);
       else if (action === AbiAction.Write)
-        response = await write(wallet, blockchain, instruction, args, accounts);
+        response = await write(
+          wallet,
+          blockchain,
+          instruction,
+          args,
+          accounts,
+          extraAccounts
+        );
       setTxResp(response);
     } catch (e) {
       notification.error({
