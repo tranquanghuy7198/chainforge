@@ -10,7 +10,8 @@ import { MinusCircleOutlined, PlusOutlined } from "@ant-design/icons";
 
 const SolanaExtraAccountInput: React.FC<{
   disabled: boolean;
-}> = ({ disabled }) => {
+  onChange: () => void;
+}> = ({ disabled, onChange }) => {
   return (
     <Form.Item label="Remaining Accounts">
       <Form.List name={EXTRA_ACCOUNT_PARAM}>
@@ -19,13 +20,17 @@ const SolanaExtraAccountInput: React.FC<{
             {fields.map((field) => (
               <Space key={field.key} align="baseline">
                 <Form.Item name={[field.name, EXTRA_SIGNER]}>
-                  <Checkbox disabled={disabled}>Signer</Checkbox>
+                  <Checkbox disabled={disabled} onChange={onChange}>
+                    Signer
+                  </Checkbox>
                 </Form.Item>
                 <Form.Item name={[field.name, EXTRA_WRITABLE]}>
-                  <Checkbox disabled={disabled}>Writable</Checkbox>
+                  <Checkbox disabled={disabled} onChange={onChange}>
+                    Writable
+                  </Checkbox>
                 </Form.Item>
                 <Form.Item name={[field.name, EXTRA_ACCOUNT]}>
-                  <Input placeholder="Extra Account" />
+                  <Input placeholder="Extra Account" onChange={onChange} />
                 </Form.Item>
                 <MinusCircleOutlined onClick={() => remove(field.name)} />
               </Space>

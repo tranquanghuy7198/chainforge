@@ -168,7 +168,9 @@ const SolanaAdvancedInstructionForm: React.FC<{
           const argParser = new SolanaIdlParser(contractTemplate.abi as Idl);
           args = instruction.args.map((arg) =>
             argParser.parseValue(
-              (ix.rawData[ARG_PARAM] || {})[arg.name],
+              ((ix.rawData[ARG_PARAM] as Record<string, string>) || {})[
+                arg.name
+              ],
               arg.type
             )
           );

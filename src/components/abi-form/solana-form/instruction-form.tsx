@@ -210,7 +210,10 @@ const SolanaInstructionForm: React.FC<{
           </Form.Item>
         ))}
         {action === AbiAction.Write && (
-          <SolanaExtraAccountInput disabled={disabled} />
+          <SolanaExtraAccountInput
+            disabled={disabled}
+            onChange={() => onIxDataChange(form.getFieldsValue())}
+          />
         )}
       </Form>
     </div>

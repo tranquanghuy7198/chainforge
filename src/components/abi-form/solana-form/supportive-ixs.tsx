@@ -49,10 +49,14 @@ const APPROVE_SPL_TOKEN_IX: SolanaInstruction = {
   rawData: {},
   parseIx: (data: IxRawData) =>
     createApproveInstruction(
-      new PublicKey(data[ACCOUNT_PARAM]["token"]),
-      new PublicKey(data[ACCOUNT_PARAM]["delegate"]),
-      new PublicKey(data[ACCOUNT_PARAM]["owner"]),
-      new BN(parseInt(data[ARG_PARAM]["amount"], 10))
+      new PublicKey((data[ACCOUNT_PARAM] as Record<string, string>)["token"]),
+      new PublicKey(
+        (data[ACCOUNT_PARAM] as Record<string, string>)["delegate"]
+      ),
+      new PublicKey((data[ACCOUNT_PARAM] as Record<string, string>)["owner"]),
+      new BN(
+        parseInt((data[ARG_PARAM] as Record<string, string>)["amount"], 10)
+      )
     ),
 };
 
@@ -88,10 +92,10 @@ const CREATE_ATA_IX: SolanaInstruction = {
   rawData: {},
   parseIx: (data: IxRawData) =>
     createAssociatedTokenAccountInstruction(
-      new PublicKey(data[ACCOUNT_PARAM]["payer"]),
-      new PublicKey(data[ACCOUNT_PARAM]["token"]),
-      new PublicKey(data[ACCOUNT_PARAM]["owner"]),
-      new PublicKey(data[ACCOUNT_PARAM]["mint"])
+      new PublicKey((data[ACCOUNT_PARAM] as Record<string, string>)["payer"]),
+      new PublicKey((data[ACCOUNT_PARAM] as Record<string, string>)["token"]),
+      new PublicKey((data[ACCOUNT_PARAM] as Record<string, string>)["owner"]),
+      new PublicKey((data[ACCOUNT_PARAM] as Record<string, string>)["mint"])
     ),
 };
 

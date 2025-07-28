@@ -17,7 +17,13 @@ import {
 } from "@ant-design/icons";
 import { capitalize } from "../../../utils/utils";
 import TransactionResult from "../tx-response";
-import { ACCOUNT_PARAM, ARG_PARAM, IxRawData, SolanaIdlParser } from "./utils";
+import {
+  ACCOUNT_PARAM,
+  ARG_PARAM,
+  EXTRA_ACCOUNT_PARAM,
+  IxRawData,
+  SolanaIdlParser,
+} from "./utils";
 import useNotification from "antd/es/notification/useNotification";
 import camelcase from "camelcase";
 import { PublicKey } from "@solana/web3.js";
@@ -131,10 +137,14 @@ const SolanaBasicInstructionForm: React.FC<{
 
     // Execute
     try {
+      console.log(ixRawData);
       // Prepare args and accounts
       const argParser = new SolanaIdlParser(contractTemplate.abi as Idl);
       const args = instruction.args.map((arg) =>
-        argParser.parseValue((ixRawData[ARG_PARAM] || {})[arg.name], arg.type)
+        argParser.parseValue(
+          ((ixRawData[ARG_PARAM] as Record<string, string>) || {})[arg.name],
+          arg.type
+        )
       );
       const accounts = Object.fromEntries(
         Object.entries(ixRawData[ACCOUNT_PARAM] || {}).map(([key, value]) => [
