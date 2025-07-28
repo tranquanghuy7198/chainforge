@@ -173,6 +173,7 @@ const SolanaBasicInstructionForm: React.FC<{
     <>
       {contextHolder}
       <SolanaInstructionForm
+        action={action}
         contractTemplate={contractTemplate}
         contractAddress={contractAddress}
         wallet={wallet}

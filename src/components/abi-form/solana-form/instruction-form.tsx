@@ -3,6 +3,7 @@ import React, { useEffect } from "react";
 import { Idl, IdlInstruction } from "../../../utils/types/solana";
 import SolanaAccountInput from "./account-input";
 import {
+  AbiAction,
   Blockchain,
   ContractAddress,
   ContractTemplate,
@@ -22,8 +23,10 @@ import {
 } from "./utils";
 import lodash from "lodash";
 import "./solana-form.scss";
+import SolanaExtraAccountInput from "./extra-account-input";
 
 const SolanaInstructionForm: React.FC<{
+  action: AbiAction;
   contractTemplate: ContractTemplate;
   contractAddress?: ContractAddress;
   wallet?: Wallet;
@@ -33,6 +36,7 @@ const SolanaInstructionForm: React.FC<{
   defaultValue?: IxRawData;
   onIxDataChange: (data: IxRawData) => void;
 }> = ({
+  action,
   contractTemplate,
   contractAddress,
   wallet,
@@ -205,6 +209,9 @@ const SolanaInstructionForm: React.FC<{
             />
           </Form.Item>
         ))}
+        {action === AbiAction.Write && (
+          <SolanaExtraAccountInput disabled={disabled} />
+        )}
       </Form>
     </div>
   );

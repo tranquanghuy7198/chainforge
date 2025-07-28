@@ -15,6 +15,10 @@ import camelcase from "camelcase";
 
 export const DEPLOYMENT_INSTRUCTION = "deploy";
 export const ACCOUNT_PARAM = "account";
+export const EXTRA_ACCOUNT_PARAM = "extraAccount";
+export const EXTRA_SIGNER = "signer";
+export const EXTRA_WRITABLE = "writable";
+export const EXTRA_ACCOUNT = "account";
 export const ARG_PARAM = "arg";
 
 export type IxRawData = Record<string, Record<string, string>>;

@@ -286,6 +286,7 @@ const SolanaAdvancedInstructionForm: React.FC<{
           <div className="inner-advanced-ix-form">
             {instruction && (
               <SolanaInstructionForm
+                action={AbiAction.Write}
                 contractTemplate={contractTemplate}
                 contractAddress={contractAddress}
                 wallet={selectedWallet}
