@@ -36,7 +36,11 @@ const SolanaExtraAccountInput: React.FC<{
                   </Checkbox>
                 </Form.Item>
                 <Form.Item name={[field.name, EXTRA_ACCOUNT]}>
-                  <Input placeholder="Extra Account" onChange={onChange} />
+                  <Input
+                    placeholder="Extra Account"
+                    disabled={disabled}
+                    onChange={onChange}
+                  />
                 </Form.Item>
                 <MinusCircleOutlined onClick={() => remove(field.name)} />
               </Space>
