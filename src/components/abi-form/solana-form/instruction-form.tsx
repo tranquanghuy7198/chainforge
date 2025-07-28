@@ -33,6 +33,7 @@ const SolanaInstructionForm: React.FC<{
   blockchain?: Blockchain;
   instruction: IdlInstruction;
   disabled: boolean;
+  extraAccounts: boolean;
   defaultValue?: IxRawData;
   onIxDataChange: (data: IxRawData) => void;
 }> = ({
@@ -43,6 +44,7 @@ const SolanaInstructionForm: React.FC<{
   blockchain,
   instruction,
   disabled,
+  extraAccounts,
   defaultValue,
   onIxDataChange,
 }) => {
@@ -209,7 +211,7 @@ const SolanaInstructionForm: React.FC<{
             />
           </Form.Item>
         ))}
-        {action === AbiAction.Write && (
+        {action === AbiAction.Write && extraAccounts && (
           <SolanaExtraAccountInput
             disabled={disabled}
             onChange={() => onIxDataChange(form.getFieldsValue())}

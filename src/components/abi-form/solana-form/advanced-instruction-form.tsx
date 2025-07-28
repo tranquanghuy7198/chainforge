@@ -323,6 +323,7 @@ const SolanaAdvancedInstructionForm: React.FC<{
                 wallet={selectedWallet}
                 blockchain={blockchain}
                 disabled={loading}
+                extraAccounts={!selectedIx || selectedIx === instruction.name}
                 defaultValue={
                   instructions.find((ix) => ix.id === selectedIx)?.rawData
                 }

@@ -212,6 +212,7 @@ const SolanaBasicInstructionForm: React.FC<{
         blockchain={blockchain}
         instruction={instruction}
         disabled={loading}
+        extraAccounts
         onIxDataChange={(data) => setIxRawData(data)}
       />
       <Flex vertical align="start" gap="middle">
