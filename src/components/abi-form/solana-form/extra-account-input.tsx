@@ -13,7 +13,7 @@ const SolanaExtraAccountInput: React.FC<{
   onChange: () => void;
 }> = ({ disabled, onChange }) => {
   return (
-    <Form.Item label="Remaining Accounts">
+    <Form.Item label="Extra Accounts">
       <Form.List name={EXTRA_ACCOUNT_PARAM}>
         {(fields, { add, remove }) => (
           <Flex vertical justify="stretch">
