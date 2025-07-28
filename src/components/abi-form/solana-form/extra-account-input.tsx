@@ -19,12 +19,18 @@ const SolanaExtraAccountInput: React.FC<{
           <Flex vertical justify="stretch">
             {fields.map((field) => (
               <Space key={field.key} align="baseline">
-                <Form.Item name={[field.name, EXTRA_SIGNER]}>
+                <Form.Item
+                  name={[field.name, EXTRA_SIGNER]}
+                  valuePropName="checked"
+                >
                   <Checkbox disabled={disabled} onChange={onChange}>
                     Signer
                   </Checkbox>
                 </Form.Item>
-                <Form.Item name={[field.name, EXTRA_WRITABLE]}>
+                <Form.Item
+                  name={[field.name, EXTRA_WRITABLE]}
+                  valuePropName="checked"
+                >
                   <Checkbox disabled={disabled} onChange={onChange}>
                     Writable
                   </Checkbox>
