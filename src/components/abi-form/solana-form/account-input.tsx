@@ -1,6 +1,6 @@
 import React, { Fragment, useState } from "react";
 import { IdlInstructionAccount } from "../../../utils/types/solana";
-import { Dropdown, Form, Input, Space } from "antd";
+import { Dropdown, Form, Input, MenuProps, Space } from "antd";
 import { concat } from "../../../utils/utils";
 import {
   ACCOUNT_PARAM,
@@ -17,6 +17,52 @@ import {
   TOKEN_PROGRAM_ID,
 } from "@solana/spl-token";
 import { DownOutlined, LoadingOutlined } from "@ant-design/icons";
+
+const items: MenuProps["items"] = [
+  {
+    key: AccountOption.Custom,
+    label: "Custom Account",
+  },
+  {
+    key: AccountOption.Wallet,
+    label: "Wallet Account",
+  },
+  {
+    key: AccountOption.Program,
+    label: "Program Account",
+  },
+  {
+    key: AccountOption.System,
+    label: "System Account",
+    children: [
+      {
+        key: TOKEN_PROGRAM_ID.toString(),
+        label: "Token Program",
+      },
+      {
+        key: TOKEN_2022_PROGRAM_ID.toString(),
+        label: "Token 2022 Program",
+      },
+      {
+        key: ASSOCIATED_TOKEN_PROGRAM_ID.toString(),
+        label: "Associated Token Program",
+      },
+      {
+        key: NATIVE_MINT.toString(),
+        label: "Wrapped SOL",
+      },
+      {
+        key: NATIVE_MINT_2022.toString(),
+        label: "Wrapped SOL 2022",
+      },
+    ],
+  },
+  {
+    key: AccountOption.Derived,
+    label: "Derived Account",
+    disabled: true,
+  },
+];
 
 const SolanaAccountInput: React.FC<{
   account: IdlInstructionAccount;
@@ -91,51 +137,7 @@ const SolanaAccountInput: React.FC<{
               selectable: true,
               onClick: ({ keyPath }) => accTypeSelected(keyPath.reverse()),
               defaultSelectedKeys: [defaultAccType(account)],
-              items: [
-                {
-                  key: AccountOption.Custom,
-                  label: "Custom Account",
-                },
-                {
-                  key: AccountOption.Wallet,
-                  label: "Wallet Account",
-                },
-                {
-                  key: AccountOption.Program,
-                  label: "Program Account",
-                },
-                {
-                  key: AccountOption.System,
-                  label: "System Account",
-                  children: [
-                    {
-                      key: TOKEN_PROGRAM_ID.toString(),
-                      label: "Token Program",
-                    },
-                    {
-                      key: TOKEN_2022_PROGRAM_ID.toString(),
-                      label: "Token 2022 Program",
-                    },
-                    {
-                      key: ASSOCIATED_TOKEN_PROGRAM_ID.toString(),
-                      label: "Associated Token Program",
-                    },
-                    {
-                      key: NATIVE_MINT.toString(),
-                      label: "Wrapped SOL",
-                    },
-                    {
-                      key: NATIVE_MINT_2022.toString(),
-                      label: "Wrapped SOL 2022",
-                    },
-                  ],
-                },
-                {
-                  key: AccountOption.Derived,
-                  label: "Derived Account",
-                  disabled: true,
-                },
-              ],
+              items: items,
             }}
           >
             <Space style={{ cursor: isDisabled ? "not-allowed" : "pointer" }}>
