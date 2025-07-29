@@ -9,7 +9,13 @@ import {
   getAccountRoles,
   pdaDependees,
 } from "./utils";
-import { TOKEN_2022_PROGRAM_ID, TOKEN_PROGRAM_ID } from "@solana/spl-token";
+import {
+  ASSOCIATED_TOKEN_PROGRAM_ID,
+  NATIVE_MINT,
+  NATIVE_MINT_2022,
+  TOKEN_2022_PROGRAM_ID,
+  TOKEN_PROGRAM_ID,
+} from "@solana/spl-token";
 import { DownOutlined, LoadingOutlined } from "@ant-design/icons";
 
 const SolanaAccountInput: React.FC<{
@@ -109,6 +115,18 @@ const SolanaAccountInput: React.FC<{
                     {
                       key: TOKEN_2022_PROGRAM_ID.toString(),
                       label: "Token 2022 Program",
+                    },
+                    {
+                      key: ASSOCIATED_TOKEN_PROGRAM_ID.toString(),
+                      label: "Associated Token Program",
+                    },
+                    {
+                      key: NATIVE_MINT.toString(),
+                      label: "Wrapped SOL",
+                    },
+                    {
+                      key: NATIVE_MINT_2022.toString(),
+                      label: "Wrapped SOL 2022",
                     },
                   ],
                 },
