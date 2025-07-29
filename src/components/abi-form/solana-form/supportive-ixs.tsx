@@ -5,7 +5,6 @@ import {
   ASSOCIATED_TOKEN_PROGRAM_ID,
   createApproveInstruction,
   createAssociatedTokenAccountInstruction,
-  TOKEN_PROGRAM_ID,
 } from "@solana/spl-token";
 import { BN } from "@coral-xyz/anchor";
 
@@ -34,7 +33,7 @@ const APPROVE_SPL_TOKEN_IX: SolanaInstruction = {
         pda: {
           seeds: [
             { kind: "account", path: "owner" },
-            { kind: "const", value: Array.from(TOKEN_PROGRAM_ID.toBytes()) },
+            { kind: "account", path: "token_program" },
             { kind: "account", path: "mint" },
           ],
           program: {
@@ -43,6 +42,7 @@ const APPROVE_SPL_TOKEN_IX: SolanaInstruction = {
           },
         },
       },
+      { name: "token_program", signer: false, writable: false },
     ],
     args: [{ name: "amount", type: "u64" }],
   },
@@ -56,6 +56,10 @@ const APPROVE_SPL_TOKEN_IX: SolanaInstruction = {
       new PublicKey((data[ACCOUNT_PARAM] as Record<string, string>)["owner"]),
       new BN(
         parseInt((data[ARG_PARAM] as Record<string, string>)["amount"], 10)
+      ),
+      undefined,
+      new PublicKey(
+        (data[ACCOUNT_PARAM] as Record<string, string>)["token_program"]
       )
     ),
 };
@@ -77,7 +81,7 @@ const CREATE_ATA_IX: SolanaInstruction = {
         pda: {
           seeds: [
             { kind: "account", path: "owner" },
-            { kind: "const", value: Array.from(TOKEN_PROGRAM_ID.toBytes()) },
+            { kind: "account", path: "token_program" },
             { kind: "account", path: "mint" },
           ],
           program: {
@@ -86,6 +90,7 @@ const CREATE_ATA_IX: SolanaInstruction = {
           },
         },
       },
+      { name: "token_program", signer: false, writable: false },
     ],
     args: [],
   },
@@ -95,7 +100,10 @@ const CREATE_ATA_IX: SolanaInstruction = {
       new PublicKey((data[ACCOUNT_PARAM] as Record<string, string>)["payer"]),
       new PublicKey((data[ACCOUNT_PARAM] as Record<string, string>)["token"]),
       new PublicKey((data[ACCOUNT_PARAM] as Record<string, string>)["owner"]),
-      new PublicKey((data[ACCOUNT_PARAM] as Record<string, string>)["mint"])
+      new PublicKey((data[ACCOUNT_PARAM] as Record<string, string>)["mint"]),
+      new PublicKey(
+        (data[ACCOUNT_PARAM] as Record<string, string>)["token_program"]
+      )
     ),
 };
 
