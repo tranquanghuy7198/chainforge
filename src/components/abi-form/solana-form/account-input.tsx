@@ -1,20 +1,44 @@
-import React, { Fragment } from "react";
+import React, { Fragment, useState } from "react";
 import { IdlInstructionAccount } from "../../../utils/types/solana";
-import { Form, Input, Select } from "antd";
+import { Dropdown, Form, Input, Space } from "antd";
 import { concat } from "../../../utils/utils";
 import {
   ACCOUNT_PARAM,
   AccountOption,
+  defaultAccType,
   getAccountRoles,
   pdaDependees,
 } from "./utils";
+import { TOKEN_2022_PROGRAM_ID, TOKEN_PROGRAM_ID } from "@solana/spl-token";
+import { DownOutlined, LoadingOutlined } from "@ant-design/icons";
+import "./solana-form.scss";
 
 const SolanaAccountInput: React.FC<{
   account: IdlInstructionAccount;
   disabled: boolean;
   onInputChanged: () => void;
-  onAccountOptionChanged: (option: AccountOption) => void;
+  onAccountOptionChanged: (
+    option: AccountOption,
+    address?: string
+  ) => Promise<void>;
 }> = ({ account, disabled, onInputChanged, onAccountOptionChanged }) => {
+  const [accType, setAccType] = useState<string>(defaultAccType(account));
+  const [loading, setLoading] = useState<boolean>(false);
+
+  const accTypeSelected = async (keyPath: string[]) => {
+    setLoading(true);
+    if (keyPath.length === 0) {
+      setLoading(false);
+      return;
+    }
+    setAccType(keyPath[0]);
+    await onAccountOptionChanged(
+      keyPath[0] as AccountOption,
+      keyPath.length > 1 ? keyPath[1] : undefined
+    );
+    setLoading(false);
+  };
+
   return (
     <Form.Item
       name={[ACCOUNT_PARAM, account.name]}
@@ -47,40 +71,69 @@ const SolanaAccountInput: React.FC<{
             : "Public Key"
         }
         disabled={
-          disabled || account.address !== undefined || account.pda !== undefined
+          disabled ||
+          loading ||
+          account.address !== undefined ||
+          account.pda !== undefined
         }
         onChange={onInputChanged}
         addonAfter={
-          <Select
+          <Dropdown
+            trigger={["click"]}
             disabled={
               disabled ||
+              loading ||
               account.address !== undefined ||
               account.pda !== undefined
             }
-            defaultValue={
-              account.address
-                ? AccountOption.System
-                : account.pda
-                ? AccountOption.Derived
-                : AccountOption.Custom
-            }
-            onSelect={onAccountOptionChanged}
+            menu={{
+              selectable: true,
+              onClick: ({ keyPath }) => accTypeSelected(keyPath.reverse()),
+              defaultSelectedKeys: [defaultAccType(account)],
+              items: [
+                {
+                  key: AccountOption.Custom,
+                  label: "Custom Account",
+                },
+                {
+                  key: AccountOption.Wallet,
+                  label: "Wallet Account",
+                },
+                {
+                  key: AccountOption.Program,
+                  label: "Program Account",
+                },
+                {
+                  key: AccountOption.System,
+                  label: "System Account",
+                  children: [
+                    {
+                      key: TOKEN_PROGRAM_ID.toString(),
+                      label: "Token Program",
+                    },
+                    {
+                      key: TOKEN_2022_PROGRAM_ID.toString(),
+                      label: "Token 2022 Program",
+                    },
+                  ],
+                },
+                {
+                  key: AccountOption.Derived,
+                  label: "Derived Account",
+                  disabled: true,
+                },
+              ],
+            }}
           >
-            {Object.values(AccountOption).map((option) => (
-              <Select.Option
-                key={option}
-                value={option}
-                disabled={[
-                  AccountOption.System,
-                  AccountOption.Derived,
-                ].includes(option)}
-              >
-                {option
+            <Space className="acc-type-select">
+              <>
+                {accType
                   .replace(/-/g, " ")
                   .replace(/\b\w/g, (char) => char.toUpperCase())}
-              </Select.Option>
-            ))}
-          </Select>
+              </>
+              {loading ? <LoadingOutlined /> : <DownOutlined />}
+            </Space>
+          </Dropdown>
         }
       />
     </Form.Item>

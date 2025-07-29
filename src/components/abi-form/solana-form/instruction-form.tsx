@@ -152,7 +152,8 @@ const SolanaInstructionForm: React.FC<{
 
   const updateFormAccount = async (
     accountName: string,
-    accountOption: AccountOption
+    accountOption: AccountOption,
+    accountAddress?: string
   ) => {
     try {
       // Calculate account value
@@ -166,7 +167,8 @@ const SolanaInstructionForm: React.FC<{
         if (!contractAddress)
           throw new Error("You must select a contract first");
         accountValue = contractAddress.address;
-      }
+      } else if (accountOption === AccountOption.System)
+        accountValue = accountAddress;
 
       // Set it in the form and auto fill others if necessary
       if (setAccountValue(accountName, accountValue)) autoFillAccounts();
@@ -192,8 +194,8 @@ const SolanaInstructionForm: React.FC<{
               account={account}
               disabled={disabled}
               onInputChanged={() => autoFillAccounts()}
-              onAccountOptionChanged={(option) =>
-                updateFormAccount(account.name, option)
+              onAccountOptionChanged={(option, address) =>
+                updateFormAccount(account.name, option, address)
               }
             />
           ))}

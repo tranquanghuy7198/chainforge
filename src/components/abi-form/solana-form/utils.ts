@@ -34,6 +34,14 @@ export enum AccountOption {
   Derived = "derived-account",
 }
 
+export const defaultAccType = (
+  account: IdlInstructionAccount
+): AccountOption => {
+  if (account.address) return AccountOption.System;
+  if (account.pda) return AccountOption.Derived;
+  return AccountOption.Custom;
+};
+
 export const deserializeAccountData = async (
   address: PublicKey | string,
   typeName: string,
