@@ -11,7 +11,6 @@ import {
 } from "./utils";
 import { TOKEN_2022_PROGRAM_ID, TOKEN_PROGRAM_ID } from "@solana/spl-token";
 import { DownOutlined, LoadingOutlined } from "@ant-design/icons";
-import "./solana-form.scss";
 
 const SolanaAccountInput: React.FC<{
   account: IdlInstructionAccount;
@@ -24,6 +23,12 @@ const SolanaAccountInput: React.FC<{
 }> = ({ account, disabled, onInputChanged, onAccountOptionChanged }) => {
   const [accType, setAccType] = useState<string>(defaultAccType(account));
   const [loading, setLoading] = useState<boolean>(false);
+
+  const isDisabled =
+    disabled ||
+    loading ||
+    account.address !== undefined ||
+    account.pda !== undefined;
 
   const accTypeSelected = async (keyPath: string[]) => {
     setLoading(true);
@@ -70,22 +75,12 @@ const SolanaAccountInput: React.FC<{
             ? `Derived from ${concat(pdaDependees(account.pda))}`
             : "Public Key"
         }
-        disabled={
-          disabled ||
-          loading ||
-          account.address !== undefined ||
-          account.pda !== undefined
-        }
+        disabled={isDisabled}
         onChange={onInputChanged}
         addonAfter={
           <Dropdown
             trigger={["click"]}
-            disabled={
-              disabled ||
-              loading ||
-              account.address !== undefined ||
-              account.pda !== undefined
-            }
+            disabled={isDisabled}
             menu={{
               selectable: true,
               onClick: ({ keyPath }) => accTypeSelected(keyPath.reverse()),
@@ -125,7 +120,7 @@ const SolanaAccountInput: React.FC<{
               ],
             }}
           >
-            <Space className="acc-type-select">
+            <Space style={{ cursor: isDisabled ? "not-allowed" : "pointer" }}>
               <>
                 {accType
                   .replace(/-/g, " ")
