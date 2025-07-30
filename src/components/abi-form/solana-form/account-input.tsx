@@ -17,6 +17,15 @@ import {
   TOKEN_PROGRAM_ID,
 } from "@solana/spl-token";
 import { DownOutlined, LoadingOutlined } from "@ant-design/icons";
+import {
+  BPF_LOADER_DEPRECATED_PROGRAM_ID,
+  ComputeBudgetProgram,
+  Ed25519Program,
+  Secp256k1Program,
+  SystemProgram,
+  SYSVAR_CLOCK_PUBKEY,
+  SYSVAR_RENT_PUBKEY,
+} from "@solana/web3.js";
 
 const items: MenuProps["items"] = [
   {
@@ -36,6 +45,14 @@ const items: MenuProps["items"] = [
     label: "System Account",
     children: [
       {
+        key: NATIVE_MINT.toString(),
+        label: "Wrapped SOL",
+      },
+      {
+        key: NATIVE_MINT_2022.toString(),
+        label: "Wrapped SOL 2022",
+      },
+      {
         key: TOKEN_PROGRAM_ID.toString(),
         label: "Token Program",
       },
@@ -48,12 +65,36 @@ const items: MenuProps["items"] = [
         label: "Associated Token Program",
       },
       {
-        key: NATIVE_MINT.toString(),
-        label: "Wrapped SOL",
+        key: SystemProgram.programId.toString(),
+        label: "System Program",
       },
       {
-        key: NATIVE_MINT_2022.toString(),
-        label: "Wrapped SOL 2022",
+        key: "MemoSq4gqABAXKb96qnH8TysNcWxMyWCqXgDLGmfcHr",
+        label: "Memo Program",
+      },
+      {
+        key: Ed25519Program.programId.toString(),
+        label: "Ed25519 Program",
+      },
+      {
+        key: Secp256k1Program.programId.toString(),
+        label: "Secp256k1 Program",
+      },
+      {
+        key: BPF_LOADER_DEPRECATED_PROGRAM_ID.toString(),
+        label: "BPF Loader Program",
+      },
+      {
+        key: SYSVAR_RENT_PUBKEY.toString(),
+        label: "Rent Program",
+      },
+      {
+        key: SYSVAR_CLOCK_PUBKEY.toString(),
+        label: "Clock Program",
+      },
+      {
+        key: ComputeBudgetProgram.programId.toString(),
+        label: "Compute Budget Program",
       },
     ],
   },
