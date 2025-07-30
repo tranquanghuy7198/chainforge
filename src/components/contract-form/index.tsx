@@ -12,6 +12,7 @@ import { Button, Form, Image, Input, Select, Space } from "antd";
 import { CloseOutlined, PlusOutlined } from "@ant-design/icons";
 import "./contract-form.scss";
 import { useAppSelector } from "../../redux/hook";
+import SelectOption from "../select-option";
 
 export type ContractFormStructure = {
   id: string;
@@ -94,15 +95,21 @@ const ContractForm: React.FC<{
                         emoji: chain.logo,
                       }))}
                       optionRender={(option) => (
-                        <Space align="center">
-                          <Image
-                            src={option.data.emoji}
-                            className="select-icon"
-                            preview={false}
-                          />
-                          <div>{option.data.label}</div>
-                        </Space>
+                        <SelectOption
+                          icon={option.data.emoji}
+                          label={option.data.label}
+                        />
                       )}
+                      labelRender={({ value, label }) => {
+                        const selected = blockchains.find(
+                          (chain) => chain.id === value
+                        );
+                        return selected ? (
+                          <SelectOption icon={selected.logo} label={label} />
+                        ) : (
+                          label
+                        );
+                      }}
                     />
                   </Form.Item>
                   <Form.Item name={[field.name, "address"]}>

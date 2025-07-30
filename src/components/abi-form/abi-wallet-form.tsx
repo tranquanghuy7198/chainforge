@@ -1,4 +1,4 @@
-import { Form, Image, Select, Space } from "antd";
+import { Form, Select } from "antd";
 import React, { useEffect } from "react";
 import {
   Blockchain,
@@ -8,6 +8,7 @@ import {
 import { useAppSelector } from "../../redux/hook";
 import { Wallet } from "../../utils/wallets/wallet";
 import { useForm } from "antd/es/form/Form";
+import SelectOption from "../select-option";
 
 const AbiWalletForm: React.FC<{
   contractAddress?: ContractAddress;
@@ -56,16 +57,16 @@ const AbiWalletForm: React.FC<{
               emoji: wallet.ui.icon,
             }))}
           optionRender={(option) => (
-            <Space align="center">
-              <Image
-                src={option.data.emoji}
-                className="select-icon"
-                preview={false}
-              />
-              <div>{option.data.label}</div>
-            </Space>
+            <SelectOption icon={option.data.emoji} label={option.data.label} />
           )}
           onSelect={(walletKey: string) => onWalletSelected(wallets[walletKey])}
+          labelRender={({ value, label }) =>
+            value in wallets ? (
+              <SelectOption icon={wallets[value].ui.icon} label={label} />
+            ) : (
+              label
+            )
+          }
         />
       </Form.Item>
       <Form.Item name="blockchain" label="Blockchain" required>
@@ -78,14 +79,7 @@ const AbiWalletForm: React.FC<{
               emoji: chain.logo,
             }))}
           optionRender={(option) => (
-            <Space align="center">
-              <Image
-                src={option.data.emoji}
-                className="select-icon"
-                preview={false}
-              />
-              <div>{option.data.label}</div>
-            </Space>
+            <SelectOption icon={option.data.emoji} label={option.data.label} />
           )}
           onSelect={(blockchainId: string) =>
             onBlockchainSelected(
@@ -93,6 +87,14 @@ const AbiWalletForm: React.FC<{
             )
           }
           disabled={contractAddress !== undefined}
+          labelRender={({ value, label }) => {
+            const selected = blockchains.find((c) => c.id === value);
+            return selected ? (
+              <SelectOption icon={selected.logo} label={label} />
+            ) : (
+              label
+            );
+          }}
         />
       </Form.Item>
     </Form>
