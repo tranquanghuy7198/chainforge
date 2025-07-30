@@ -26,7 +26,6 @@ import {
   SYSVAR_CLOCK_PUBKEY,
   SYSVAR_RENT_PUBKEY,
 } from "@solana/web3.js";
-import { BpfLoaderUpgradeable } from "solana-bpf";
 
 const items: MenuProps["items"] = [
   {
