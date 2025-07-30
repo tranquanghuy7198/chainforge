@@ -1,6 +1,7 @@
 import { Connection, PublicKey } from "@solana/web3.js";
 import {
   Idl,
+  IdlEnumVariant,
   IdlField,
   IdlInstruction,
   IdlInstructionAccount,
@@ -245,22 +246,16 @@ export class SolanaIdlParser {
     const typeDef = this.idl.types?.find((t) => t.name === typeName);
     if (!typeDef) throw new Error(`Type definition not found: ${typeName}`);
     const parsed = JSON.parse(value);
-    if (typeDef.type.kind === "struct") {
+    if (typeDef.type.kind === "struct")
       return this.parseStruct(
         parsed,
         (typeDef.type.fields || []) as IdlField[],
         context
       ); // TODO
-    }
-
-    // if (typeDef.type.kind === "enum") {
-    //   return this.parseEnum(parsed, typeDef.type.variants, context);
-    // }
-
+    if (typeDef.type.kind === "enum")
+      return this.parseEnum(parsed, typeDef.type.variants, context);
     if (typeDef.type.kind === "type")
       return this.parseValueInternal(value, typeDef.type.alias, context);
-
-    throw new Error(`Unsupported type definition kind: ${typeDef.type.kind}`);
   }
 
   private parseStruct(
@@ -279,65 +274,54 @@ export class SolanaIdlParser {
     return result;
   }
 
-  // private parseEnum(
-  //   obj: any,
-  //   variants: IdlEnumVariant[],
-  //   context: ParseContext
-  // ): any {
-  //   // Handle enum as object with variant name as key
-  //   if (typeof obj === "object" && obj !== null) {
-  //     const variantName = Object.keys(obj)[0];
-  //     const variant = variants.find((v) => v.name === variantName);
+  private parseEnum(
+    obj: any,
+    variants: IdlEnumVariant[],
+    context: ParseContext
+  ): any {
+    // Handle enum as object with variant name as key
+    if (typeof obj === "object" && obj !== null) {
+      const variantName = Object.keys(obj)[0];
+      const variant = variants.find((v) => v.name === variantName);
 
-  //     if (!variant) {
-  //       throw new Error(`Unknown enum variant: ${variantName}`);
-  //     }
+      if (!variant) throw new Error(`Unknown enum variant: ${variantName}`);
 
-  //     if (variant.fields) {
-  //       if (Array.isArray(variant.fields)) {
-  //         // Named fields
-  //         if (variant.fields.length > 0 && "name" in variant.fields[0]) {
-  //           return {
-  //             [variantName]: this.parseStruct(
-  //               obj[variantName],
-  //               variant.fields as IdlField[],
-  //               context
-  //             ),
-  //           };
-  //         }
-  //         // Tuple fields
-  //         else {
-  //           const tupleFields = variant.fields as IdlType[];
-  //           const values = Array.isArray(obj[variantName])
-  //             ? obj[variantName]
-  //             : [obj[variantName]];
-  //           return {
-  //             [variantName]: values.map((val: any, idx: number) =>
-  //               this.parseValueInternal(
-  //                 JSON.stringify(val),
-  //                 tupleFields[idx],
-  //                 context
-  //               )
-  //             ),
-  //           };
-  //         }
-  //       }
-  //     }
+      if (variant.fields && Array.isArray(variant.fields))
+        if (variant.fields.length > 0 && "name" in variant.fields[0])
+          // Named fields
+          return {
+            [variantName]: this.parseStruct(
+              obj[variantName],
+              variant.fields as IdlField[],
+              context
+            ),
+          };
+        else {
+          // Tuple fields
+          const tupleFields = variant.fields as IdlType[];
+          const values = Array.isArray(obj[variantName])
+            ? obj[variantName]
+            : [obj[variantName]];
+          return {
+            [variantName]: values.map((val: any, idx: number) =>
+              this.parseValueInternal(
+                JSON.stringify(val),
+                tupleFields[idx],
+                context
+              )
+            ),
+          };
+        }
+    }
 
-  //     return { [variantName]: obj[variantName] };
-  //   }
+    // Handle enum as string (unit variant)
+    if (typeof obj === "string") {
+      const variant = variants.find((v) => v.name === obj);
+      if (!variant) throw new Error(`Unknown enum variant: ${obj}`);
+    }
 
-  //   // Handle enum as string (unit variant)
-  //   if (typeof obj === "string") {
-  //     const variant = variants.find((v) => v.name === obj);
-  //     if (!variant) {
-  //       throw new Error(`Unknown enum variant: ${obj}`);
-  //     }
-  //     return obj;
-  //   }
-
-  //   throw new Error(`Invalid enum format: ${JSON.stringify(obj)}`);
-  // }
+    throw new Error(`Invalid enum format: ${JSON.stringify(obj)}`);
+  }
 }
 
 export const stringifyArgType = (argType: IdlType): string => {
