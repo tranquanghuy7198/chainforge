@@ -25,9 +25,24 @@ const AbiWalletForm: React.FC<{
   const wallets = useAppSelector((state) => state.wallet.wallets);
 
   useEffect(() => {
-    if (contractAddress?.blockchainId)
-      form.setFieldsValue({ blockchain: contractAddress.blockchainId });
-  }, [contractAddress?.blockchainId, form]);
+    // Set default blockchain
+    if (contractAddress?.blockchainId) {
+      form.setFieldValue("blockchain", contractAddress.blockchainId);
+      const selectedChain = blockchains.find(
+        (chain) => chain.id === contractAddress.blockchainId
+      );
+      if (selectedChain) onBlockchainSelected(selectedChain);
+    }
+
+    // Set default wallet
+    const wallet = Object.values(wallets).find((w) =>
+      networkClusters.includes(w.networkCluster)
+    );
+    if (wallet) {
+      form.setFieldValue("wallet", wallet.key);
+      onWalletSelected(wallet);
+    }
+  }, [contractAddress?.blockchainId, networkClusters, form]);
 
   return (
     <Form form={form} name="wallet-form" layout="horizontal">
@@ -72,7 +87,7 @@ const AbiWalletForm: React.FC<{
               <div>{option.data.label}</div>
             </Space>
           )}
-          onChange={(blockchainId: string) =>
+          onSelect={(blockchainId: string) =>
             onBlockchainSelected(
               blockchains.find((chain) => chain.id === blockchainId)!
             )
