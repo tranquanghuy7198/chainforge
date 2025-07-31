@@ -1,0 +1,49 @@
+@use "../../styles.scss" as *;
+
+.confirm-modal-body {
+  display: flex;
+  flex-flow: column;
+  align-items: center;
+  padding: 32px;
+}
+
+.confirm-icon {
+  width: 80px;
+  margin-bottom: 15px;
+}
+
+.confirm-title {
+  font-size: 24px;
+  color: #595959;
+}
+
+.confirm-des {
+  margin-top: 12px;
+  font-size: 14px;
+  color: #909090;
+  text-align: justify;
+}
+
+.confirm-btn-space {
+  width: 30px;
+}
+
+.confirm-btn-container {
+  display: flex;
+  align-self: stretch;
+  margin-left: 25px;
+  margin-right: 25px;
+  margin-top: 28px;
+}
+
+.ant-btn-primary.confirm-cancel-btn {
+  background-color: #bebebe;
+  border-color: #bebebe;
+}
+
+.ant-btn-primary.confirm-cancel-btn:hover,
+.ant-btn-primary.confirm-cancel-btn:active,
+.ant-btn-primary.confirm-cancel-btn:focus {
+  background-color: #aaaaaa;
+  border-color: #aaaaaa;
+}
