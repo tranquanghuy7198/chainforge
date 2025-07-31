@@ -1,4 +1,4 @@
-import { Button, Flex, Image, Modal, Space } from "antd";
+import { Button, Flex, Image, Modal } from "antd";
 import React from "react";
 import "./confirm-modal.scss";
 
@@ -46,8 +46,8 @@ const ConfirmModal: React.FC<{
             block
             danger={danger}
             onClick={() => {
-              onOk();
-              onCancel();
+              onOk(); // Do action
+              onCancel(); // Close the modal
             }}
           >
             {okText}

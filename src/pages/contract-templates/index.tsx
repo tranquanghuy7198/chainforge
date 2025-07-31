@@ -17,6 +17,7 @@ import ContractTemplateForm, {
 } from "../../components/contract-template-form";
 import Paragraph from "antd/es/typography/Paragraph";
 import { XBlock, XMasonry } from "react-xmasonry";
+import ConfirmModal from "../../components/confirm-modal";
 
 const ContractTemplates: React.FC = () => {
   const [notification, contextHolder] = useNotification();
@@ -32,6 +33,7 @@ const ContractTemplates: React.FC = () => {
     open: boolean;
     form?: ContractTemplateFormStructure;
   }>({ open: false, form: undefined });
+  const [confirmDeleteId, setConfirmDeleteId] = useState<string>();
 
   useEffect(() => {
     setDisplayedTemplates(
@@ -86,7 +88,7 @@ const ContractTemplates: React.FC = () => {
     });
   };
 
-  const deleteContractTemplate = (id: string) => {
+  const deleteContractTemplate = (id?: string) => {
     setContractTemplates(
       contractTemplates.filter((template) => template.id !== id)
     );
@@ -134,7 +136,7 @@ const ContractTemplates: React.FC = () => {
             <XBlock key={template.id}>
               <ContractTemplateCard
                 contractTemplate={template}
-                onDeleteTemplate={deleteContractTemplate}
+                onDeleteTemplate={(id) => setConfirmDeleteId(id)}
                 onEditTemplate={editContractTemplate}
               />
             </XBlock>
@@ -157,6 +159,15 @@ const ContractTemplates: React.FC = () => {
           }
         />
       </Drawer>
+      <ConfirmModal
+        showModal={confirmDeleteId !== undefined}
+        danger
+        onOk={() => deleteContractTemplate(confirmDeleteId)}
+        onCancel={() => setConfirmDeleteId(undefined)}
+        title="Delete this template?"
+        description="This action can not be undone. All information associated with this template will be lost."
+        okText="Delete"
+      />
     </div>
   );
 };
