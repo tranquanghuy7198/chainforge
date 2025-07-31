@@ -287,7 +287,12 @@ export class SolanaIdlParser {
       if (!variant) throw new Error(`Unknown enum variant: ${variantName}`);
 
       if (variant.fields && Array.isArray(variant.fields))
-        if (variant.fields.length > 0 && "name" in variant.fields[0])
+        if (
+          variant.fields.length > 0 &&
+          typeof variant.fields[0] === "object" &&
+          variant.fields[0] !== null &&
+          "name" in variant.fields[0]
+        )
           // Named fields
           return {
             [variantName]: this.parseStruct(
