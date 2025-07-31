@@ -17,6 +17,7 @@ import ContractForm, {
 import useNotification from "antd/es/notification/useNotification";
 import Paragraph from "antd/es/typography/Paragraph";
 import { XBlock, XMasonry } from "react-xmasonry";
+import ConfirmModal from "../../components/confirm-modal";
 
 const Contracts: React.FC = () => {
   const [notification, contextHolder] = useNotification();
@@ -34,6 +35,7 @@ const Contracts: React.FC = () => {
     open: boolean;
     form?: ContractFormStructure;
   }>({ open: false, form: undefined });
+  const [confirmDeleteId, setConfirmDeleteId] = useState<string>();
 
   useEffect(() => {
     setDisplayedContracts(
@@ -111,7 +113,7 @@ const Contracts: React.FC = () => {
       });
   };
 
-  const deleteContract = (id: string) => {
+  const deleteContract = (id?: string) => {
     setContracts(contracts.filter((contract) => contract.id !== id));
   };
 
@@ -135,7 +137,7 @@ const Contracts: React.FC = () => {
             <XBlock key={contract.id}>
               <ContractCard
                 contract={contract}
-                onDeleteContract={deleteContract}
+                onDeleteContract={setConfirmDeleteId}
                 onEditContract={editContract}
               />
             </XBlock>
@@ -154,6 +156,15 @@ const Contracts: React.FC = () => {
           saveContract={(contract) => saveContract(parseToContract(contract))}
         />
       </Drawer>
+      <ConfirmModal
+        showModal={confirmDeleteId !== undefined}
+        danger
+        onOk={() => deleteContract(confirmDeleteId)}
+        onCancel={() => setConfirmDeleteId(undefined)}
+        title="Delete this contract?"
+        description="This action cannot be undone. All information associated with this contract will be lost."
+        okText="Delete Contract"
+      />
     </div>
   );
 };

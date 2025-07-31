@@ -136,7 +136,7 @@ const ContractTemplates: React.FC = () => {
             <XBlock key={template.id}>
               <ContractTemplateCard
                 contractTemplate={template}
-                onDeleteTemplate={(id) => setConfirmDeleteId(id)}
+                onDeleteTemplate={setConfirmDeleteId}
                 onEditTemplate={editContractTemplate}
               />
             </XBlock>
@@ -166,7 +166,7 @@ const ContractTemplates: React.FC = () => {
         onCancel={() => setConfirmDeleteId(undefined)}
         title="Delete this template?"
         description="This action can not be undone. All information associated with this template will be lost."
-        okText="Delete"
+        okText="Delete Template"
       />
     </div>
   );
