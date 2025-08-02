@@ -48,7 +48,7 @@ const AbiWalletForm: React.FC<{
       form.setFieldValue("wallet", wallet.key);
       onWalletSelected(wallet);
     }
-  }, [contractAddress?.blockchainId, networkClusters, form]);
+  }, [defaultWallet, contractAddress?.blockchainId, networkClusters, form]);
 
   return (
     <Form form={form} name="wallet-form" layout="horizontal">

@@ -81,7 +81,6 @@ const SolanaAdvancedInstructionForm: React.FC<{
   };
 
   const resetAndClose = () => {
-    setWallet(wallet);
     setInstructions([]);
     setSelectedIx(undefined);
     setLoading(false);
@@ -269,6 +268,7 @@ const SolanaAdvancedInstructionForm: React.FC<{
         <Flex className="advanced-ix" gap="large" justify="space-between">
           <Flex vertical className="instruction-menu">
             <AbiWalletForm
+              defaultWallet={wallet?.key}
               contractAddress={contractAddress}
               networkClusters={contractTemplate.networkClusters}
               onWalletSelected={setWallet}
