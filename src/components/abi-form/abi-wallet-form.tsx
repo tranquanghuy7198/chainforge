@@ -11,11 +11,13 @@ import { useForm } from "antd/es/form/Form";
 import SelectOption from "../select-option";
 
 const AbiWalletForm: React.FC<{
-  contractAddress?: ContractAddress;
+  defaultWallet?: string; // default wallet
+  contractAddress?: ContractAddress; // default blockchain
   networkClusters: NetworkCluster[];
   onWalletSelected: (wallet: Wallet) => void;
   onBlockchainSelected: (blockchain: Blockchain) => void;
 }> = ({
+  defaultWallet,
   contractAddress,
   networkClusters,
   onWalletSelected,
@@ -36,9 +38,12 @@ const AbiWalletForm: React.FC<{
     }
 
     // Set default wallet
-    const wallet = Object.values(wallets).find((w) =>
-      networkClusters.includes(w.networkCluster)
-    );
+    const wallet =
+      defaultWallet && defaultWallet in wallets
+        ? wallets[defaultWallet]
+        : Object.values(wallets).find((w) =>
+            networkClusters.includes(w.networkCluster)
+          );
     if (wallet) {
       form.setFieldValue("wallet", wallet.key);
       onWalletSelected(wallet);
