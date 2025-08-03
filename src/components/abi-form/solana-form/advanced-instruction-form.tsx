@@ -169,13 +169,13 @@ const SolanaAdvancedInstructionForm: React.FC<{
       let args: any = null;
       let accounts: Record<string, PublicKey> = {};
       let extraAccounts: AccountMeta[] = [];
-      const parsedIsx: (TransactionInstruction | null)[] = [];
+      let parsedIxs: (TransactionInstruction | null)[] = [];
       for (const ix of instructions)
         if (ix.id !== instruction.name && ix.parseIx)
-          parsedIsx.push(ix.parseIx(ix.rawData));
+          parsedIxs = [...parsedIxs, ...ix.parseIx(ix.rawData)];
         else {
           // Reserve slot for main instruction
-          parsedIsx.push(null);
+          parsedIxs.push(null);
 
           // Prepare args and accounts
           const argParser = new SolanaIdlParser(contractTemplate.abi as Idl);
@@ -215,7 +215,7 @@ const SolanaAdvancedInstructionForm: React.FC<{
         [args, accounts],
         {
           remainingAccounts: extraAccounts,
-          instructions: parsedIsx,
+          instructions: parsedIxs,
         } as SolanaExtra
       );
       setTxResp(response);
