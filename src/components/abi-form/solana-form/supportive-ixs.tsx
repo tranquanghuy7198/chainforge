@@ -107,4 +107,25 @@ const CREATE_ATA_IX: SolanaInstruction = {
     ),
 };
 
-export const SUPPORTIVE_IXS = [APPROVE_SPL_TOKEN_IX, CREATE_ATA_IX];
+const WRAP_SOL_IX: SolanaInstruction = {
+  id: "",
+  name: "Wrap native SOL",
+  idlInstruction: {},
+  rawData: {},
+  parseIx: (data: IxRawData) => {},
+};
+
+const UNWRAP_SOL_IX: SolanaInstruction = {
+  id: "",
+  name: "Unwrap native SOL",
+  idlInstruction: {},
+  rawData: {},
+  parseIx: (data: IxRawData) => {},
+};
+
+export const SUPPORTIVE_IXS = [
+  APPROVE_SPL_TOKEN_IX,
+  CREATE_ATA_IX,
+  WRAP_SOL_IX,
+  UNWRAP_SOL_IX,
+];
