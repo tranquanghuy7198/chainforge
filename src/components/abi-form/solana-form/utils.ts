@@ -22,10 +22,11 @@ export const EXTRA_WRITABLE = "writable";
 export const EXTRA_ACCOUNT = "account";
 export const ARG_PARAM = "arg";
 
-export type IxRawData = Record<
-  string,
-  Record<string, string> | Array<Record<string, string | boolean>>
->;
+export type IxRawData = {
+  [ACCOUNT_PARAM]?: Record<string, string>;
+  [ARG_PARAM]?: Record<string, string>;
+  [EXTRA_ACCOUNT_PARAM]?: Array<Record<string, string | boolean>>;
+};
 
 export enum AccountOption {
   Custom = "custom-account",

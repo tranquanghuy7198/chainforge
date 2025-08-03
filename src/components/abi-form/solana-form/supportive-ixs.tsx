@@ -55,18 +55,12 @@ const APPROVE_SPL_TOKEN_IX: SolanaInstruction = {
   rawData: {},
   parseIx: (data: IxRawData) => [
     createApproveInstruction(
-      new PublicKey((data[ACCOUNT_PARAM] as Record<string, string>)["token"]),
-      new PublicKey(
-        (data[ACCOUNT_PARAM] as Record<string, string>)["delegate"]
-      ),
-      new PublicKey((data[ACCOUNT_PARAM] as Record<string, string>)["owner"]),
-      new BN(
-        parseInt((data[ARG_PARAM] as Record<string, string>)["amount"], 10)
-      ),
+      new PublicKey(data[ACCOUNT_PARAM]!["token"]),
+      new PublicKey(data[ACCOUNT_PARAM]!["delegate"]),
+      new PublicKey(data[ACCOUNT_PARAM]!["owner"]),
+      new BN(parseInt(data[ARG_PARAM]!["amount"], 10)),
       undefined,
-      new PublicKey(
-        (data[ACCOUNT_PARAM] as Record<string, string>)["token_program"]
-      )
+      new PublicKey(data[ACCOUNT_PARAM]!["token_program"])
     ),
   ],
 };
@@ -104,13 +98,11 @@ const CREATE_ATA_IX: SolanaInstruction = {
   rawData: {},
   parseIx: (data: IxRawData) => [
     createAssociatedTokenAccountInstruction(
-      new PublicKey((data[ACCOUNT_PARAM] as Record<string, string>)["payer"]),
-      new PublicKey((data[ACCOUNT_PARAM] as Record<string, string>)["token"]),
-      new PublicKey((data[ACCOUNT_PARAM] as Record<string, string>)["owner"]),
-      new PublicKey((data[ACCOUNT_PARAM] as Record<string, string>)["mint"]),
-      new PublicKey(
-        (data[ACCOUNT_PARAM] as Record<string, string>)["token_program"]
-      )
+      new PublicKey(data[ACCOUNT_PARAM]!["payer"]),
+      new PublicKey(data[ACCOUNT_PARAM]!["token"]),
+      new PublicKey(data[ACCOUNT_PARAM]!["owner"]),
+      new PublicKey(data[ACCOUNT_PARAM]!["mint"]),
+      new PublicKey(data[ACCOUNT_PARAM]!["token_program"])
     ),
   ],
 };
@@ -147,23 +139,13 @@ const WRAP_SOL_IX: SolanaInstruction = {
   rawData: {},
   parseIx: (data: IxRawData) => [
     SystemProgram.transfer({
-      fromPubkey: new PublicKey(
-        (data[ACCOUNT_PARAM] as Record<string, string>)["owner"]
-      ),
-      toPubkey: new PublicKey(
-        (data[ACCOUNT_PARAM] as Record<string, string>)["wrapped_token"]
-      ),
-      lamports: new BN(
-        parseInt((data[ARG_PARAM] as Record<string, string>)["lamports"], 10)
-      ),
+      fromPubkey: new PublicKey(data[ACCOUNT_PARAM]!["owner"]),
+      toPubkey: new PublicKey(data[ACCOUNT_PARAM]!["wrapped_token"]),
+      lamports: new BN(parseInt(data[ARG_PARAM]!["lamports"], 10)),
     }),
     createSyncNativeInstruction(
-      new PublicKey(
-        (data[ACCOUNT_PARAM] as Record<string, string>)["wrapped_token"]
-      ),
-      new PublicKey(
-        (data[ACCOUNT_PARAM] as Record<string, string>)["token_program"]
-      )
+      new PublicKey(data[ACCOUNT_PARAM]!["wrapped_token"]),
+      new PublicKey(data[ACCOUNT_PARAM]!["token_program"])
     ),
   ],
 };
@@ -200,15 +182,11 @@ const UNWRAP_SOL_IX: SolanaInstruction = {
   rawData: {},
   parseIx: (data: IxRawData) => [
     createCloseAccountInstruction(
-      new PublicKey(
-        (data[ACCOUNT_PARAM] as Record<string, string>)["wrapped_token"]
-      ),
-      new PublicKey((data[ACCOUNT_PARAM] as Record<string, string>)["owner"]),
-      new PublicKey((data[ACCOUNT_PARAM] as Record<string, string>)["owner"]),
+      new PublicKey(data[ACCOUNT_PARAM]!["wrapped_token"]),
+      new PublicKey(data[ACCOUNT_PARAM]!["owner"]),
+      new PublicKey(data[ACCOUNT_PARAM]!["owner"]),
       [],
-      new PublicKey(
-        (data[ACCOUNT_PARAM] as Record<string, string>)["token_program"]
-      )
+      new PublicKey(data[ACCOUNT_PARAM]!["token_program"])
     ),
   ],
 };

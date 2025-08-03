@@ -144,10 +144,7 @@ const SolanaBasicInstructionForm: React.FC<{
       // Prepare args and accounts
       const argParser = new SolanaIdlParser(contractTemplate.abi as Idl);
       const args = instruction.args.map((arg) =>
-        argParser.parseValue(
-          ((ixRawData[ARG_PARAM] as Record<string, string>) || {})[arg.name],
-          arg.type
-        )
+        argParser.parseValue((ixRawData[ARG_PARAM] || {})[arg.name], arg.type)
       );
       const accounts = Object.fromEntries(
         Object.entries(ixRawData[ACCOUNT_PARAM] || {}).map(([key, value]) => [
@@ -155,11 +152,7 @@ const SolanaBasicInstructionForm: React.FC<{
           new PublicKey(value),
         ])
       );
-      const extraAccounts = (
-        (ixRawData[EXTRA_ACCOUNT_PARAM] || []) as Array<
-          Record<string, string | boolean>
-        >
-      ).map(
+      const extraAccounts = (ixRawData[EXTRA_ACCOUNT_PARAM] || []).map(
         (extraAccount) =>
           ({
             pubkey: new PublicKey(extraAccount[EXTRA_ACCOUNT]),
