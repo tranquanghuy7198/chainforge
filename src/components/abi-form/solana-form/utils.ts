@@ -25,7 +25,11 @@ export const ARG_PARAM = "arg";
 export type IxRawData = {
   [ACCOUNT_PARAM]?: Record<string, string>;
   [ARG_PARAM]?: Record<string, string>;
-  [EXTRA_ACCOUNT_PARAM]?: Array<Record<string, string | boolean>>;
+  [EXTRA_ACCOUNT_PARAM]?: Array<{
+    [EXTRA_SIGNER]?: boolean;
+    [EXTRA_WRITABLE]?: boolean;
+    [EXTRA_ACCOUNT]?: string;
+  }>;
 };
 
 export enum AccountOption {

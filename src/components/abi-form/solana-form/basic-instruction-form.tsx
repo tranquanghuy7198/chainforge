@@ -155,7 +155,7 @@ const SolanaBasicInstructionForm: React.FC<{
       const extraAccounts = (ixRawData[EXTRA_ACCOUNT_PARAM] || []).map(
         (extraAccount) =>
           ({
-            pubkey: new PublicKey(extraAccount[EXTRA_ACCOUNT]),
+            pubkey: new PublicKey(extraAccount[EXTRA_ACCOUNT]!),
             isSigner: extraAccount[EXTRA_SIGNER] ?? false,
             isWritable: extraAccount[EXTRA_WRITABLE] ?? false,
           } as AccountMeta)
