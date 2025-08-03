@@ -170,7 +170,7 @@ const WRAP_SOL_IX: SolanaInstruction = {
 
 const UNWRAP_SOL_IX: SolanaInstruction = {
   id: "",
-  name: "Unwrap native SOL",
+  name: "Unwrap wSOL",
   idlInstruction: {
     name: "unwrapSol",
     discriminator: [1, 2, 3, 4, 5, 6, 7, 8], // TODO
@@ -204,7 +204,11 @@ const UNWRAP_SOL_IX: SolanaInstruction = {
         (data[ACCOUNT_PARAM] as Record<string, string>)["wrapped_token"]
       ),
       new PublicKey((data[ACCOUNT_PARAM] as Record<string, string>)["owner"]),
-      new PublicKey((data[ACCOUNT_PARAM] as Record<string, string>)["owner"])
+      new PublicKey((data[ACCOUNT_PARAM] as Record<string, string>)["owner"]),
+      [],
+      new PublicKey(
+        (data[ACCOUNT_PARAM] as Record<string, string>)["token_program"]
+      )
     ),
   ],
 };
