@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import "./contract-template-card.scss";
 import { AbiAction, ContractTemplate } from "../../utils/constants";
 import { useAppSelector } from "../../redux/hook";
-import { Card, Drawer, Image, Space, Tooltip } from "antd";
+import { Avatar, Card, Drawer, Flex, Space, Tooltip } from "antd";
 import {
   CloudUploadOutlined,
   CodeOutlined,
@@ -41,66 +41,76 @@ const ContractTemplateCard: React.FC<{
           </Tooltip>,
         ]}
       >
-        <span className="template-name">
-          {contractTemplate.name}
-          {Array.from(
-            new Map(
-              blockchains
-                .filter(
-                  (blockchain) =>
-                    contractTemplate.networkClusters.includes(
-                      blockchain.networkCluster
-                    ) && !blockchain.isTestnet
-                )
-                .map((blockchain) => [blockchain.logo, blockchain])
-            ).values()
-          ).map((blockchain) => (
-            <Tooltip key={blockchain.id} title={blockchain.name}>
-              <Image
-                src={blockchain.logo}
-                preview={false}
-                className="template-chain"
-              />
-            </Tooltip>
-          ))}
-        </span>
-        <div className="template-component">
-          {[
-            {
-              key: "abi",
-              label: "ABI",
-              value: JSON.stringify(contractTemplate.abi),
-              icon: <FileTextOutlined className="template-icon" />,
-            },
-            {
-              key: "bytecode",
-              label: "Bytecode",
-              value: contractTemplate.bytecode,
-              icon: <FieldBinaryOutlined className="template-icon" />,
-            },
-            {
-              key: "flattenSource",
-              label: "Flatten Source",
-              value: contractTemplate.flattenSource || "",
-              icon: <CodeOutlined className="template-icon" />,
-            },
-          ].map(({ key, label, value, icon }) => (
-            <Paragraph key={key} copyable={{ text: value, tooltips: false }}>
-              <Space>
-                {icon}
-                <a
-                  href={URL.createObjectURL(
-                    new Blob([value], { type: "text/plain" })
-                  )}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  {label}
-                </a>
-              </Space>
-            </Paragraph>
-          ))}
-        </div>
+        <Flex vertical gap={12}>
+          <Flex align="center" justify="space-between">
+            <div className="template-name">{contractTemplate.name}</div>
+            <Avatar.Group
+              size={30}
+              max={{
+                count: 4,
+                style: {
+                  color: "#0077ffff",
+                  backgroundColor: "#c7e1ffff",
+                  fontSize: 14,
+                  fontWeight: "bold",
+                },
+              }}
+            >
+              {Array.from(
+                new Map(
+                  blockchains
+                    .filter(
+                      (blockchain) =>
+                        contractTemplate.networkClusters.includes(
+                          blockchain.networkCluster
+                        ) && !blockchain.isTestnet
+                    )
+                    .map((blockchain) => [blockchain.logo, blockchain])
+                ).values()
+              ).map((blockchain) => (
+                <Tooltip key={blockchain.id} title={blockchain.name}>
+                  <Avatar src={blockchain.logo} />
+                </Tooltip>
+              ))}
+            </Avatar.Group>
+          </Flex>
+          <Flex vertical>
+            {[
+              {
+                key: "abi",
+                label: "ABI",
+                value: JSON.stringify(contractTemplate.abi),
+                icon: <FileTextOutlined />,
+              },
+              {
+                key: "bytecode",
+                label: "Bytecode",
+                value: contractTemplate.bytecode,
+                icon: <FieldBinaryOutlined />,
+              },
+              {
+                key: "flattenSource",
+                label: "Flatten Source",
+                value: contractTemplate.flattenSource || "",
+                icon: <CodeOutlined />,
+              },
+            ].map(({ key, label, value, icon }) => (
+              <Paragraph key={key} copyable={{ text: value, tooltips: false }}>
+                <Space>
+                  <a
+                    href={URL.createObjectURL(
+                      new Blob([value], { type: "text/plain" })
+                    )}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    {icon} {label}
+                  </a>
+                </Space>
+              </Paragraph>
+            ))}
+          </Flex>
+        </Flex>
       </Card>
       <Drawer
         width={700}
