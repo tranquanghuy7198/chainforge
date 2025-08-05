@@ -2,7 +2,7 @@ import { Button, Flex, Image, Modal } from "antd";
 import React from "react";
 import "./confirm-modal.scss";
 
-import ErrorIcon from "../../assets/ic_error.png";
+import AlertIcon from "../../assets/ic_alert.png";
 import InfoIcon from "../../assets/ic_info.png";
 
 const ConfirmModal: React.FC<{
@@ -34,7 +34,7 @@ const ConfirmModal: React.FC<{
     >
       <Flex vertical align="center" justify="stretch" gap={12}>
         <Image
-          src={danger ? ErrorIcon : InfoIcon}
+          src={danger ? AlertIcon : InfoIcon}
           className="confirm-icon"
           preview={false}
         />
