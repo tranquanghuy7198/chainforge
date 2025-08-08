@@ -199,16 +199,24 @@ const VERIFY_SIGNATURE: SolanaInstruction = {
     discriminator: [1, 2, 3, 4, 5, 6, 7, 8], // TODO
     accounts: [{ name: "signer", signer: false, writable: false }],
     args: [
-      { name: "message", type: "string", docs: ["Message in hexa format"] },
-      { name: "signature", type: "string", docs: ["Signature in hexa format"] },
+      {
+        name: "message",
+        type: "string",
+        docs: ["Message in number array format"],
+      },
+      {
+        name: "signature",
+        type: "string",
+        docs: ["Signature in number array format"],
+      },
     ],
   },
   rawData: {},
   parseIx: (data: IxRawData) => [
     web3.Ed25519Program.createInstructionWithPublicKey({
       publicKey: new PublicKey(data[ACCOUNT_PARAM]!["signer"]).toBytes(),
-      message: Buffer.from(data[ARG_PARAM]!["message"], "hex"),
-      signature: Buffer.from(data[ARG_PARAM]!["signature"], "hex"),
+      message: Uint8Array.from(JSON.parse(data[ARG_PARAM]!["message"])),
+      signature: Uint8Array.from(JSON.parse(data[ARG_PARAM]!["signature"])),
     }),
   ],
 };
