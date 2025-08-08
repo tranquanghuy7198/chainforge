@@ -1,5 +1,5 @@
 import { Form, Input } from "antd";
-import React, { useEffect } from "react";
+import React, { Fragment, useEffect } from "react";
 import { Idl, IdlInstruction } from "../../../utils/types/solana";
 import SolanaAccountInput from "./account-input";
 import {
@@ -205,6 +205,18 @@ const SolanaInstructionForm: React.FC<{
             name={[ARG_PARAM, arg.name]}
             label={arg.name}
             required
+            tooltip={
+              arg.docs ? (
+                <>
+                  {arg.docs.map((doc, index) => (
+                    <Fragment key={index}>
+                      {doc}
+                      <br />
+                    </Fragment>
+                  ))}
+                </>
+              ) : undefined
+            }
           >
             <Input
               placeholder={stringifyArgType(arg.type)}

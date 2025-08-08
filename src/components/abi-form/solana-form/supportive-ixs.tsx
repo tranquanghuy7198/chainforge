@@ -12,7 +12,7 @@ import {
   createCloseAccountInstruction,
   createSyncNativeInstruction,
 } from "@solana/spl-token";
-import { BN } from "@coral-xyz/anchor";
+import { BN, web3 } from "@coral-xyz/anchor";
 
 export type SolanaInstruction = {
   id: string;
@@ -191,9 +191,32 @@ const UNWRAP_SOL_IX: SolanaInstruction = {
   ],
 };
 
+const VERIFY_SIGNATURE: SolanaInstruction = {
+  id: "",
+  name: "Verify ED25519 Signature",
+  idlInstruction: {
+    name: "verifySignature",
+    discriminator: [1, 2, 3, 4, 5, 6, 7, 8], // TODO
+    accounts: [{ name: "signer", signer: false, writable: false }],
+    args: [
+      { name: "message", type: "string", docs: ["Message in hexa format"] },
+      { name: "signature", type: "string", docs: ["Signature in hexa format"] },
+    ],
+  },
+  rawData: {},
+  parseIx: (data: IxRawData) => [
+    web3.Ed25519Program.createInstructionWithPublicKey({
+      publicKey: new PublicKey(data[ACCOUNT_PARAM]!["signer"]).toBytes(),
+      message: Buffer.from(data[ARG_PARAM]!["message"], "hex"),
+      signature: Buffer.from(data[ARG_PARAM]!["signature"], "hex"),
+    }),
+  ],
+};
+
 export const SUPPORTIVE_IXS = [
   APPROVE_SPL_TOKEN_IX,
   CREATE_ATA_IX,
   WRAP_SOL_IX,
   UNWRAP_SOL_IX,
+  VERIFY_SIGNATURE,
 ];
