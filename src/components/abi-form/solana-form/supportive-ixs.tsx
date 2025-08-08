@@ -201,12 +201,12 @@ const VERIFY_SIGNATURE: SolanaInstruction = {
     args: [
       {
         name: "message",
-        type: "string",
+        type: "bytes",
         docs: ["Message in number array format"],
       },
       {
         name: "signature",
-        type: "string",
+        type: "bytes",
         docs: ["Signature in number array format"],
       },
     ],
