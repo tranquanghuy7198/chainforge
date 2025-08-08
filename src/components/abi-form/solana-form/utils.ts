@@ -192,9 +192,15 @@ export class SolanaIdlParser {
       case "string":
         return trimmed.replace(/^["']|["']$/g, "");
       case "bytes":
-        if (trimmed.startsWith("0x")) {
+        // Accept hexa string
+        if (trimmed.startsWith("0x"))
           return Buffer.from(trimmed.slice(2), "hex");
-        }
+
+        // Accept number array
+        if (/^\[\s*(?:\d+(?:\s*,\s*\d+)*)?\s*\]$/.test(trimmed))
+          return Buffer.from(JSON.parse(trimmed));
+
+        // Accept base64 string
         return Buffer.from(trimmed, "base64");
       case "pubkey":
         return new PublicKey(trimmed.replace(/^["']|["']$/g, ""));
