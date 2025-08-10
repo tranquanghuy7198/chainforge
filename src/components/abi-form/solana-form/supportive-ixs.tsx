@@ -65,11 +65,11 @@ const APPROVE_SPL_TOKEN_IX: SolanaInstruction = {
   ],
 };
 
-const CREATE_ATA_IX: SolanaInstruction = {
+const INIT_ATA_IX: SolanaInstruction = {
   id: "",
-  name: "Create Associated Token Account",
+  name: "Initialize Associated Token Account",
   idlInstruction: {
-    name: "createAssociatedTokenAccount",
+    name: "initAssociatedTokenAccount",
     discriminator: [1, 2, 3, 4, 5, 6, 7, 8], // TODO
     accounts: [
       { name: "payer", signer: true, writable: false },
@@ -221,9 +221,32 @@ const VERIFY_SIGNATURE: SolanaInstruction = {
   ],
 };
 
+const INIT_ACCOUNT_IX: SolanaInstruction = {
+  id: "",
+  name: "Initialize Basic Account",
+  idlInstruction: {
+    name: "initBasicAccount",
+    discriminator: [1, 2, 3, 4, 5, 6, 7, 8], // TODO
+    accounts: [
+      { name: "payer", signer: true, writable: true },
+      { name: "account", signer: false, writable: true },
+    ],
+    args: [],
+  },
+  rawData: {},
+  parseIx: (data: IxRawData) => [
+    SystemProgram.transfer({
+      fromPubkey: new PublicKey(data[ACCOUNT_PARAM]!["payer"]),
+      toPubkey: new PublicKey(data[ACCOUNT_PARAM]!["account"]),
+      lamports: 900000,
+    }),
+  ],
+};
+
 export const SUPPORTIVE_IXS = [
+  INIT_ACCOUNT_IX,
+  INIT_ATA_IX,
   APPROVE_SPL_TOKEN_IX,
-  CREATE_ATA_IX,
   WRAP_SOL_IX,
   UNWRAP_SOL_IX,
   VERIFY_SIGNATURE,
