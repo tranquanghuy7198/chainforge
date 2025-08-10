@@ -13,6 +13,7 @@ import {
 import { BN, BorshCoder } from "@coral-xyz/anchor";
 import { Blockchain } from "../../../utils/constants";
 import camelcase from "camelcase";
+import { HEX_STRING, NUMBER_ARRAY } from "../../../utils/regexes";
 
 export const DEPLOYMENT_INSTRUCTION = "deploy";
 export const ACCOUNT_PARAM = "account";
@@ -192,21 +193,19 @@ export class SolanaIdlParser {
       case "string":
         return trimmed.replace(/^["']|["']$/g, "");
       case "bytes":
-        // Accept hexa string
-        if (trimmed.startsWith("0x"))
-          return Buffer.from(trimmed.slice(2), "hex");
-
-        // Accept number array
-        if (/^\[\s*(?:\d+(?:\s*,\s*\d+)*)?\s*\]$/.test(trimmed))
-          return Buffer.from(JSON.parse(trimmed));
-
-        // Accept base64 string
-        return Buffer.from(trimmed, "base64");
+        return SolanaIdlParser.parseBytes(trimmed);
       case "pubkey":
         return new PublicKey(trimmed.replace(/^["']|["']$/g, ""));
       default:
         throw new Error(`Unsupported primitive type: ${type}`);
     }
+  }
+
+  public static parseBytes(value: string): Buffer {
+    const trimmed = value.trim();
+    if (HEX_STRING.test(trimmed)) return Buffer.from(trimmed.slice(2), "hex");
+    if (NUMBER_ARRAY.test(trimmed)) return Buffer.from(JSON.parse(trimmed));
+    return Buffer.from(trimmed, "base64");
   }
 
   private parseOption(

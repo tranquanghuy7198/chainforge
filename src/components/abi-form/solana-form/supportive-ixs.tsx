@@ -4,7 +4,7 @@ import {
   TransactionInstruction,
 } from "@solana/web3.js";
 import { IdlInstruction } from "../../../utils/types/solana";
-import { ACCOUNT_PARAM, ARG_PARAM, IxRawData } from "./utils";
+import { ACCOUNT_PARAM, ARG_PARAM, IxRawData, SolanaIdlParser } from "./utils";
 import {
   ASSOCIATED_TOKEN_PROGRAM_ID,
   createApproveInstruction,
@@ -215,8 +215,8 @@ const VERIFY_SIGNATURE: SolanaInstruction = {
   parseIx: (data: IxRawData) => [
     web3.Ed25519Program.createInstructionWithPublicKey({
       publicKey: new PublicKey(data[ACCOUNT_PARAM]!["signer"]).toBytes(),
-      message: Uint8Array.from(JSON.parse(data[ARG_PARAM]!["message"])),
-      signature: Uint8Array.from(JSON.parse(data[ARG_PARAM]!["signature"])),
+      message: SolanaIdlParser.parseBytes(data[ARG_PARAM]!["message"]),
+      signature: SolanaIdlParser.parseBytes(data[ARG_PARAM]!["signature"]),
     }),
   ],
 };
