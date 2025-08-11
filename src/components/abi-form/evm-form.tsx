@@ -248,6 +248,7 @@ const EvmForm: React.FC<{
                 </Form>
                 {Object.keys(txResponses).includes(func.name || func.type) && (
                   <TransactionResult
+                    blockchain={blockchain}
                     txResponse={txResponses[func.name || func.type]}
                   />
                 )}

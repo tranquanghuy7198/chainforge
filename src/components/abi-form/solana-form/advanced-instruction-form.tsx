@@ -253,7 +253,9 @@ const SolanaAdvancedInstructionForm: React.FC<{
             >
               {capitalize(AbiAction.Write)}
             </Button>
-            {txResp && <TransactionResult txResponse={txResp} />}
+            {txResp && (
+              <TransactionResult blockchain={blockchain} txResponse={txResp} />
+            )}
           </Flex>
         }
         open={instruction !== undefined}
