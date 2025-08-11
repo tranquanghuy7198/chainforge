@@ -191,7 +191,7 @@ const UNWRAP_SOL_IX: SolanaInstruction = {
   ],
 };
 
-const VERIFY_SIGNATURE: SolanaInstruction = {
+const VERIFY_SIGNATURE_IX: SolanaInstruction = {
   id: "",
   name: "Verify ED25519 Signature",
   idlInstruction: {
@@ -249,5 +249,5 @@ export const SUPPORTIVE_IXS = [
   APPROVE_SPL_TOKEN_IX,
   WRAP_SOL_IX,
   UNWRAP_SOL_IX,
-  VERIFY_SIGNATURE,
+  VERIFY_SIGNATURE_IX,
 ];
