@@ -2,8 +2,8 @@ import { Button, Flex, Image, Modal } from "antd";
 import React from "react";
 import "./confirm-modal.scss";
 
-import AlertIcon from "../../assets/ic_alert.png";
-import InfoIcon from "../../assets/ic_info.png";
+import AlertIcon from "@assets/ic_alert.png";
+import InfoIcon from "@assets/ic_info.png";
 
 const ConfirmModal: React.FC<{
   showModal: boolean;

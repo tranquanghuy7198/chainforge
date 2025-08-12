@@ -1,8 +1,8 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { MetaMask } from "../../utils/wallets/ethereum/metamask";
-import { Wallet } from "../../utils/wallets/wallet";
-import { Phantom, Solflare } from "../../utils/wallets/solana/solana";
-import { Slush } from "../../utils/wallets/sui/sui";
+import { MetaMask } from "@utils/wallets/ethereum/metamask";
+import { Wallet } from "@utils/wallets/wallet";
+import { Phantom, Solflare } from "@utils/wallets/solana/solana";
+import { Slush } from "@utils/wallets/sui/sui";
 
 interface WalletState {
   wallets: Record<string, Wallet>;

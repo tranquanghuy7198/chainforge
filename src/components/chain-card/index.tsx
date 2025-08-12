@@ -8,7 +8,7 @@ import {
 import { Card, Image, Tooltip } from "antd";
 import "./blockchain-card.scss";
 import React from "react";
-import { Blockchain } from "../../utils/constants";
+import { Blockchain } from "@utils/constants";
 
 const BlockchainCard: React.FC<{ blockchain: Blockchain }> = ({
   blockchain,

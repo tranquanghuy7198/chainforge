@@ -1,16 +1,16 @@
 import { Form, Input } from "antd";
 import React, { Fragment, useEffect } from "react";
-import { Idl, IdlInstruction } from "../../../utils/types/solana";
-import SolanaAccountInput from "./account-input";
+import { Idl, IdlInstruction } from "@utils/types/solana";
+import SolanaAccountInput from "@components/abi-form/solana-form/account-input";
 import {
   AbiAction,
   Blockchain,
   ContractAddress,
   ContractTemplate,
-} from "../../../utils/constants";
+} from "@utils/constants";
 import useNotification from "antd/es/notification/useNotification";
 import { PublicKey } from "@solana/web3.js";
-import { Wallet } from "../../../utils/wallets/wallet";
+import { Wallet } from "@utils/wallets/wallet";
 import { useForm } from "antd/es/form/Form";
 import {
   ACCOUNT_PARAM,
@@ -20,10 +20,10 @@ import {
   deserializeAccountData,
   IxRawData,
   stringifyArgType,
-} from "./utils";
+} from "@components/abi-form/solana-form/utils";
 import lodash from "lodash";
-import "./solana-form.scss";
-import SolanaExtraAccountInput from "./extra-account-input";
+import "@components/abi-form/solana-form/solana-form.scss";
+import SolanaExtraAccountInput from "@components/abi-form/solana-form/extra-account-input";
 
 const SolanaInstructionForm: React.FC<{
   action: AbiAction;

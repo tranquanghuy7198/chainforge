@@ -1,10 +1,10 @@
 import React from "react";
-import { Wallet } from "../../utils/wallets/wallet";
+import { Wallet } from "@utils/wallets/wallet";
 import { Card, Image, Tooltip } from "antd";
 import "./wallet.scss";
 import { CheckCircleOutlined, PauseCircleOutlined } from "@ant-design/icons";
-import { useAppSelector } from "../../redux/hook";
-import { shorten } from "../../utils/utils";
+import { useAppSelector } from "@redux/hook";
+import { shorten } from "@utils/utils";
 import useNotification from "antd/es/notification/useNotification";
 import Paragraph from "antd/es/typography/Paragraph";
 

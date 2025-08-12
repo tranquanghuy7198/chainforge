@@ -1,5 +1,5 @@
-import { Blockchain } from "../utils/constants";
-import { DATABASE, TABLE } from "./constants";
+import { Blockchain } from "@utils/constants";
+import { DATABASE, TABLE } from "@api/constants";
 
 export const fetchBlockchains = async (): Promise<Blockchain[]> => {
   const response = await fetch(`https://opensheet.elk.sh/${DATABASE}/${TABLE}`);

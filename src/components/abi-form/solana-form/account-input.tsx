@@ -1,14 +1,14 @@
 import React, { Fragment, useState } from "react";
-import { IdlInstructionAccount } from "../../../utils/types/solana";
+import { IdlInstructionAccount } from "@utils/types/solana";
 import { Dropdown, Form, Input, MenuProps, Space } from "antd";
-import { concat } from "../../../utils/utils";
+import { concat } from "@utils/utils";
 import {
   ACCOUNT_PARAM,
   AccountOption,
   defaultAccType,
   getAccountRoles,
   pdaDependees,
-} from "./utils";
+} from "@components/abi-form/solana-form/utils";
 import {
   ASSOCIATED_TOKEN_PROGRAM_ID,
   NATIVE_MINT,

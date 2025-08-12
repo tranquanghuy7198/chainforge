@@ -9,11 +9,11 @@ import {
   IdlSeed,
   IdlType,
   IdlTypeDef,
-} from "../../../utils/types/solana";
+} from "@utils/types/solana";
 import { BN, BorshCoder } from "@coral-xyz/anchor";
-import { Blockchain } from "../../../utils/constants";
+import { Blockchain } from "@utils/constants";
 import camelcase from "camelcase";
-import { HEX_STRING, NUMBER_ARRAY } from "../../../utils/regexes";
+import { HEX_STRING, NUMBER_ARRAY } from "@utils/regexes";
 
 export const DEPLOYMENT_INSTRUCTION = "deploy";
 export const ACCOUNT_PARAM = "account";

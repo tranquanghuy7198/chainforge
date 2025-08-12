@@ -1,22 +1,17 @@
 import React, { useState } from "react";
-import {
-  AbiAction,
-  ADDRESS_PATTERN,
-  ContractAddress,
-  DeployedContract,
-} from "../../utils/constants";
+import { AbiAction, ContractAddress, DeployedContract } from "@utils/constants";
 import { Card, Drawer, Image, Space, Tooltip } from "antd";
-import { useAppSelector } from "../../redux/hook";
+import { useAppSelector } from "@redux/hook";
 import {
   DeleteOutlined,
   EditOutlined,
   ExportOutlined,
   QuestionCircleFilled,
 } from "@ant-design/icons";
-import "./contract-card.scss";
-import { shorten } from "../../utils/utils";
-import AbiForm from "../abi-form";
-import AbiTitle from "../abi-form/abi-title";
+import "@components/contract-card/contract-card.scss";
+import { shorten } from "@utils/utils";
+import AbiForm from "@components/abi-form";
+import AbiTitle from "@components/abi-form/abi-title";
 
 const ContractCard: React.FC<{
   contract: DeployedContract;

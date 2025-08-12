@@ -5,10 +5,13 @@ import {
   Eip1193Provider,
   ethers,
 } from "ethers";
-import { Wallet } from "../wallet";
-import { Blockchain, NetworkCluster, TxResponse } from "../../constants";
-import MetaMaskIcon from "../../../assets/wallets/metamask.svg";
-import { EthereumExtra, toMetaMaskCompatibility } from "./utils";
+import { Wallet } from "@utils/wallets/wallet";
+import { Blockchain, NetworkCluster, TxResponse } from "@utils/constants";
+import MetaMaskIcon from "@assets/wallets/metamask.svg";
+import {
+  EthereumExtra,
+  toMetaMaskCompatibility,
+} from "@utils/wallets/ethereum/utils";
 import SuperJSON from "superjson";
 
 export class MetaMask extends Wallet {

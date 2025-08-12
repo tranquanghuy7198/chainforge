@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { Blockchain } from "../../utils/constants";
+import { Blockchain } from "@utils/constants";
 
 interface BlockchainState {
   blockchains: Blockchain[];

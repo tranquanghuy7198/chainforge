@@ -2,8 +2,8 @@ import {
   PhantomWalletAdapter,
   SolflareWalletAdapter,
 } from "@solana/wallet-adapter-wallets";
-import { Blockchain, NetworkCluster, TxResponse } from "../../constants";
-import { Wallet } from "../wallet";
+import { Blockchain, NetworkCluster, TxResponse } from "@utils/constants";
+import { Wallet } from "@utils/wallets/wallet";
 import {
   BaseMessageSignerWalletAdapter,
   WalletReadyState,
@@ -11,7 +11,7 @@ import {
 import { AnchorProvider, Idl, Program } from "@coral-xyz/anchor";
 import { Connection, Keypair, PublicKey, Transaction } from "@solana/web3.js";
 import SuperJSON from "superjson";
-import { SolanaExtra } from "./utils";
+import { SolanaExtra } from "@utils/wallets/solana/utils";
 import {
   BpfLoaderUpgradeable,
   buildDeploymentTxs,

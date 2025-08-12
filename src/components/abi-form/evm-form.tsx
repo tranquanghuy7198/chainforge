@@ -7,11 +7,11 @@ import {
   EvmAbi,
   EvmAbiFunction,
   TxResponse,
-} from "../../utils/constants";
+} from "@utils/constants";
 import { Button, Form, Input, Space, Tag, Tooltip } from "antd";
 import "./abi-form.scss";
-import { Wallet } from "../../utils/wallets/wallet";
-import { capitalize, evmFunctionSelector } from "../../utils/utils";
+import { Wallet } from "@utils/wallets/wallet";
+import { capitalize, evmFunctionSelector } from "@utils/utils";
 import {
   CloudUploadOutlined,
   EditOutlined,
@@ -19,9 +19,9 @@ import {
 } from "@ant-design/icons";
 import useNotification from "antd/es/notification/useNotification";
 import Paragraph from "antd/es/typography/Paragraph";
-import { EthereumExtra } from "../../utils/wallets/ethereum/utils";
-import CollapseForm from "./collapse-form";
-import TransactionResult from "./tx-response";
+import { EthereumExtra } from "@utils/wallets/ethereum/utils";
+import CollapseForm from "@components/abi-form/collapse-form";
+import TransactionResult from "@components/abi-form/tx-response";
 
 const PAYABLE_AMOUNT = "payable";
 

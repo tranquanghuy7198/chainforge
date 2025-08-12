@@ -1,6 +1,6 @@
 import { Alert } from "antd";
 import React from "react";
-import { Blockchain, TxResponse } from "../../utils/constants";
+import { Blockchain, TxResponse } from "@utils/constants";
 import "./abi-form.scss";
 
 const TransactionResult: React.FC<{

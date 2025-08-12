@@ -14,18 +14,18 @@ import {
   SettingFilled,
   WalletOutlined,
 } from "@ant-design/icons";
-import "./dashboard.scss";
+import "@pages/dashboard/dashboard.scss";
 import { useEffect, useState } from "react";
-import Blockchains from "../blockchains";
-import WalletCard from "../../components/wallet";
-import { useAppDispatch, useAppSelector } from "../../redux/hook";
-import { fetchBlockchains } from "../../api/blockchains";
-import { setBlockchains } from "../../redux/reducers/blockchain";
-import { updateWallet } from "../../redux/reducers/wallet";
-import ContractTemplates from "../contract-templates";
-import Contracts from "../contracts";
-import ProductContact from "../../components/contact";
-import logo from "../../assets/chainforge.png";
+import Blockchains from "@pages/blockchains";
+import WalletCard from "@components/wallet";
+import { useAppDispatch, useAppSelector } from "@redux/hook";
+import { fetchBlockchains } from "@api/blockchains";
+import { setBlockchains } from "@redux/reducers/blockchain";
+import { updateWallet } from "@redux/reducers/wallet";
+import ContractTemplates from "@pages/contract-templates";
+import Contracts from "@pages/contracts";
+import ProductContact from "@components/contact";
+import logo from "@assets/chainforge.png";
 
 type MenuItem = Required<MenuProps>["items"][number];
 

@@ -1,4 +1,4 @@
-import { Blockchain } from "../../constants";
+import { Blockchain } from "@utils/constants";
 
 export type EthereumExtra = { payment?: string };
 

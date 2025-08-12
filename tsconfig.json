@@ -10,7 +10,17 @@
     "strict": true,
     "noEmit": false,
     "skipLibCheck": true,
-    "types": ["webpack-env", "node"]
+    "types": ["webpack-env", "node"],
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"],
+      "@api/*": ["src/api/*"],
+      "@assets/*": ["src/assets/*"],
+      "@components/*": ["src/components/*"],
+      "@pages/*": ["src/pages/*"],
+      "@redux/*": ["src/redux/*"],
+      "@utils/*": ["src/utils/*"]
+    }
   },
   "include": ["src"]
 }

@@ -1,14 +1,10 @@
 import { Form, Select } from "antd";
 import React, { useEffect } from "react";
-import {
-  Blockchain,
-  ContractAddress,
-  NetworkCluster,
-} from "../../utils/constants";
-import { useAppSelector } from "../../redux/hook";
-import { Wallet } from "../../utils/wallets/wallet";
+import { Blockchain, ContractAddress, NetworkCluster } from "@utils/constants";
+import { useAppSelector } from "@redux/hook";
+import { Wallet } from "@utils/wallets/wallet";
 import { useForm } from "antd/es/form/Form";
-import SelectOption from "../select-option";
+import SelectOption from "@components/select-option";
 
 const AbiWalletForm: React.FC<{
   defaultWallet?: string; // default wallet

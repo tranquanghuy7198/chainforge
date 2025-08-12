@@ -2,9 +2,9 @@ import {
   StandardWalletAdapter,
   WalletStandardAdapterProvider,
 } from "@mysten/wallet-adapter-wallet-standard";
-import { Wallet, WalletUI } from "../wallet";
-import { Blockchain, NetworkCluster } from "../../constants";
-import SuiIcon from "../../../assets/wallets/sui.svg";
+import { Wallet, WalletUI } from "@utils/wallets/wallet";
+import { Blockchain, NetworkCluster } from "@utils/constants";
+import SuiIcon from "@assets/wallets/sui.svg";
 import { registerSlushWallet, SLUSH_WALLET_NAME } from "@mysten/slush-wallet";
 
 // WARNING: Be careful when changing Sui wallet names here because those names must match the extension names

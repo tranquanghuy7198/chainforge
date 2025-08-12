@@ -1,6 +1,6 @@
 import { configureStore } from "@reduxjs/toolkit";
-import walletReducer from "./reducers/wallet";
-import blockchainReducer from "./reducers/blockchain";
+import walletReducer from "@redux/reducers/wallet";
+import blockchainReducer from "@redux/reducers/blockchain";
 
 export const store = configureStore({
   reducer: { wallet: walletReducer, blockchain: blockchainReducer },

@@ -5,7 +5,7 @@ import {
   EXTRA_ACCOUNT_PARAM,
   EXTRA_SIGNER,
   EXTRA_WRITABLE,
-} from "./utils";
+} from "@components/abi-form/solana-form/utils";
 import { CloseOutlined, PlusOutlined } from "@ant-design/icons";
 
 const SolanaExtraAccountInput: React.FC<{

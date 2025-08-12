@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import SolanaInstructionForm from "./instruction-form";
+import SolanaInstructionForm from "@components/abi-form/solana-form/instruction-form";
 import { Button, Flex } from "antd";
 import {
   AbiAction,
@@ -7,16 +7,16 @@ import {
   ContractAddress,
   ContractTemplate,
   TxResponse,
-} from "../../../utils/constants";
-import { Wallet } from "../../../utils/wallets/wallet";
-import { Idl, IdlInstruction } from "../../../utils/types/solana";
+} from "@utils/constants";
+import { Wallet } from "@utils/wallets/wallet";
+import { Idl, IdlInstruction } from "@utils/types/solana";
 import {
   CloudUploadOutlined,
   EditOutlined,
   EyeOutlined,
 } from "@ant-design/icons";
-import { capitalize } from "../../../utils/utils";
-import TransactionResult from "../tx-response";
+import { capitalize } from "@utils/utils";
+import TransactionResult from "@components/abi-form/tx-response";
 import {
   ACCOUNT_PARAM,
   ARG_PARAM,
@@ -26,11 +26,11 @@ import {
   EXTRA_WRITABLE,
   IxRawData,
   SolanaIdlParser,
-} from "./utils";
+} from "@components/abi-form/solana-form/utils";
 import useNotification from "antd/es/notification/useNotification";
 import camelcase from "camelcase";
 import { AccountMeta, PublicKey } from "@solana/web3.js";
-import { SolanaExtra } from "../../../utils/wallets/solana/utils";
+import { SolanaExtra } from "@utils/wallets/solana/utils";
 import Paragraph from "antd/es/typography/Paragraph";
 
 const SolanaBasicInstructionForm: React.FC<{

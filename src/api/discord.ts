@@ -1,4 +1,4 @@
-import { WEBHOOK } from "./constants";
+import { WEBHOOK } from "@api/constants";
 
 export type BlockchainForm = {
   name: string;

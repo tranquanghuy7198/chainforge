@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import "./abi-form.scss";
+import "@components/abi-form/abi-form.scss";
 import {
   AbiAction,
   Blockchain,
@@ -8,14 +8,14 @@ import {
   ContractTemplate,
   DeployedContract,
   NetworkCluster,
-} from "../../utils/constants";
-import EvmForm from "./evm-form";
-import SuiForm from "./sui-form";
-import AbiWalletForm from "./abi-wallet-form";
-import { Wallet } from "../../utils/wallets/wallet";
-import { useAppSelector } from "../../redux/hook";
+} from "@utils/constants";
+import EvmForm from "@components/abi-form/evm-form";
+import SuiForm from "@components/abi-form/sui-form";
+import AbiWalletForm from "@components/abi-form/abi-wallet-form";
+import { Wallet } from "@utils/wallets/wallet";
+import { useAppSelector } from "@redux/hook";
 import { Segmented } from "antd";
-import SolanaForm from "./solana-form";
+import SolanaForm from "@components/abi-form/solana-form";
 import { EditOutlined, EyeOutlined } from "@ant-design/icons";
 import useLocalStorageState from "use-local-storage-state";
 import { v4 } from "uuid";

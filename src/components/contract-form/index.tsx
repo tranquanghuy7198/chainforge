@@ -4,15 +4,15 @@ import {
   ContractAddress,
   DeployedContract,
   NetworkCluster,
-} from "../../utils/constants";
+} from "@utils/constants";
 import { v4 } from "uuid";
-import { parseContractTemplateForm } from "../contract-template-form";
+import { parseContractTemplateForm } from "@components/contract-template-form";
 import { useForm, useWatch } from "antd/es/form/Form";
-import { Button, Form, Image, Input, Select, Space } from "antd";
+import { Button, Form, Input, Select, Space } from "antd";
 import { CloseOutlined, PlusOutlined } from "@ant-design/icons";
-import "./contract-form.scss";
-import { useAppSelector } from "../../redux/hook";
-import SelectOption from "../select-option";
+import "@components/contract-form/contract-form.scss";
+import { useAppSelector } from "@redux/hook";
+import SelectOption from "@components/select-option";
 
 export type ContractFormStructure = {
   id: string;

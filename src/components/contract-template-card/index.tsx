@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import "./contract-template-card.scss";
-import { AbiAction, ContractTemplate } from "../../utils/constants";
-import { useAppSelector } from "../../redux/hook";
+import { AbiAction, ContractTemplate } from "@utils/constants";
+import { useAppSelector } from "@redux/hook";
 import { Avatar, Card, Drawer, Flex, Space, Tooltip } from "antd";
 import {
   CloudUploadOutlined,
@@ -11,7 +11,7 @@ import {
   FieldBinaryOutlined,
   FileTextOutlined,
 } from "@ant-design/icons";
-import AbiForm from "../abi-form";
+import AbiForm from "@components/abi-form";
 import Paragraph from "antd/es/typography/Paragraph";
 
 const ContractTemplateCard: React.FC<{

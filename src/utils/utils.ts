@@ -1,5 +1,5 @@
 import { keccak256, toUtf8Bytes } from "ethers";
-import { EvmAbiFunction } from "./constants";
+import { EvmAbiFunction } from "@utils/constants";
 
 export const capitalize = (value: string): string => {
   return value.charAt(0).toUpperCase() + value.slice(1);

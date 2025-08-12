@@ -1,4 +1,4 @@
-import { Blockchain, NetworkCluster, TxResponse } from "../constants";
+import { Blockchain, NetworkCluster, TxResponse } from "@utils/constants";
 
 export const WALLET_STORAGE = "wallets";
 

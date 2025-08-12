@@ -1,5 +1,5 @@
 import React from "react";
-import { AbiAction } from "../../utils/constants";
+import { AbiAction } from "@utils/constants";
 
 const SuiForm: React.FC<{
   action: AbiAction;

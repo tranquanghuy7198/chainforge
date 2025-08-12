@@ -5,19 +5,19 @@ import {
   CONTRACT_TEMPLATE_KEY,
   ContractTemplate,
   NetworkCluster,
-} from "../../utils/constants";
-import Header from "../../components/header";
-import ContractTemplateCard from "../../components/contract-template-card";
-import { capitalize } from "../../utils/utils";
+} from "@utils/constants";
+import Header from "@components/header";
+import ContractTemplateCard from "@components/contract-template-card";
+import { capitalize } from "@utils/utils";
 import { Drawer } from "antd";
 import useNotification from "antd/es/notification/useNotification";
 import ContractTemplateForm, {
   ContractTemplateFormStructure,
   parseContractTemplateForm,
-} from "../../components/contract-template-form";
+} from "@components/contract-template-form";
 import Paragraph from "antd/es/typography/Paragraph";
 import { XBlock, XMasonry } from "react-xmasonry";
-import ConfirmModal from "../../components/confirm-modal";
+import ConfirmModal from "@components/confirm-modal";
 
 const ContractTemplates: React.FC = () => {
   const [notification, contextHolder] = useNotification();

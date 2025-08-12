@@ -3,8 +3,13 @@ import {
   SystemProgram,
   TransactionInstruction,
 } from "@solana/web3.js";
-import { IdlInstruction } from "../../../utils/types/solana";
-import { ACCOUNT_PARAM, ARG_PARAM, IxRawData, SolanaIdlParser } from "./utils";
+import { IdlInstruction } from "@utils/types/solana";
+import {
+  ACCOUNT_PARAM,
+  ARG_PARAM,
+  IxRawData,
+  SolanaIdlParser,
+} from "@components/abi-form/solana-form/utils";
 import {
   ASSOCIATED_TOKEN_PROGRAM_ID,
   createApproveInstruction,

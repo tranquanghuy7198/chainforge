@@ -1,6 +1,6 @@
 import { Alert, Button, Form, Input, Select } from "antd";
-import { ContractTemplate, NetworkCluster } from "../../utils/constants";
-import { capitalize } from "../../utils/utils";
+import { ContractTemplate, NetworkCluster } from "@utils/constants";
+import { capitalize } from "@utils/utils";
 import { useForm, useWatch } from "antd/es/form/Form";
 import { useEffect, useState } from "react";
 import { InboxOutlined } from "@ant-design/icons";

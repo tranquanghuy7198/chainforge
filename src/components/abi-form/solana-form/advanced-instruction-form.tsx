@@ -1,15 +1,15 @@
 import { Button, Drawer, Dropdown, Flex, Space } from "antd";
 import React, { useState } from "react";
-import AbiTitle from "../abi-title";
+import AbiTitle from "@components/abi-form/abi-title";
 import {
   AbiAction,
   Blockchain,
   ContractAddress,
   ContractTemplate,
   TxResponse,
-} from "../../../utils/constants";
-import { Wallet } from "../../../utils/wallets/wallet";
-import { Idl, IdlInstruction } from "../../../utils/types/solana";
+} from "@utils/constants";
+import { Wallet } from "@utils/wallets/wallet";
+import { Idl, IdlInstruction } from "@utils/types/solana";
 import useNotification from "antd/es/notification/useNotification";
 import {
   ACCOUNT_PARAM,
@@ -20,29 +20,32 @@ import {
   EXTRA_WRITABLE,
   IxRawData,
   SolanaIdlParser,
-} from "./utils";
-import "./solana-form.scss";
-import AbiWalletForm from "../abi-wallet-form";
+} from "@components/abi-form/solana-form/utils";
+import "@components/abi-form/solana-form/solana-form.scss";
+import AbiWalletForm from "@components/abi-form/abi-wallet-form";
 import { EditOutlined, PlusOutlined } from "@ant-design/icons";
-import { capitalize } from "../../../utils/utils";
-import TransactionResult from "../tx-response";
-import { SolanaInstruction, SUPPORTIVE_IXS } from "./supportive-ixs";
+import { capitalize } from "@utils/utils";
+import TransactionResult from "@components/abi-form/tx-response";
+import {
+  SolanaInstruction,
+  SUPPORTIVE_IXS,
+} from "@components/abi-form/solana-form/supportive-ixs";
 import { v4 } from "uuid";
-import SolanaInstructionForm from "./instruction-form";
+import SolanaInstructionForm from "@components/abi-form/solana-form/instruction-form";
 import { closestCenter, DndContext, DragEndEvent } from "@dnd-kit/core";
 import {
   arrayMove,
   SortableContext,
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
-import InstructionController from "./ix-controller";
+import InstructionController from "@components/abi-form/solana-form/ix-controller";
 import camelcase from "camelcase";
 import {
   AccountMeta,
   PublicKey,
   TransactionInstruction,
 } from "@solana/web3.js";
-import { SolanaExtra } from "../../../utils/wallets/solana/utils";
+import { SolanaExtra } from "@utils/wallets/solana/utils";
 import Paragraph from "antd/es/typography/Paragraph";
 import {
   restrictToVerticalAxis,

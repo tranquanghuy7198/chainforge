@@ -1,23 +1,23 @@
 import React, { useEffect, useState } from "react";
-import Header from "../../components/header";
+import Header from "@components/header";
 import {
   CONTRACT_KEY,
   DeployedContract,
   NetworkCluster,
-} from "../../utils/constants";
-import ContractCard from "../../components/contract-card";
+} from "@utils/constants";
+import ContractCard from "@components/contract-card";
 import useLocalStorageState from "use-local-storage-state";
-import { capitalize } from "../../utils/utils";
-import { useAppSelector } from "../../redux/hook";
+import { capitalize } from "@utils/utils";
+import { useAppSelector } from "@redux/hook";
 import { Drawer } from "antd";
 import ContractForm, {
   ContractFormStructure,
   parseContractForm,
-} from "../../components/contract-form";
+} from "@components/contract-form";
 import useNotification from "antd/es/notification/useNotification";
 import Paragraph from "antd/es/typography/Paragraph";
 import { XBlock, XMasonry } from "react-xmasonry";
-import ConfirmModal from "../../components/confirm-modal";
+import ConfirmModal from "@components/confirm-modal";
 
 const Contracts: React.FC = () => {
   const [notification, contextHolder] = useNotification();

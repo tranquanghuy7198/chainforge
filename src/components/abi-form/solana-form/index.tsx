@@ -3,20 +3,23 @@ import {
   Blockchain,
   ContractAddress,
   ContractTemplate,
-} from "../../../utils/constants";
-import { Wallet } from "../../../utils/wallets/wallet";
+} from "@utils/constants";
+import { Wallet } from "@utils/wallets/wallet";
 import { Space, Tag, Tooltip } from "antd";
 import { useState } from "react";
-import { Idl, IdlInstruction } from "../../../utils/types/solana";
+import { Idl, IdlInstruction } from "@utils/types/solana";
 import { PublicKey, TransactionInstruction } from "@solana/web3.js";
-import CollapseForm from "../collapse-form";
-import "./solana-form.scss";
+import CollapseForm from "@components/abi-form/collapse-form";
+import "@components/abi-form/solana-form/solana-form.scss";
 import { createApproveInstruction } from "@solana/spl-token";
 import { BN } from "@coral-xyz/anchor";
 import { ThunderboltTwoTone } from "@ant-design/icons";
-import { DEPLOYMENT_INSTRUCTION, getFullInstructions } from "./utils";
-import SolanaAdvancedInstructionForm from "./advanced-instruction-form";
-import SolanaBasicInstructionForm from "./basic-instruction-form";
+import {
+  DEPLOYMENT_INSTRUCTION,
+  getFullInstructions,
+} from "@components/abi-form/solana-form/utils";
+import SolanaAdvancedInstructionForm from "@components/abi-form/solana-form/advanced-instruction-form";
+import SolanaBasicInstructionForm from "@components/abi-form/solana-form/basic-instruction-form";
 
 type TokenApprovalInstruction = {
   account: string;
