@@ -204,16 +204,8 @@ const VERIFY_SIGNATURE_IX: SolanaInstruction = {
     discriminator: [1, 2, 3, 4, 5, 6, 7, 8], // TODO
     accounts: [{ name: "signer", signer: false, writable: false }],
     args: [
-      {
-        name: "message",
-        type: "bytes",
-        docs: ["Message in number array format"],
-      },
-      {
-        name: "signature",
-        type: "bytes",
-        docs: ["Signature in number array format"],
-      },
+      { name: "message", type: "bytes" },
+      { name: "signature", type: "bytes" },
     ],
   },
   rawData: {},
