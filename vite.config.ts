@@ -1,9 +1,16 @@
 import { defineConfig } from "vite";
+import { nodePolyfills } from "vite-plugin-node-polyfills";
 import react from "@vitejs/plugin-react";
 import path from "path";
 
 export default defineConfig({
-  plugins: [react()],
+  plugins: [
+    react(),
+    nodePolyfills({
+      include: ["buffer", "process", "util", "crypto", "stream", "vm"],
+      globals: { global: true, process: true },
+    }),
+  ],
   base: process.env.NODE_ENV === "production" ? "/chainforge/" : "/",
   resolve: {
     alias: {

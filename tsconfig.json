@@ -10,7 +10,8 @@
     "strict": true,
     "noEmit": false,
     "skipLibCheck": true,
-    "types": ["webpack-env", "node"],
+    "types": ["node", "vite/client"],
+    "allowSyntheticDefaultImports": true,
     "baseUrl": ".",
     "paths": {
       "@/*": ["src/*"],
