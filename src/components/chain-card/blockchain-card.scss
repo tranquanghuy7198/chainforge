@@ -20,9 +20,7 @@
 }
 
 .blockchain-name {
-  color: $secondary;
-  font-weight: bold;
-  font-size: 20px;
+  @extend .primary-title;
 }
 
 .blockchain-mainnet {

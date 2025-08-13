@@ -1,9 +1,7 @@
 @use "../../styles.scss" as *;
 
 .template-name {
-  color: $secondary;
-  font-weight: bold;
-  font-size: 20px;
+  @extend .primary-title;
   flex: 1;
   text-overflow: ellipsis;
   white-space: nowrap;
