@@ -12,6 +12,7 @@ import "@components/contract-card/contract-card.scss";
 import { shorten } from "@utils/utils";
 import AbiForm from "@components/abi-form";
 import AbiTitle from "@components/abi-form/abi-title";
+import Paragraph from "antd/es/typography/Paragraph";
 
 const ContractCard: React.FC<{
   contract: DeployedContract;
@@ -38,9 +39,12 @@ const ContractCard: React.FC<{
         <Flex vertical justify="stretch" gap={5}>
           <div className="contract-name">{contract.template.name}</div>
           {contract.template.description && (
-            <div className="primary-description">
+            <Paragraph
+              className="primary-description"
+              ellipsis={{ rows: 4, expandable: true, symbol: "See more" }}
+            >
               {contract.template.description}
-            </div>
+            </Paragraph>
           )}
           <div>
             {contract.addresses.map((address) => {
