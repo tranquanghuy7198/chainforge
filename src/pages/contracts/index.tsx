@@ -106,6 +106,7 @@ const Contracts: React.FC = () => {
         form: {
           id: contract.id,
           name: contract.template.name,
+          description: contract.template.description,
           abi: JSON.stringify(contract.template.abi),
           flattenSource: contract.template.flattenSource,
           addresses: contract.addresses,

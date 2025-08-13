@@ -12,6 +12,7 @@ import "./contract-template-form.scss";
 export type ContractTemplateFormStructure = {
   id: string;
   name: string;
+  desscription?: string;
   abi: string;
   bytecode: string;
   flattenSource?: string;
@@ -26,6 +27,7 @@ export const parseContractTemplateForm = (
   return {
     id: id ?? v4(),
     name: form.name,
+    description: form.desscription,
     abi: JSON.parse(form.abi),
     bytecode: form.bytecode,
     flattenSource: form.flattenSource,

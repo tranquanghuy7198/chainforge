@@ -39,7 +39,7 @@ const ConfirmModal: React.FC<{
           preview={false}
         />
         <div className="confirm-title">{title}</div>
-        <div className="confirm-des">{description}</div>
+        <div className="description">{description}</div>
         {showButtons && (
           <Button
             type="primary"

@@ -17,6 +17,7 @@ import SelectOption from "@components/select-option";
 export type ContractFormStructure = {
   id: string;
   name: string;
+  description?: string;
   abi: string;
   flattenSource?: string;
   addresses: ContractAddress[];
@@ -33,6 +34,7 @@ export const parseContractForm = (
     template: parseContractTemplateForm({
       id: contractId,
       name: form.name,
+      desscription: form.description,
       abi: form.abi,
       bytecode: "{}",
       flattenSource: form.flattenSource,
@@ -69,6 +71,9 @@ const ContractForm: React.FC<{
     >
       <Form.Item name="name" label="Name" required>
         <Input placeholder="Contract Name" />
+      </Form.Item>
+      <Form.Item name="description" label="Description">
+        <Input.TextArea placeholder="Description" />
       </Form.Item>
       <Form.Item name="abi" label="ABI" required>
         <Input.TextArea

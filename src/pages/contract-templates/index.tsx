@@ -104,6 +104,7 @@ const ContractTemplates: React.FC = () => {
           id: template.id,
           name: template.name,
           abi: JSON.stringify(template.abi),
+          desscription: template.description,
           bytecode: template.bytecode,
           flattenSource: template.flattenSource,
           programKeypair: template.programKeypair
