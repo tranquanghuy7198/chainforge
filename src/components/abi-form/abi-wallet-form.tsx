@@ -53,7 +53,7 @@ const AbiWalletForm: React.FC<{
           options={Object.values(wallets)
             .filter((wallet) => networkClusters.includes(wallet.networkCluster))
             .map((wallet) => ({
-              label: wallet.constructor.name,
+              label: wallet.ui.name,
               value: wallet.key,
               emoji: wallet.ui.icon,
             }))}
