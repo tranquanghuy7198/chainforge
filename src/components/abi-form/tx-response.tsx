@@ -1,6 +1,6 @@
 import { Alert } from "antd";
 import React from "react";
-import { Blockchain, TxResponse } from "@utils/constants";
+import { Blockchain, TX_PATTERN, TxResponse } from "@utils/constants";
 import "./abi-form.scss";
 
 const TransactionResult: React.FC<{
@@ -16,7 +16,7 @@ const TransactionResult: React.FC<{
         (txResponse.txHash && blockchain ? (
           <a
             target="_blank"
-            href={blockchain.txUrl.replace("[[tx]]", txResponse.txHash)}
+            href={blockchain.txUrl.replaceAll(TX_PATTERN, txResponse.txHash)}
           >
             {txResponse.txHash}
           </a>
