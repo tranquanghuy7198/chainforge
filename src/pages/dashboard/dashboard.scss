@@ -22,7 +22,6 @@ body {
 }
 
 .left-area {
-  background-color: $primary !important;
   height: 100vh;
 }
 
@@ -46,18 +45,14 @@ body {
 }
 
 .ant-menu {
-  background-color: $primary !important;
+  border: none !important;
   height: calc(100vh - 80px - 40px);
   overflow-y: auto;
 }
 
 .ant-menu-item {
-  padding-left: 40px !important;
-  padding-right: 40px !important;
-}
-
-.ant-menu-item-selected {
-  background-color: $secondary !important;
+  padding-left: 30px !important;
+  padding-right: 30px !important;
 }
 
 .page-header {

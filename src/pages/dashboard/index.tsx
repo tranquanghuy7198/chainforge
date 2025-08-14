@@ -59,7 +59,7 @@ export default function Dashboard(props: any) {
 
   return (
     <Layout hasSider className="main-screen">
-      <Layout.Sider className="left-area" width="auto">
+      <Layout.Sider className="left-area" width="auto" theme="light">
         <div className="profile-logo-container">
           <Image src={logo} preview={false} className="profile-logo" />
           <div className="profile-title">CHAINFORGE</div>
@@ -68,7 +68,7 @@ export default function Dashboard(props: any) {
           defaultSelectedKeys={["blockchains"]}
           defaultOpenKeys={["blockchains"]}
           onSelect={({ key }) => setSelectedKey(key)}
-          theme="dark"
+          theme="light"
           items={items}
         />
         <ProductContact />
