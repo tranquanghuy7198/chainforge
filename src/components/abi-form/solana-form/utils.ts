@@ -136,7 +136,7 @@ export class SolanaIdlParser {
     this.idl = idl;
   }
 
-  public parseValue(value: string, idlType: IdlType): any {
+  public parseValue(value: string | undefined, idlType: IdlType): any {
     const context: ParseContext = {
       typeDefs: this.idl.types || [],
       generics: new Map(),
@@ -145,21 +145,22 @@ export class SolanaIdlParser {
   }
 
   private parseValueInternal(
-    value: string,
+    value: string | undefined,
     idlType: IdlType,
     context: ParseContext
   ): any {
-    if (typeof idlType === "string") return this.parsePrimitive(value, idlType);
+    if (typeof idlType === "string")
+      return this.parsePrimitive(value!, idlType);
     if ("option" in idlType)
       return this.parseOption(value, idlType.option, context);
     if ("coption" in idlType)
       return this.parseOption(value, idlType.coption, context);
-    if ("vec" in idlType) return this.parseVec(value, idlType.vec, context);
+    if ("vec" in idlType) return this.parseVec(value!, idlType.vec, context);
     // if ('array' in idlType) {
     //   return this.parseArray(value, idlType.array[0], idlType.array[1], context);
     // }
     if ("defined" in idlType)
-      return this.parseDefined(value, idlType.defined.name, context);
+      return this.parseDefined(value!, idlType.defined.name, context);
     if ("generic" in idlType) {
       const resolvedType = context.generics?.get(idlType.generic);
       if (resolvedType)
@@ -209,13 +210,12 @@ export class SolanaIdlParser {
   }
 
   private parseOption(
-    value: string,
+    value: string | undefined,
     innerType: IdlType,
     context: ParseContext
   ): any {
-    const trimmed = value.trim();
-    if (["null", "undefined", ""].includes(trimmed)) return null;
-    return this.parseValueInternal(value, innerType, context);
+    if (!value || value === "") return null;
+    return this.parseValueInternal(value.trim(), innerType, context);
   }
 
   private parseVec(
