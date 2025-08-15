@@ -111,7 +111,7 @@ const SolanaForm: React.FC<{
               <Space>
                 <div className="function-name">{instruction.name}</div>
                 <Tooltip title="Instruction Discriminator">
-                  <Tag color="#108ee9">
+                  <Tag color="green" bordered={false}>
                     0x{Buffer.from(instruction.discriminator).toString("hex")}
                   </Tag>
                 </Tooltip>

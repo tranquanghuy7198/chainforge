@@ -198,7 +198,9 @@ const EvmForm: React.FC<{
               <Space>
                 <div className="function-name">{func.name || func.type}</div>
                 <Tooltip title="Function Selector">
-                  <Tag color="#108ee9">0x{evmFunctionSelector(func)}</Tag>
+                  <Tag color="green" bordered={false}>
+                    0x{evmFunctionSelector(func)}
+                  </Tag>
                 </Tooltip>
               </Space>
             ),
