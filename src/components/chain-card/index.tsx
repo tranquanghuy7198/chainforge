@@ -1,6 +1,5 @@
 import {
   CheckCircleOutlined,
-  CheckCircleTwoTone,
   EditOutlined,
   ExportOutlined,
   SettingOutlined,
@@ -52,10 +51,7 @@ const BlockchainCard: React.FC<{ blockchain: Blockchain }> = ({
                 }
                 color="green"
               >
-                <CheckCircleTwoTone
-                  twoToneColor="#52c41a"
-                  className="blockchain-mainnet"
-                />
+                <CheckCircleOutlined className="blockchain-mainnet" />
               </Tooltip>
             )}
           </div>
