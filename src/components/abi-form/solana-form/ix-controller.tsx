@@ -4,6 +4,7 @@ import { Card, Flex } from "antd";
 import React from "react";
 import "./solana-form.scss";
 import { CloseOutlined, MenuOutlined } from "@ant-design/icons";
+import { PRIMARY_COLOR } from "@/utils/constants";
 
 const InstructionController: React.FC<{
   id: string;
@@ -19,8 +20,8 @@ const InstructionController: React.FC<{
   const style: React.CSSProperties = {
     transform: CSS.Transform.toString(transform),
     transition,
-    borderColor: selected ? "#1ABC9C" : "#303030",
-    color: selected ? "#1ABC9C" : "inherit",
+    borderColor: selected ? PRIMARY_COLOR : "#303030",
+    color: selected ? PRIMARY_COLOR : "inherit",
   };
 
   return (

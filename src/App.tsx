@@ -4,6 +4,7 @@ import Dashboard from "@pages/dashboard";
 import { Provider } from "react-redux";
 import { store } from "@redux/store";
 import { ConfigProvider, theme } from "antd";
+import { PRIMARY_COLOR } from "./utils/constants";
 
 const App: React.FC = () => {
   return (
@@ -11,9 +12,9 @@ const App: React.FC = () => {
       theme={{
         algorithm: theme.darkAlgorithm,
         token: {
-          colorPrimary: "#1ABC9C",
-          colorLink: "#1ABC9C",
-          colorInfo: "#1ABC9C",
+          colorPrimary: PRIMARY_COLOR,
+          colorLink: PRIMARY_COLOR,
+          colorInfo: PRIMARY_COLOR,
         },
       }}
     >

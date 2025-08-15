@@ -1,3 +1,5 @@
+export const PRIMARY_COLOR = "#1ABC9C";
+
 export const CONTRACT_TEMPLATE_KEY = "contract-templates";
 export const CONTRACT_KEY = "contracts";
 export const ADDRESS_PATTERN = "[[address]]";
