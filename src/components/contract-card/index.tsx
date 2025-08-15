@@ -40,7 +40,7 @@ const ContractCard: React.FC<{
           <div className="contract-name">{contract.template.name}</div>
           {contract.template.description && (
             <Paragraph
-              className="primary-description"
+              className="description"
               ellipsis={{ rows: 4, expandable: true, symbol: "See more" }}
             >
               {contract.template.description}

@@ -59,9 +59,11 @@ const BlockchainCard: React.FC<{ blockchain: Blockchain }> = ({
               </Tooltip>
             )}
           </div>
-          <div>Chain ID: {blockchain.chainId}</div>
-          <div>Token: {blockchain.nativeToken}</div>
-          <div>Decimals: {blockchain.nativeDecimal}</div>
+          <div className="description">
+            <div>Chain ID: {blockchain.chainId}</div>
+            <div>Token: {blockchain.nativeToken}</div>
+            <div>Decimals: {blockchain.nativeDecimal}</div>
+          </div>
         </div>
       </div>
     </Card>

@@ -9,6 +9,11 @@ const App: React.FC = () => {
   return (
     <ConfigProvider
       theme={{
+        token: {
+          colorPrimary: "#1ABC9C",
+          colorLink: "#1ABC9C",
+          colorInfo: "#1ABC9C",
+        },
         algorithm: theme.darkAlgorithm,
       }}
     >

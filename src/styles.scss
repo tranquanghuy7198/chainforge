@@ -1,5 +1,5 @@
 /* Commonly used color */
-$primary: #1e407c;
+$primary: #1abc9c;
 $secondary: #235abc;
 $success: #52c41a;
 $gray: #595959;
@@ -30,17 +30,11 @@ $gray: #595959;
 }
 
 .primary-title {
-  color: $secondary;
   font-weight: bold;
   font-size: 20px;
 }
 
 .description {
   font-size: 14px;
-  color: #909090;
-}
-
-.primary-description {
-  font-size: 14px;
-  color: #6090e2;
+  color: #9ca3af;
 }
