@@ -19,7 +19,8 @@ const InstructionController: React.FC<{
   const style: React.CSSProperties = {
     transform: CSS.Transform.toString(transform),
     transition,
-    backgroundColor: selected ? "#e6f4ff" : "#fff",
+    borderColor: selected ? "#1ABC9C" : "#303030",
+    color: selected ? "#1ABC9C" : "inherit",
   };
 
   return (

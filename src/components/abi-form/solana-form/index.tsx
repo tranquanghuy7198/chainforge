@@ -13,7 +13,7 @@ import CollapseForm from "@components/abi-form/collapse-form";
 import "@components/abi-form/solana-form/solana-form.scss";
 import { createApproveInstruction } from "@solana/spl-token";
 import { BN } from "@coral-xyz/anchor";
-import { ThunderboltTwoTone } from "@ant-design/icons";
+import { ThunderboltFilled } from "@ant-design/icons";
 import {
   DEPLOYMENT_INSTRUCTION,
   getFullInstructions,
@@ -120,7 +120,8 @@ const SolanaForm: React.FC<{
             extra:
               action === AbiAction.Write ? (
                 <Tooltip title="Advanced Mode">
-                  <ThunderboltTwoTone
+                  <ThunderboltFilled
+                    className="advanced-mode"
                     onClick={(event) => {
                       event.stopPropagation();
                       setAdvancedIx(instruction);

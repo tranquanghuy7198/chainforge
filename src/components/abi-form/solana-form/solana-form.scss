@@ -46,7 +46,6 @@
 
 .ix-controller {
   margin-bottom: 10px;
-  color: $gray;
   cursor: default;
 }
 
@@ -64,10 +63,13 @@
   text-overflow: ellipsis;
   white-space: nowrap;
   overflow: hidden;
-  color: black;
 }
 
 .ix-close {
   margin-left: 10px;
   cursor: pointer;
+}
+
+.advanced-mode {
+  color: $success;
 }
