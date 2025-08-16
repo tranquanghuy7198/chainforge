@@ -29,7 +29,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 15px;
+  gap: 8px;
   height: 80px;
 }
 
@@ -39,9 +39,10 @@ body {
 }
 
 .profile-title {
+  font-family: "tesla";
   font-size: 20px;
   font-weight: bold;
-  color: #ffffff;
+  color: $primary;
 }
 
 .ant-menu {
@@ -51,8 +52,8 @@ body {
 }
 
 .ant-menu-item {
-  padding-left: 30px !important;
-  padding-right: 30px !important;
+  padding-left: 40px !important;
+  padding-right: 40px !important;
 }
 
 .page-header {

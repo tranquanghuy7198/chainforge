@@ -4,6 +4,14 @@ $secondary: #235abc;
 $success: #52c41a;
 $gray: #595959;
 
+@font-face {
+  font-family: "tesla";
+  src: url("@assets/fonts/tesla.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
 .page {
   height: 100vh;
   overflow-y: hidden;
