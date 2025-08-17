@@ -24,6 +24,7 @@ import {
 import lodash from "lodash";
 import "@components/abi-form/solana-form/solana-form.scss";
 import SolanaExtraAccountInput from "@components/abi-form/solana-form/extra-account-input";
+import VSCodeEditor from "@/components/vscode-editor";
 
 const SolanaInstructionForm: React.FC<{
   action: AbiAction;
@@ -218,11 +219,21 @@ const SolanaInstructionForm: React.FC<{
               ) : undefined
             }
           >
-            <Input
-              placeholder={stringifyArgType(arg.type)}
-              onChange={() => onIxDataChange(form.getFieldsValue())}
-              disabled={disabled}
-            />
+            {["vec", "array", "defined", "generic"].some((specialType) =>
+              stringifyArgType(arg.type).includes(specialType)
+            ) ? (
+              <VSCodeEditor
+                placeholder={stringifyArgType(arg.type)}
+                onChange={() => onIxDataChange(form.getFieldsValue())}
+                disabled={disabled}
+              />
+            ) : (
+              <Input
+                placeholder={stringifyArgType(arg.type)}
+                onChange={() => onIxDataChange(form.getFieldsValue())}
+                disabled={disabled}
+              />
+            )}
           </Form.Item>
         ))}
         {action === AbiAction.Write && extraAccounts && (
