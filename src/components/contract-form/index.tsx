@@ -13,6 +13,7 @@ import { CloseOutlined, PlusOutlined } from "@ant-design/icons";
 import "@components/contract-form/contract-form.scss";
 import { useAppSelector } from "@redux/hook";
 import SelectOption from "@components/select-option";
+import VSCodeEditor from "../vscode-editor";
 
 export type ContractFormStructure = {
   id: string;
@@ -76,10 +77,7 @@ const ContractForm: React.FC<{
         <Input.TextArea placeholder="Description" />
       </Form.Item>
       <Form.Item name="abi" label="ABI" required>
-        <Input.TextArea
-          placeholder="Contract ABI (EVM) or IDL (Solana)"
-          rows={4}
-        />
+        <VSCodeEditor placeholder="Contract ABI (EVM) or IDL (Solana)" />
       </Form.Item>
       <Form.Item name="flattenSource" label="Flatten Source">
         <Input.TextArea rows={4} placeholder="Contract flatten source" />
