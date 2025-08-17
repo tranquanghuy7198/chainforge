@@ -7,7 +7,7 @@ import { InboxOutlined } from "@ant-design/icons";
 import Dragger from "antd/es/upload/Dragger";
 import { v4 } from "uuid";
 import { Keypair } from "@solana/web3.js";
-import Editor from "@monaco-editor/react";
+import VSCodeEditor from "@components/vscode-editor";
 import "./contract-template-form.scss";
 
 export type ContractTemplateFormStructure = {
@@ -99,22 +99,7 @@ const ContractTemplateForm: React.FC<{
         <Input placeholder="Contract Name" />
       </Form.Item>
       <Form.Item name="abi" label="ABI" required>
-        {/* <Input.TextArea
-          placeholder="Contract ABI (EVM) or IDL (Solana)"
-          rows={4}
-        /> */}
-        <Editor
-          theme="vs-dark"
-          defaultLanguage="json"
-          height={150}
-          options={{
-            minimap: { enabled: false },
-            tabIndex: 2,
-            lineNumbers: "off",
-            placeholder: "Contract ABI (EVM) or IDL (Solana)",
-          }}
-          // className="ant-input ant-input-outlined"
-        />
+        <VSCodeEditor placeholder="Contract ABI (EVM) or IDL (Solana)" />
       </Form.Item>
       <Form.Item name="bytecode" label="Bytecode" required>
         <Input.TextArea placeholder="Contract bytecode" rows={4} />
