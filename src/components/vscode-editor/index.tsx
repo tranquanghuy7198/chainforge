@@ -40,7 +40,7 @@ const VSCodeEditor = forwardRef<VSCodeEditorRef, VSCodeEditorProps>(
     };
 
     return (
-      <div className="vscode-editor-wrapper">
+      <div>
         <Editor
           value={value || ""}
           onChange={handleEditorChange}
