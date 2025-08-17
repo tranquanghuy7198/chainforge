@@ -22,6 +22,7 @@ import Paragraph from "antd/es/typography/Paragraph";
 import { EthereumExtra } from "@utils/wallets/ethereum/utils";
 import CollapseForm from "@components/abi-form/collapse-form";
 import TransactionResult from "@components/abi-form/tx-response";
+import VSCodeEditor from "../vscode-editor";
 
 const PAYABLE_AMOUNT = "payable";
 
@@ -218,7 +219,15 @@ const EvmForm: React.FC<{
                       label={param.name}
                       required
                     >
-                      <Input placeholder={param.type} disabled={loading} />
+                      {param.type.includes("tuple") ||
+                      param.type.includes("[]") ? (
+                        <VSCodeEditor
+                          placeholder={param.type}
+                          disabled={loading}
+                        />
+                      ) : (
+                        <Input placeholder={param.type} disabled={loading} />
+                      )}
                     </Form.Item>
                   ))}
                   {func.stateMutability === "payable" && (
