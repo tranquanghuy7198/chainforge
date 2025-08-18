@@ -50,30 +50,25 @@ const EvmForm: React.FC<{
   const deploy = async (
     wallet: Wallet,
     blockchain: Blockchain,
-    func: EvmAbiFunction,
-    params: Record<string, string>
+    parsedParams: any[],
+    payableAmount?: string
   ) => {
     const txResponse = await wallet.deploy(
       blockchain,
       contractTemplate.abi,
       contractTemplate.bytecode,
-      func.inputs.map((param) => {
-        const rawParam = params[param.name];
-        if (param.type.includes("tuple") || param.type.includes("[]"))
-          return JSON.parse(rawParam);
-        return rawParam;
-      }),
-      { payment: params[PAYABLE_AMOUNT] } as EthereumExtra
+      parsedParams,
+      { payment: payableAmount } as EthereumExtra
     );
-    setTxResponses({ ...txResponses, [func.name || func.type]: txResponse });
+    setTxResponses({ ...txResponses, constructor: txResponse });
     saveDeployedContract(blockchain, txResponse.contractAddress!);
   };
 
   const read = async (
     wallet: Wallet,
     blockchain: Blockchain,
-    func: EvmAbiFunction,
-    params: Record<string, string>
+    funcName: string,
+    parsedParams: any[]
   ) => {
     if (!contractAddress) {
       notification.error({
@@ -87,24 +82,18 @@ const EvmForm: React.FC<{
       blockchain,
       contractAddress.address,
       contractTemplate.abi,
-      func.name!,
-      func.inputs.map((param) => {
-        const rawParam = params[param.name];
-        try {
-          return JSON.parse(rawParam);
-        } catch {
-          return rawParam;
-        }
-      })
+      funcName,
+      parsedParams
     );
-    setTxResponses({ ...txResponses, [func.name!]: response });
+    setTxResponses({ ...txResponses, [funcName]: response });
   };
 
   const write = async (
     wallet: Wallet,
     blockchain: Blockchain,
-    func: EvmAbiFunction,
-    params: Record<string, string>
+    funcName: string,
+    parsedParams: any[],
+    payableAmount?: string
   ) => {
     if (!contractAddress) {
       notification.error({
@@ -118,18 +107,11 @@ const EvmForm: React.FC<{
       blockchain,
       contractAddress.address,
       contractTemplate.abi,
-      func.name!,
-      func.inputs.map((param) => {
-        const rawParam = params[param.name];
-        try {
-          return JSON.parse(rawParam);
-        } catch {
-          return rawParam;
-        }
-      }),
-      { payment: params[PAYABLE_AMOUNT] } as EthereumExtra
+      funcName,
+      parsedParams,
+      { payment: payableAmount } as EthereumExtra
     );
-    setTxResponses({ ...txResponses, [func.name!]: response });
+    setTxResponses({ ...txResponses, [funcName]: response });
   };
 
   const execute = async (
@@ -152,6 +134,15 @@ const EvmForm: React.FC<{
       return;
     }
 
+    // Parse function params
+    const payableAmount = params[PAYABLE_AMOUNT];
+    const parsedParams = func.inputs.map((param) => {
+      const rawParam = params[param.name];
+      if (param.type.includes("tuple") || param.type.includes("[]"))
+        return JSON.parse(rawParam);
+      return rawParam;
+    });
+
     // Pre-tx UI handling
     setLoading(true);
     const { [func.name || func.type]: _, ...newTxResponses } = txResponses;
@@ -160,11 +151,17 @@ const EvmForm: React.FC<{
     // Execute
     try {
       if (action === AbiAction.Deploy)
-        await deploy(wallet, blockchain, func, params);
+        await deploy(wallet, blockchain, parsedParams, payableAmount);
       else if (action === AbiAction.Read)
-        await read(wallet, blockchain, func, params);
+        await read(wallet, blockchain, func.name!, parsedParams);
       else if (action === AbiAction.Write)
-        await write(wallet, blockchain, func, params);
+        await write(
+          wallet,
+          blockchain,
+          func.name!,
+          parsedParams,
+          payableAmount
+        );
     } catch (e) {
       notification.error({
         message: "Execution Failed",
