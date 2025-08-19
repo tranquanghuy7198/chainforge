@@ -12,8 +12,8 @@ import CollapseForm from "@components/abi-form/collapse-form";
 import "@components/abi-form/solana-form/solana-form.scss";
 import { ThunderboltFilled } from "@ant-design/icons";
 import {
-  DEPLOYMENT_INSTRUCTION,
   getFullInstructions,
+  ixAction,
 } from "@components/abi-form/solana-form/utils";
 import SolanaAdvancedInstructionForm from "@components/abi-form/solana-form/advanced-instruction-form";
 import SolanaBasicInstructionForm from "@components/abi-form/solana-form/basic-instruction-form";
@@ -39,23 +39,7 @@ const SolanaForm: React.FC<{
     <>
       <CollapseForm
         items={getFullInstructions(contractTemplate.abi as Idl)
-          .filter((instruction) => {
-            if (action === AbiAction.Deploy)
-              return instruction.name === DEPLOYMENT_INSTRUCTION;
-            let isWriteInstruction = false;
-            for (const account of instruction.accounts)
-              for (const singleAccount of "accounts" in account
-                ? account.accounts
-                : [account])
-                if (singleAccount.signer || singleAccount.writable) {
-                  isWriteInstruction = true;
-                  break;
-                }
-            return (
-              instruction.name !== DEPLOYMENT_INSTRUCTION &&
-              isWriteInstruction === (action === AbiAction.Write)
-            );
-          })
+          .filter((instruction) => ixAction(instruction) === action)
           .map((instruction) => ({
             key: instruction.name,
             label: (
