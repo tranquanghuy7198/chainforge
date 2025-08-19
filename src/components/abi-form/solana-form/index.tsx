@@ -8,11 +8,8 @@ import { Wallet } from "@utils/wallets/wallet";
 import { Space, Tag, Tooltip } from "antd";
 import { useState } from "react";
 import { Idl, IdlInstruction } from "@utils/types/solana";
-import { PublicKey, TransactionInstruction } from "@solana/web3.js";
 import CollapseForm from "@components/abi-form/collapse-form";
 import "@components/abi-form/solana-form/solana-form.scss";
-import { createApproveInstruction } from "@solana/spl-token";
-import { BN } from "@coral-xyz/anchor";
 import { ThunderboltFilled } from "@ant-design/icons";
 import {
   DEPLOYMENT_INSTRUCTION,
@@ -20,13 +17,6 @@ import {
 } from "@components/abi-form/solana-form/utils";
 import SolanaAdvancedInstructionForm from "@components/abi-form/solana-form/advanced-instruction-form";
 import SolanaBasicInstructionForm from "@components/abi-form/solana-form/basic-instruction-form";
-
-type TokenApprovalInstruction = {
-  account: string;
-  delegate: string;
-  owner: string;
-  amount: string;
-};
 
 const SolanaForm: React.FC<{
   action: AbiAction;
@@ -44,45 +34,6 @@ const SolanaForm: React.FC<{
   blockchain,
 }) => {
   const [advancedIx, setAdvancedIx] = useState<IdlInstruction>();
-  const [supportiveInstructions, setSupportiveInstructions] = useState<
-    Record<string, Partial<TokenApprovalInstruction>[]>
-  >({});
-
-  const parseSupportiveInstruction = (
-    rawInstruction: Partial<TokenApprovalInstruction>
-  ): TransactionInstruction => {
-    return createApproveInstruction(
-      new PublicKey(rawInstruction.account!),
-      new PublicKey(rawInstruction.delegate!),
-      new PublicKey(rawInstruction.owner!),
-      new BN(parseInt(rawInstruction.amount!, 10))
-    );
-  };
-
-  const addTokenApprovalForm = (instructionName: string) => {
-    setSupportiveInstructions({
-      ...supportiveInstructions,
-      [instructionName]: [
-        ...(supportiveInstructions[instructionName] || []),
-        {},
-      ],
-    });
-  };
-
-  const setTokenApproval = (
-    instructionName: string,
-    index: number,
-    values: TokenApprovalInstruction
-  ) => {
-    setSupportiveInstructions({
-      ...supportiveInstructions,
-      [instructionName]: [
-        ...(supportiveInstructions[instructionName] || []).slice(0, index),
-        values,
-        ...(supportiveInstructions[instructionName] || []).slice(index + 1),
-      ],
-    });
-  };
 
   return (
     <>
