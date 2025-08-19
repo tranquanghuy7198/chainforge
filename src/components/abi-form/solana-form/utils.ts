@@ -11,7 +11,7 @@ import {
   IdlTypeDef,
 } from "@utils/types/solana";
 import { BN, BorshCoder } from "@coral-xyz/anchor";
-import { Blockchain } from "@utils/constants";
+import { AbiAction, Blockchain } from "@utils/constants";
 import camelcase from "camelcase";
 import { HEX_STRING, NUMBER_ARRAY } from "@utils/regexes";
 
@@ -112,6 +112,22 @@ export const getAccountRoles = (account: IdlInstructionAccount): string[] => {
   if (account.writable) roles.push("Writable");
   return roles;
 };
+
+export const ixAction = (instruction: IdlInstruction): AbiAction => {
+  if (instruction.name === DEPLOYMENT_INSTRUCTION) return AbiAction.Deploy;
+  let isWriteInstruction = false;
+  for (const account of instruction.accounts)
+    for (const singleAccount of "accounts" in account
+      ? account.accounts
+      : [account])
+      if (singleAccount.signer || singleAccount.writable) {
+        isWriteInstruction = true;
+        break;
+      }
+  if (isWriteInstruction) return AbiAction.Write;
+  return AbiAction.Read;
+};
+
 export const getFullInstructions = (idl: Idl): IdlInstruction[] => {
   return [
     ...idl.instructions,
