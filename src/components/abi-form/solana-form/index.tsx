@@ -61,11 +61,13 @@ const SolanaForm: React.FC<{
             label: (
               <Space>
                 <div className="function-name">{instruction.name}</div>
-                <Tooltip title="Instruction Discriminator">
-                  <Tag color="green" bordered={false}>
-                    0x{Buffer.from(instruction.discriminator).toString("hex")}
-                  </Tag>
-                </Tooltip>
+                {instruction.discriminator.length > 0 && (
+                  <Tooltip title="Instruction Discriminator">
+                    <Tag color="green" bordered={false}>
+                      0x{Buffer.from(instruction.discriminator).toString("hex")}
+                    </Tag>
+                  </Tooltip>
+                )}
               </Space>
             ),
             extra:
