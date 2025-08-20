@@ -1,6 +1,8 @@
-import { Editor } from "@monaco-editor/react";
+import { Editor, Monaco } from "@monaco-editor/react";
 import { forwardRef, useImperativeHandle, useRef } from "react";
 import "./vscode-editor.scss";
+
+const TRANSPARENT = "#00000000";
 
 interface VSCodeEditorProps {
   value?: string;
@@ -27,8 +29,21 @@ const VSCodeEditor = forwardRef<VSCodeEditorRef, VSCodeEditorProps>(
       getValue: () => editorRef.current?.getValue(),
     }));
 
-    const handleEditorDidMount = (editor: any) => {
+    const handleEditorDidMount = (editor: any, monaco: Monaco) => {
       editorRef.current = editor;
+      monaco.editor.defineTheme("chainforge-theme", {
+        base: "vs-dark",
+        inherit: true,
+        rules: [],
+        colors: {
+          "editor.background": "#141414",
+          "editor.focusBorder": TRANSPARENT,
+          focusBorder: TRANSPARENT,
+          "editor.lineHighlightBackground": TRANSPARENT,
+          "editor.lineHighlightBorder": TRANSPARENT,
+        },
+      });
+      monaco.editor.setTheme("chainforge-theme");
     };
 
     const handleEditorChange = (value: string | undefined) => {
@@ -45,7 +60,6 @@ const VSCodeEditor = forwardRef<VSCodeEditorRef, VSCodeEditorProps>(
           value={value || ""}
           onChange={handleEditorChange}
           onMount={handleEditorDidMount}
-          theme="vs-dark"
           defaultLanguage="json"
           height={150}
           options={{
