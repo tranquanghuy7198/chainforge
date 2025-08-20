@@ -66,8 +66,8 @@ export class Slush extends Sui {
       ui: {
         name: slushWallet?.wallet.name ?? SLUSH_WALLET_NAME,
         icon: slushWallet?.wallet.icon ?? SuiIcon,
-        backgroundColor: "#c5efff",
-        titleColor: "#00a7d1",
+        backgroundColor: "#00B8D9",
+        titleColor: "#aff3ffff",
       },
       installLink:
         "https://chrome.google.com/webstore/detail/sui-wallet/opcgpfmipidbgpenhmajoajpbobppdil",

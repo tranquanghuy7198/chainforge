@@ -27,8 +27,8 @@ export class MetaMask extends Wallet {
       ui: {
         name: "MetaMask",
         icon: MetaMaskIcon,
-        backgroundColor: "#fcd0a1",
-        titleColor: "#cf6b00",
+        backgroundColor: "#efae78ff",
+        titleColor: "#be5500ff",
       },
       installLink: "https://metamask.io/download/",
       networkCluster: NetworkCluster.Ethereum,
