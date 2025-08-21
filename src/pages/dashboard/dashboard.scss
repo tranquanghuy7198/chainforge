@@ -45,15 +45,11 @@ body {
   color: $primary;
 }
 
-.ant-menu {
+.menu {
+  width: 240px;
   border: none !important;
   height: calc(100vh - 80px - 40px);
   overflow-y: auto;
-}
-
-.ant-menu-item {
-  padding-left: 40px !important;
-  padding-right: 40px !important;
 }
 
 .page-header {

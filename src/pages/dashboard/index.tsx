@@ -36,18 +36,28 @@ const items: MenuItem[] = [
     icon: <AppstoreFilled />,
   },
   {
-    key: "contract-templates",
-    label: "Contract Templates",
-    icon: <SettingFilled />,
+    key: "my-contracts",
+    label: "My Contracts",
+    icon: <FileTextFilled />,
+    children: [
+      {
+        key: "contract-templates",
+        label: "Contract Templates",
+      },
+      {
+        key: "contracts",
+        label: "Contract Explorer",
+      },
+    ],
   },
   {
-    key: "contracts",
-    label: "Contract Explorer",
-    icon: <FileTextFilled />,
+    key: "settings",
+    label: "Settings",
+    icon: <SettingFilled />,
   },
 ];
 
-export default function Dashboard(props: any) {
+export default function Dashboard() {
   const dispatch = useAppDispatch();
   const wallets = useAppSelector((state) => state.wallet.wallets);
   let [selectedKey, setSelectedKey] = useState<string>("blockchains");
@@ -65,10 +75,12 @@ export default function Dashboard(props: any) {
           <div className="profile-title">CHAINFORGE</div>
         </div>
         <Menu
+          className="menu"
           defaultSelectedKeys={["blockchains"]}
           defaultOpenKeys={["blockchains"]}
           onSelect={({ key }) => setSelectedKey(key)}
           theme="light"
+          mode="inline"
           items={items}
         />
         <ProductContact />
