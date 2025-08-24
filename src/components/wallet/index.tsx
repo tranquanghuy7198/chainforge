@@ -53,10 +53,7 @@ const WalletCard: React.FC<{
             >
               {wallet.ui.name}
             </div>
-            <div
-              className="wallet-info-container"
-              style={{ color: wallet.address ? "green" : "red" }}
-            >
+            <div className="wallet-info-container">
               {wallet.address && wallet.chainId && (
                 <Tooltip
                   title={
