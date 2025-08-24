@@ -9,8 +9,10 @@ import {
   Tag,
 } from "antd";
 import {
+  AlignLeftOutlined,
   AppstoreFilled,
   FileTextFilled,
+  SearchOutlined,
   SettingFilled,
   WalletOutlined,
 } from "@ant-design/icons";
@@ -43,10 +45,12 @@ const items: MenuItem[] = [
       {
         key: "contract-templates",
         label: "Contract Templates",
+        icon: <AlignLeftOutlined />,
       },
       {
         key: "contracts",
         label: "Contract Explorer",
+        icon: <SearchOutlined />,
       },
     ],
   },
