@@ -4,7 +4,7 @@ import { Card, Flex } from "antd";
 import React from "react";
 import "./solana-form.scss";
 import { CloseOutlined, MenuOutlined } from "@ant-design/icons";
-import { PRIMARY_COLOR } from "@/utils/constants";
+import { PRIMARY_COLOR } from "@utils/constants";
 
 const InstructionController: React.FC<{
   id: string;

@@ -1,5 +1,5 @@
-import { NetworkCluster } from "@/utils/constants";
-import { makeRequest } from "./utils";
+import { NetworkCluster } from "@utils/constants";
+import { makeRequest } from "@api/utils";
 
 export const requestChallenge = async (
   address: string
