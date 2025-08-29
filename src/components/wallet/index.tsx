@@ -53,7 +53,10 @@ const WalletCard: React.FC<{
             >
               {wallet.ui.name}
             </div>
-            <div className="wallet-info-container">
+            <div
+              className="wallet-info-container"
+              style={{ color: wallet.address ? "#237804" : "#f5222d" }}
+            >
               {wallet.address && wallet.chainId && (
                 <Tooltip
                   title={
@@ -77,10 +80,8 @@ const WalletCard: React.FC<{
                   />
                 </Tooltip>
               )}
-              {wallet.address && !wallet.chainId && (
-                <CheckCircleOutlined color="green" />
-              )}
-              {!wallet.address && <PauseCircleOutlined color="red" />}
+              {wallet.address && !wallet.chainId && <CheckCircleOutlined />}
+              {!wallet.address && <PauseCircleOutlined />}
               <div className="wallet-info">
                 {wallet.address ? shorten(wallet.address) : "Not Connected"}
               </div>
