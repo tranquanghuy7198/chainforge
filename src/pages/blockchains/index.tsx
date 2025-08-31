@@ -64,7 +64,7 @@ const Blockchains: React.FC = () => {
         defaultSelectAll
       />
       <div className="masonry-container">
-        <XMasonry center={false} targetBlockWidth={360}>
+        <XMasonry center={false} targetBlockWidth={380}>
           {displayedBlockchains.map((blockchain) => (
             <XBlock key={blockchain.id}>
               <BlockchainCard blockchain={blockchain} />
