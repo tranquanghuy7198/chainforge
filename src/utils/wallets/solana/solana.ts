@@ -17,6 +17,7 @@ import {
   buildDeploymentTxs,
   executeDeploymentTxs,
 } from "solana-bpf";
+import bs58 from "bs58";
 
 class Solana extends Wallet {
   public provider: BaseMessageSignerWalletAdapter;
@@ -51,6 +52,14 @@ class Solana extends Wallet {
     await this.provider.connect();
     this.address = this.provider.publicKey?.toString();
     if (blockchain) this.chainId = blockchain.chainId;
+  }
+
+  public async signMessage(message: string): Promise<string> {
+    await this.connect();
+    const signature = await this.provider.signMessage(
+      Buffer.from(message, "utf-8")
+    );
+    return bs58.encode(signature);
   }
 
   public async deploy(
