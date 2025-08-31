@@ -14,17 +14,19 @@ import SuiForm from "@components/abi-form/sui-form";
 import AbiWalletForm from "@components/abi-form/abi-wallet-form";
 import { Wallet } from "@utils/wallets/wallet";
 import { useAppSelector } from "@redux/hook";
-import { Segmented } from "antd";
+import { Flex, Segmented } from "antd";
 import SolanaForm from "@components/abi-form/solana-form";
-import { EditOutlined, EyeOutlined } from "@ant-design/icons";
+import { EditOutlined, EyeOutlined, StarOutlined } from "@ant-design/icons";
 import useLocalStorageState from "use-local-storage-state";
 import { v4 } from "uuid";
+import PublishContract from "@components/abi-form/publish-contract";
 
 const AbiForm: React.FC<{
   defaultAction: AbiAction;
   contractTemplate: ContractTemplate;
-  contractAddress?: ContractAddress;
-}> = ({ contractAddress, defaultAction, contractTemplate }) => {
+  contractAddress?: ContractAddress; // not used for Contract Deploy
+  contractId?: string; // not used for Contract Deploy
+}> = ({ contractAddress, defaultAction, contractTemplate, contractId }) => {
   const blockchains = useAppSelector((state) => state.blockchain.blockchains);
   const [wallet, setWallet] = useState<Wallet>();
   const [blockchain, setBlockchain] = useState<Blockchain>();
@@ -76,7 +78,7 @@ const AbiForm: React.FC<{
   }, [contractAddress, blockchains]);
 
   return (
-    <div>
+    <Flex vertical>
       <AbiWalletForm
         contractAddress={contractAddress}
         networkClusters={contractTemplate.networkClusters}
@@ -86,6 +88,7 @@ const AbiForm: React.FC<{
       {defaultAction !== AbiAction.Deploy && (
         <Segmented<AbiAction>
           defaultValue={defaultAction}
+          block
           options={[
             {
               label: "Read Contract",
@@ -97,12 +100,24 @@ const AbiForm: React.FC<{
               value: AbiAction.Write,
               icon: <EditOutlined />,
             },
+            {
+              label: "Publish Contract",
+              value: AbiAction.Publish,
+              icon: <StarOutlined />,
+            },
           ]}
           onChange={(value) => setAction(value)}
           className="action-selector"
         />
       )}
-      {contractTemplate.networkClusters.includes(NetworkCluster.Sui) ? (
+      {action === AbiAction.Publish ? (
+        <PublishContract
+          contractId={contractId}
+          contractTemplate={contractTemplate}
+          contractAddress={contractAddress}
+          wallet={wallet}
+        />
+      ) : contractTemplate.networkClusters.includes(NetworkCluster.Sui) ? (
         <SuiForm action={action} abi={contractTemplate.abi} />
       ) : contractTemplate.networkClusters.includes(NetworkCluster.Solana) ? (
         <SolanaForm
@@ -129,7 +144,7 @@ const AbiForm: React.FC<{
           saveDeployedContract={saveDeployedContract}
         />
       )}
-    </div>
+    </Flex>
   );
 };
 
