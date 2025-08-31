@@ -1,6 +1,14 @@
 import { NetworkCluster } from "@utils/constants";
 import { makeRequest } from "@api/utils";
 
+export type AuthResponse = {
+  access_token: string;
+  token_type: string;
+  expires_in: number;
+  refresh_token: string;
+  scope: string;
+};
+
 export const requestChallenge = async (
   address: string
 ): Promise<[number, string, string]> => {
@@ -25,6 +33,22 @@ export const registerWithWallet = async (
     nonce,
     signature,
     networkCluster,
+  });
+};
+
+export const authWithWallet = async (
+  address: string,
+  timestamp: number,
+  nonce: string,
+  signature: string,
+  networkCluster: NetworkCluster
+): Promise<AuthResponse> => {
+  return await makeRequest("/token", "POST", {
+    wallet_address: address,
+    timestamp,
+    nonce,
+    signature,
+    network_cluster: networkCluster,
   });
 };
 
