@@ -187,8 +187,14 @@ const EvmForm: React.FC<{
           .filter((func) => {
             if (action === AbiAction.Deploy) return func.type === "constructor";
             if (action === AbiAction.Read)
-              return func.stateMutability === "view";
-            return func.type === "function" && func.stateMutability !== "view";
+              return (
+                func.type === "function" && func.stateMutability === "view"
+              );
+            if (action === AbiAction.Write)
+              return (
+                func.type === "function" && func.stateMutability !== "view"
+              );
+            return false;
           })
           .map((func) => ({
             key: func.name || func.type,
