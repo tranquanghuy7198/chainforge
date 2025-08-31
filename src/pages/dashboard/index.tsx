@@ -14,6 +14,7 @@ import {
   FileTextFilled,
   SearchOutlined,
   SettingFilled,
+  StarFilled,
   WalletOutlined,
 } from "@ant-design/icons";
 import "@pages/dashboard/dashboard.scss";
@@ -36,6 +37,11 @@ const items: MenuItem[] = [
     key: "blockchains",
     label: "Blockchains",
     icon: <AppstoreFilled />,
+  },
+  {
+    key: "trending-contracts",
+    label: "Trending Contracts",
+    icon: <StarFilled />,
   },
   {
     key: "my-contracts",
