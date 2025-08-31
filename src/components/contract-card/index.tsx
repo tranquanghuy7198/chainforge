@@ -96,6 +96,7 @@ const ContractCard: React.FC<{
           contractAddress={contractAddress}
           defaultAction={AbiAction.Read}
           contractTemplate={contract.template}
+          contractId={contract.id}
         />
       </Drawer>
     </>
