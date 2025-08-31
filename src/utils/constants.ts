@@ -20,6 +20,7 @@ export enum AbiAction {
   Deploy = "deploy",
   Read = "read",
   Write = "write",
+  Publish = "publish",
 }
 
 export type Blockchain = {

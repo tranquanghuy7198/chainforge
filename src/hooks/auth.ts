@@ -12,10 +12,11 @@ type Session = {
 export function useAuth() {
   const [session, setSession] = useState<Session>();
 
-  const login = async (wallet: Wallet, blockchain?: Blockchain) => {
+  const login = async (wallet?: Wallet, blockchain?: Blockchain) => {
     // Check current session
 
     // Connect wallet first
+    if (!wallet) throw new Error("Wallet not connected");
     await wallet.connect(blockchain);
     const address = wallet.address;
     if (!address) throw new Error(`Cannot connect to ${wallet.ui.name}`);
@@ -30,6 +31,8 @@ export function useAuth() {
       signature,
       wallet.networkCluster
     );
+
+    // Fetch profile
 
     // Save session
     setSession({
