@@ -7,7 +7,6 @@ import {
   EditOutlined,
   ExportOutlined,
   QuestionCircleFilled,
-  StarOutlined,
 } from "@ant-design/icons";
 import "@components/contract-card/contract-card.scss";
 import { shorten } from "@utils/utils";
@@ -17,10 +16,9 @@ import Paragraph from "antd/es/typography/Paragraph";
 
 const ContractCard: React.FC<{
   contract: DeployedContract;
-  onPublishContract: (id: string) => void;
   onDeleteContract: (id: string) => void;
   onEditContract: (id: string) => void;
-}> = ({ contract, onPublishContract, onDeleteContract, onEditContract }) => {
+}> = ({ contract, onDeleteContract, onEditContract }) => {
   const blockchains = useAppSelector((state) => state.blockchain.blockchains);
   const [contractAddress, setContractAddress] = useState<ContractAddress>();
 
@@ -30,9 +28,6 @@ const ContractCard: React.FC<{
         className="masonry-item"
         hoverable
         actions={[
-          <Tooltip title="Publish">
-            <StarOutlined onClick={() => onPublishContract(contract.id)} />
-          </Tooltip>,
           <Tooltip title="Edit">
             <EditOutlined onClick={() => onEditContract(contract.id)} />
           </Tooltip>,
