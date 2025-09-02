@@ -1,12 +1,21 @@
 import { Blockchain } from "@utils/constants";
-import { authWithWallet, requestChallenge } from "@api/auth";
+import { AuthMethod, authWithWallet, requestChallenge } from "@api/auth";
 import { Wallet } from "@utils/wallets/wallet";
 import { useState } from "react";
+import { getProfile } from "@api/account";
 
 type Session = {
   accessToken: string;
   refreshToken: string;
   accessTokenExpires: number;
+  refreshTokenExpires: number;
+  accountId: string;
+  username: string;
+  credentials: {
+    id: string;
+    method: AuthMethod;
+    credentialId: string;
+  }[];
 };
 
 export function useAuth() {
@@ -33,6 +42,7 @@ export function useAuth() {
     );
 
     // Fetch profile
+    const profile = await getProfile(authResponse.access_token);
 
     // Save session
     setSession({
@@ -40,6 +50,11 @@ export function useAuth() {
       refreshToken: authResponse.refresh_token,
       accessTokenExpires:
         Math.floor(Date.now() / 1000) + authResponse.expires_in,
+      refreshTokenExpires:
+        Math.floor(Date.now() / 1000) + authResponse.expires_in,
+      accountId: profile.accountId,
+      username: profile.username,
+      credentials: profile.credentials,
     });
   };
 
