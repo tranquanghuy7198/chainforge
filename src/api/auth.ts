@@ -1,7 +1,7 @@
 import { NetworkCluster } from "@utils/constants";
 import { makeRequest } from "@api/utils";
 
-enum AuthMethod {
+export enum AuthMethod {
   Password = "password",
   RefreshToken = "refresh_token",
   Wallet = "wallet",
