@@ -1,21 +1,12 @@
 import { Blockchain } from "@utils/constants";
-import { AuthMethod, authWithWallet, requestChallenge } from "@api/auth";
+import { authWithWallet, requestChallenge } from "@api/auth";
 import { Wallet } from "@utils/wallets/wallet";
 import { useState } from "react";
-import { getProfile } from "@api/account";
 
 type Session = {
   accessToken: string;
   refreshToken: string;
   accessTokenExpires: number;
-  refreshTokenExpires: number;
-  accountId: string;
-  username: string;
-  credentials: {
-    id: string;
-    method: AuthMethod;
-    credentialId: string;
-  }[];
 };
 
 export function useAuth() {
@@ -23,6 +14,7 @@ export function useAuth() {
 
   const login = async (wallet?: Wallet, blockchain?: Blockchain) => {
     // Check current session
+    if (session) return;
 
     // Connect wallet first
     if (!wallet) throw new Error("Wallet not connected");
@@ -41,20 +33,12 @@ export function useAuth() {
       wallet.networkCluster
     );
 
-    // Fetch profile
-    const profile = await getProfile(authResponse.access_token);
-
     // Save session
     setSession({
       accessToken: authResponse.access_token,
       refreshToken: authResponse.refresh_token,
       accessTokenExpires:
         Math.floor(Date.now() / 1000) + authResponse.expires_in,
-      refreshTokenExpires:
-        Math.floor(Date.now() / 1000) + authResponse.expires_in,
-      accountId: profile.accountId,
-      username: profile.username,
-      credentials: profile.credentials,
     });
   };
 
