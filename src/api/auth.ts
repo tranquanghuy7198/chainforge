@@ -15,6 +15,13 @@ export type AuthResponse = {
   scope: string;
 };
 
+export const refresh = async (refreshToken: string): Promise<AuthResponse> => {
+  return await makeRequest("/token", "POST", {
+    grant_type: AuthMethod.RefreshToken,
+    refresh_token: refreshToken,
+  });
+};
+
 export const requestChallenge = async (
   address: string
 ): Promise<[number, string, string]> => {
