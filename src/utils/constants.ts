@@ -57,6 +57,7 @@ export type ContractAddress = {
   blockchainId: string;
   address: string;
   package?: string;
+  publicity: boolean;
 };
 
 export type DeployedContract = {
