@@ -11,9 +11,9 @@ import { useForm, useWatch } from "antd/es/form/Form";
 import { Button, Form, Input, Select, Space } from "antd";
 import { CloseOutlined, PlusOutlined } from "@ant-design/icons";
 import "@components/contract-form/contract-form.scss";
-import { useAppSelector } from "@redux/hook";
 import SelectOption from "@components/select-option";
 import VSCodeEditor from "../vscode-editor";
+import { useFetchBlockchains } from "@hooks/blockchain";
 
 export type ContractFormStructure = {
   id: string;
@@ -54,7 +54,7 @@ const ContractForm: React.FC<{
   contractForm: { open: boolean; form?: ContractFormStructure };
   saveContract: (contract: ContractFormStructure) => void;
 }> = ({ contractForm, saveContract }) => {
-  const blockchains = useAppSelector((state) => state.blockchain.blockchains);
+  const { blockchains } = useFetchBlockchains();
   const [form] = useForm();
   const addresses = useWatch<ContractAddress[]>("addresses", form);
 

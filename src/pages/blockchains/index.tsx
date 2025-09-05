@@ -3,18 +3,18 @@ import "@pages/blockchains/blockchains.scss";
 import React, { useEffect, useState } from "react";
 import BlockchainCard from "@components/chain-card";
 import { Blockchain } from "@utils/constants";
-import { useAppSelector } from "@redux/hook";
 import Header from "@components/header";
 import { Button, Checkbox, Drawer, Form, Input } from "antd";
 import { BlockchainForm, requestNewBlockchain } from "@api/discord";
 import useNotification from "antd/es/notification/useNotification";
 import { XBlock, XMasonry } from "react-xmasonry";
+import { useFetchBlockchains } from "@hooks/blockchain";
 
 const TESTNET: string = "testnet";
 const MAINNET: string = "mainnet";
 
 const Blockchains: React.FC = () => {
-  const blockchains = useAppSelector((state) => state.blockchain.blockchains);
+  const { blockchains } = useFetchBlockchains();
   const [displayedBlockchains, setDisplayedBlockchains] = useState<
     Blockchain[]
   >([]);

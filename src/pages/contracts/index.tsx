@@ -8,7 +8,6 @@ import {
 import ContractCard from "@components/contract-card";
 import useLocalStorageState from "use-local-storage-state";
 import { capitalize } from "@utils/utils";
-import { useAppSelector } from "@redux/hook";
 import { Drawer } from "antd";
 import ContractForm, {
   ContractFormStructure,
@@ -18,10 +17,11 @@ import useNotification from "antd/es/notification/useNotification";
 import Paragraph from "antd/es/typography/Paragraph";
 import { XBlock, XMasonry } from "react-xmasonry";
 import ConfirmModal from "@components/confirm-modal";
+import { useFetchBlockchains } from "@hooks/blockchain";
 
 const Contracts: React.FC = () => {
   const [notification, contextHolder] = useNotification();
-  const blockchains = useAppSelector((state) => state.blockchain.blockchains);
+  const { blockchains } = useFetchBlockchains();
   const [contracts, setContracts] = useLocalStorageState<DeployedContract[]>(
     CONTRACT_KEY,
     { defaultValue: [] }

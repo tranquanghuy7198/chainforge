@@ -3,8 +3,8 @@ import { ContractAddress, ContractTemplate } from "@utils/constants";
 import React from "react";
 import { useAuth } from "@hooks/auth";
 import useNotification from "antd/es/notification/useNotification";
-import { useAppSelector } from "@redux/hook";
 import { Button } from "antd";
+import { useFetchBlockchains } from "@hooks/blockchain";
 
 const PublishContract: React.FC<{
   contractId?: string;
@@ -13,7 +13,7 @@ const PublishContract: React.FC<{
   wallet?: Wallet;
 }> = ({ contractId, contractTemplate, contractAddress, wallet }) => {
   const { session, login } = useAuth();
-  const blockchains = useAppSelector((state) => state.blockchain.blockchains);
+  const { blockchains } = useFetchBlockchains();
   const [notification, contextHolder] = useNotification();
 
   const loginWithWallet = async () => {

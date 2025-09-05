@@ -3,17 +3,17 @@ import { Wallet } from "@utils/wallets/wallet";
 import { Card, Image, Tooltip } from "antd";
 import "./wallet.scss";
 import { CheckCircleOutlined, PauseCircleOutlined } from "@ant-design/icons";
-import { useAppSelector } from "@redux/hook";
 import { shorten } from "@utils/utils";
 import useNotification from "antd/es/notification/useNotification";
 import Paragraph from "antd/es/typography/Paragraph";
+import { useFetchBlockchains } from "@hooks/blockchain";
 
 const WalletCard: React.FC<{
   wallet: Wallet;
   onWalletUpdate: (wallet: Wallet) => void;
 }> = ({ wallet, onWalletUpdate }) => {
   const [notification, contextHolder] = useNotification();
-  const blockchains = useAppSelector((state) => state.blockchain.blockchains);
+  const { blockchains } = useFetchBlockchains();
 
   const connectWallet = async (wallet: Wallet): Promise<void> => {
     try {

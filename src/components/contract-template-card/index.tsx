@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import "./contract-template-card.scss";
 import { AbiAction, ContractTemplate } from "@utils/constants";
-import { useAppSelector } from "@redux/hook";
 import { Avatar, Card, Drawer, Flex, Space, Tooltip } from "antd";
 import {
   CloudUploadOutlined,
@@ -13,13 +12,14 @@ import {
 } from "@ant-design/icons";
 import AbiForm from "@components/abi-form";
 import Paragraph from "antd/es/typography/Paragraph";
+import { useFetchBlockchains } from "@hooks/blockchain";
 
 const ContractTemplateCard: React.FC<{
   contractTemplate: ContractTemplate;
   onDeleteTemplate: (id: string) => void;
   onEditTemplate: (id: string) => void;
 }> = ({ contractTemplate, onDeleteTemplate, onEditTemplate }) => {
-  const blockchains = useAppSelector((state) => state.blockchain.blockchains);
+  const { blockchains } = useFetchBlockchains();
   const [openDeploy, setOpenDeploy] = useState<boolean>(false);
 
   return (
