@@ -1,27 +1,40 @@
-import { ContractAddress, NetworkCluster } from "@utils/constants";
+import { DeployedContract } from "@utils/constants";
 import { makeRequest } from "./utils";
 
+type ContractResponse = {
+  contractId: string;
+  templateId: string;
+  owner: string;
+  name: string;
+  description?: string;
+  abi: any;
+  bytecode: string;
+  flattenSource?: string;
+  networkClusters: string[];
+  addresses: string[];
+};
+
+export const listContracts = async (
+  accessToken: string
+): Promise<ContractResponse[]> => {
+  return await makeRequest("/api/contracts", "GET", undefined, accessToken);
+};
+
 export const createContractAndTemplate = async (
-  accessToken: string,
-  name: string,
-  abi: any,
-  bytecode: string,
-  networkClusters: NetworkCluster[],
-  addresses: ContractAddress[],
-  description?: string,
-  flattenSource?: string
+  contract: DeployedContract,
+  accessToken: string
 ): Promise<[string, string]> => {
   const { templateId, contractId } = await makeRequest(
     "/api/contracts",
     "POST",
     {
-      name,
-      abi,
-      bytecode,
-      networkClusters,
-      addresses,
-      description,
-      flattenSource,
+      name: contract.template.name,
+      abi: contract.template.abi,
+      bytecode: contract.template.bytecode,
+      networkClusters: contract.template.networkClusters,
+      addresses: contract.addresses,
+      description: contract.template.description,
+      flattenSource: contract.template.flattenSource,
     },
     accessToken
   );
@@ -29,28 +42,20 @@ export const createContractAndTemplate = async (
 };
 
 export const updateContractAndTemplate = async (
-  accessToken: string,
-  templateId: string,
-  contractId: string,
-  name: string,
-  abi: any,
-  bytecode: string,
-  networkClusters: NetworkCluster[],
-  addresses: ContractAddress[],
-  description?: string,
-  flattenSource?: string
+  contract: DeployedContract,
+  accessToken: string
 ): Promise<[string, string]> => {
-  await makeRequest(
-    `/api/contracts/template/${templateId}/contract/${contractId}`,
+  const { templateId, contractId } = await makeRequest(
+    `/api/contracts/template/${contract.template.id}/contract/${contract.id}`,
     "PUT",
     {
-      name,
-      abi,
-      bytecode,
-      networkClusters,
-      addresses,
-      description,
-      flattenSource,
+      name: contract.template.name,
+      abi: contract.template.abi,
+      bytecode: contract.template.bytecode,
+      networkClusters: contract.template.networkClusters,
+      addresses: contract.addresses,
+      description: contract.template.description,
+      flattenSource: contract.template.flattenSource,
     },
     accessToken
   );
