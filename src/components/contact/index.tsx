@@ -1,7 +1,6 @@
 import {
   DiscordFilled,
   GiftFilled,
-  GithubFilled,
   GoogleOutlined,
   LinkedinFilled,
 } from "@ant-design/icons";
@@ -11,12 +10,6 @@ import "./contact.scss";
 const ProductContact: React.FC = () => {
   return (
     <div className="about-product">
-      <GithubFilled
-        className="product-contact"
-        onClick={() =>
-          window.open("https://github.com/tranquanghuy7198/chainforge")
-        }
-      />
       <DiscordFilled
         className="product-contact"
         onClick={() => window.open("https://discord.gg/pW8kw8JX7s")}
