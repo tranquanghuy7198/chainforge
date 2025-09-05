@@ -1,9 +1,14 @@
 import { configureStore } from "@reduxjs/toolkit";
 import walletReducer from "@redux/reducers/wallet";
 import blockchainReducer from "@redux/reducers/blockchain";
+import contractReducer from "@redux/reducers/contract";
 
 export const store = configureStore({
-  reducer: { wallet: walletReducer, blockchain: blockchainReducer },
+  reducer: {
+    wallet: walletReducer,
+    blockchain: blockchainReducer,
+    contract: contractReducer,
+  },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({ serializableCheck: false }),
 });
