@@ -1,4 +1,8 @@
-import { DeployedContract } from "@utils/constants";
+import {
+  ContractAddress,
+  DeployedContract,
+  NetworkCluster,
+} from "@utils/constants";
 import { makeRequest } from "./utils";
 
 type ContractResponse = {
@@ -10,8 +14,8 @@ type ContractResponse = {
   abi: any;
   bytecode: string;
   flattenSource?: string;
-  networkClusters: string[];
-  addresses: string[];
+  networkClusters: NetworkCluster[];
+  addresses: ContractAddress[];
 };
 
 export const listMyContracts = async (
