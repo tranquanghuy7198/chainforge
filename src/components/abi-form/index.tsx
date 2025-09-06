@@ -80,7 +80,7 @@ const AbiForm: React.FC<{
   }, [contractAddress, blockchains]);
 
   return (
-    <Flex vertical>
+    <div>
       <AbiWalletForm
         contractAddress={contractAddress}
         networkClusters={contractTemplate.networkClusters}
@@ -90,7 +90,6 @@ const AbiForm: React.FC<{
       {defaultAction !== AbiAction.Deploy && (
         <Segmented<AbiAction>
           defaultValue={defaultAction}
-          block
           options={[
             {
               label: "Read Contract",
@@ -102,24 +101,12 @@ const AbiForm: React.FC<{
               value: AbiAction.Write,
               icon: <EditOutlined />,
             },
-            {
-              label: "Publish Contract",
-              value: AbiAction.Publish,
-              icon: <StarOutlined />,
-            },
           ]}
           onChange={(value) => setAction(value)}
           className="action-selector"
         />
       )}
-      {action === AbiAction.Publish ? (
-        <PublishContract
-          contractId={contractId}
-          contractTemplate={contractTemplate}
-          contractAddress={contractAddress}
-          wallet={wallet}
-        />
-      ) : contractTemplate.networkClusters.includes(NetworkCluster.Sui) ? (
+      {contractTemplate.networkClusters.includes(NetworkCluster.Sui) ? (
         <SuiForm action={action} abi={contractTemplate.abi} />
       ) : contractTemplate.networkClusters.includes(NetworkCluster.Solana) ? (
         <SolanaForm
@@ -146,7 +133,7 @@ const AbiForm: React.FC<{
           saveDeployedContract={saveDeployedContract}
         />
       )}
-    </Flex>
+    </div>
   );
 };
 
