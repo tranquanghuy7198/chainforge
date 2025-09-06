@@ -13,13 +13,10 @@ import EvmForm from "@components/abi-form/evm-form";
 import SuiForm from "@components/abi-form/sui-form";
 import AbiWalletForm from "@components/abi-form/abi-wallet-form";
 import { Wallet } from "@utils/wallets/wallet";
-import { useAppSelector } from "@redux/hook";
-import { Flex, Segmented } from "antd";
+import { Segmented } from "antd";
 import SolanaForm from "@components/abi-form/solana-form";
-import { EditOutlined, EyeOutlined, StarOutlined } from "@ant-design/icons";
+import { EditOutlined, EyeOutlined } from "@ant-design/icons";
 import useLocalStorageState from "use-local-storage-state";
-import { v4 } from "uuid";
-import PublishContract from "@components/abi-form/publish-contract";
 import { useFetchBlockchains } from "@hooks/blockchain";
 
 const AbiForm: React.FC<{
