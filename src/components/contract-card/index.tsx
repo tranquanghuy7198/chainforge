@@ -22,7 +22,7 @@ const ContractCard: React.FC<{
   const { blockchains } = useFetchBlockchains();
   const [contractAddress, setContractAddress] = useState<ContractAddress>();
 
-  const actions = [];
+  const actions: React.ReactNode[] = [];
   if (onEditContract)
     actions.push(
       <Tooltip title="Edit">
