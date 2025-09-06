@@ -20,6 +20,7 @@ import { EditOutlined, EyeOutlined, StarOutlined } from "@ant-design/icons";
 import useLocalStorageState from "use-local-storage-state";
 import { v4 } from "uuid";
 import PublishContract from "@components/abi-form/publish-contract";
+import { useFetchBlockchains } from "@hooks/blockchain";
 
 const AbiForm: React.FC<{
   defaultAction: AbiAction;
@@ -27,7 +28,7 @@ const AbiForm: React.FC<{
   contractAddress?: ContractAddress; // not used for Contract Deploy
   contractId?: string; // not used for Contract Deploy
 }> = ({ contractAddress, defaultAction, contractTemplate, contractId }) => {
-  const blockchains = useAppSelector((state) => state.blockchain.blockchains);
+  const { blockchains } = useFetchBlockchains();
   const [wallet, setWallet] = useState<Wallet>();
   const [blockchain, setBlockchain] = useState<Blockchain>();
   const [action, setAction] = useState<AbiAction>(defaultAction);
@@ -36,38 +37,39 @@ const AbiForm: React.FC<{
   >(CONTRACT_KEY, { defaultValue: [] });
 
   const saveDeployedContract = (blockchain: Blockchain, address: string) => {
-    setDeployedContracts(
-      deployedContracts.some(
-        (contract) => contract.template.id === contractTemplate.id
-      )
-        ? deployedContracts.map((contract) =>
-            contract.template.id === contractTemplate.id
-              ? {
-                  ...contract,
-                  addresses: [
-                    ...contract.addresses,
-                    {
-                      blockchainId: blockchain.id,
-                      address: address!,
-                    },
-                  ],
-                }
-              : contract
-          )
-        : [
-            ...deployedContracts,
-            {
-              id: v4(),
-              template: contractTemplate,
-              addresses: [
-                {
-                  blockchainId: blockchain.id,
-                  address: address!,
-                },
-              ],
-            },
-          ]
-    );
+    // TODO: Save contract with given template
+    // setDeployedContracts(
+    //   deployedContracts.some(
+    //     (contract) => contract.template.id === contractTemplate.id
+    //   )
+    //     ? deployedContracts.map((contract) =>
+    //         contract.template.id === contractTemplate.id
+    //           ? {
+    //               ...contract,
+    //               addresses: [
+    //                 ...contract.addresses,
+    //                 {
+    //                   blockchainId: blockchain.id,
+    //                   address: address!,
+    //                 },
+    //               ],
+    //             }
+    //           : contract
+    //       )
+    //     : [
+    //         ...deployedContracts,
+    //         {
+    //           id: v4(),
+    //           template: contractTemplate,
+    //           addresses: [
+    //             {
+    //               blockchainId: blockchain.id,
+    //               address: address!,
+    //             },
+    //           ],
+    //         },
+    //       ]
+    // );
   };
 
   useEffect(() => {
