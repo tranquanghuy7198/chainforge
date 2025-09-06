@@ -18,6 +18,10 @@ type ContractResponse = {
   addresses: ContractAddress[];
 };
 
+export const listTrendingContracts = async (): Promise<ContractResponse[]> => {
+  return await makeRequest("/api/contracts", "GET");
+};
+
 export const listMyContracts = async (
   accessToken: string
 ): Promise<ContractResponse[]> => {

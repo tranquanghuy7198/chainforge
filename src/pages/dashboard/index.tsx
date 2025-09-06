@@ -29,6 +29,7 @@ import ContractTemplates from "@pages/contract-templates";
 import Contracts from "@pages/contracts";
 import ProductContact from "@components/contact";
 import logo from "@assets/chainforge.png";
+import TrendingContracts from "@pages/trending-contracts";
 
 type MenuItem = Required<MenuProps>["items"][number];
 
@@ -101,6 +102,9 @@ export default function Dashboard() {
           <ContractTemplates key={"contract-templates"} />
         )}
         {selectedKey === "contracts" && <Contracts key={"contracts"} />}
+        {selectedKey === "trending-contracts" && (
+          <TrendingContracts key={"trending-contracts"} />
+        )}
       </Layout>
       <FloatButton
         className="float-btn"

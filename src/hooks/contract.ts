@@ -1,11 +1,11 @@
-import { listMyContracts } from "@/api/contracts";
+import { listMyContracts, listTrendingContracts } from "@/api/contracts";
 import { setContracts } from "@/redux/reducers/contract";
 import { useAppDispatch, useAppSelector } from "@redux/hook";
 import { DeployedContract } from "@utils/constants";
 import { useCallback, useEffect, useState } from "react";
 import { useAuth } from "@hooks/auth";
 
-export const useFetchContracts = () => {
+export const useFetchMyContracts = () => {
   const dispatch = useAppDispatch();
   const contracts = useAppSelector((state) => state.contract.contracts);
   const { session, refreshToken } = useAuth();
@@ -48,4 +48,48 @@ export const useFetchContracts = () => {
   }, [fetchContracts, contracts.length]);
 
   return { contracts, fetchContracts, contractLoading };
+};
+
+export const useFetchTrendingContracts = () => {
+  const dispatch = useAppDispatch();
+  const trendingContracts = useAppSelector(
+    (state) => state.contract.trendingContracts
+  );
+  const [trendingLoading, setTrendingLoading] = useState<boolean>(false);
+
+  const fetchTrendingContracts = useCallback(
+    async (force: boolean = false): Promise<DeployedContract[]> => {
+      if (!force && trendingContracts.length > 0) return trendingContracts;
+
+      try {
+        setTrendingLoading(true);
+        const fetchedTrendingContracts = await listTrendingContracts();
+        const parsedTrendingContracts: DeployedContract[] =
+          fetchedTrendingContracts.map((contract) => ({
+            id: contract.contractId,
+            template: {
+              id: contract.templateId,
+              name: contract.name,
+              description: contract.description,
+              abi: contract.abi,
+              bytecode: contract.bytecode,
+              flattenSource: contract.flattenSource,
+              networkClusters: contract.networkClusters,
+            },
+            addresses: contract.addresses,
+          }));
+        dispatch(setContracts(parsedTrendingContracts));
+        return parsedTrendingContracts;
+      } finally {
+        setTrendingLoading(false);
+      }
+    },
+    [dispatch]
+  );
+
+  useEffect(() => {
+    if (trendingContracts.length === 0) fetchTrendingContracts(true);
+  }, [fetchTrendingContracts, trendingContracts.length]);
+
+  return { trendingContracts, fetchTrendingContracts, trendingLoading };
 };

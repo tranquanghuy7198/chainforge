@@ -3,9 +3,10 @@ import { DeployedContract } from "@utils/constants";
 
 interface ContractState {
   contracts: DeployedContract[];
+  trendingContracts: DeployedContract[];
 }
 
-const initialState: ContractState = { contracts: [] };
+const initialState: ContractState = { contracts: [], trendingContracts: [] };
 
 export const contractSlice = createSlice({
   name: "contracts",
@@ -14,8 +15,11 @@ export const contractSlice = createSlice({
     setContracts(state, action: PayloadAction<DeployedContract[]>) {
       state.contracts = action.payload;
     },
+    setTrendingContracts(state, action: PayloadAction<DeployedContract[]>) {
+      state.trendingContracts = action.payload;
+    },
   },
 });
 
-export const { setContracts } = contractSlice.actions;
+export const { setContracts, setTrendingContracts } = contractSlice.actions;
 export default contractSlice.reducer;
