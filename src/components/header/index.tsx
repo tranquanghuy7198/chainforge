@@ -1,4 +1,4 @@
-import { Button, Input, Select } from "antd";
+import { Button, Input, Select, Space } from "antd";
 import React from "react";
 import "./header.scss";
 import { PlusCircleOutlined } from "@ant-design/icons";
@@ -8,7 +8,7 @@ const Header: React.FC<{
   options: { value: string; label: string }[];
   onSelected: (selectedValues: string[]) => void;
   onSearched: (value: string) => void;
-  onAddRequested: () => void;
+  onAddRequested?: () => void;
   defaultSelectAll: boolean;
 }> = ({
   header,
@@ -21,7 +21,7 @@ const Header: React.FC<{
   return (
     <div className="page-header">
       <h1 className="page-title">{header}</h1>
-      <div className="page-filter">
+      <Space>
         <Select
           defaultValue={
             defaultSelectAll ? options.map((option) => option.value) : []
@@ -39,14 +39,16 @@ const Header: React.FC<{
           className="page-search"
           allowClear
         />
-        <Button
-          type="primary"
-          icon={<PlusCircleOutlined />}
-          onClick={() => onAddRequested()}
-        >
-          Add
-        </Button>
-      </div>
+        {onAddRequested && (
+          <Button
+            type="primary"
+            icon={<PlusCircleOutlined />}
+            onClick={() => onAddRequested()}
+          >
+            Add
+          </Button>
+        )}
+      </Space>
     </div>
   );
 };
