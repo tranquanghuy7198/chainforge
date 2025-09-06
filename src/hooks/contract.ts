@@ -1,5 +1,5 @@
 import { listMyContracts, listTrendingContracts } from "@/api/contracts";
-import { setContracts } from "@/redux/reducers/contract";
+import { setContracts, setTrendingContracts } from "@/redux/reducers/contract";
 import { useAppDispatch, useAppSelector } from "@redux/hook";
 import { DeployedContract } from "@utils/constants";
 import { useCallback, useEffect, useState } from "react";
@@ -78,7 +78,7 @@ export const useFetchTrendingContracts = () => {
             },
             addresses: contract.addresses,
           }));
-        dispatch(setContracts(parsedTrendingContracts));
+        dispatch(setTrendingContracts(parsedTrendingContracts));
         return parsedTrendingContracts;
       } finally {
         setTrendingLoading(false);
