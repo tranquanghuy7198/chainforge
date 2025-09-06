@@ -16,26 +16,29 @@ import { useFetchBlockchains } from "@hooks/blockchain";
 
 const ContractCard: React.FC<{
   contract: DeployedContract;
-  onDeleteContract: (id: string) => void;
-  onEditContract: (id: string) => void;
+  onDeleteContract?: (id: string) => void;
+  onEditContract?: (id: string) => void;
 }> = ({ contract, onDeleteContract, onEditContract }) => {
   const { blockchains } = useFetchBlockchains();
   const [contractAddress, setContractAddress] = useState<ContractAddress>();
 
+  const actions = [];
+  if (onEditContract)
+    actions.push(
+      <Tooltip title="Edit">
+        <EditOutlined onClick={() => onEditContract(contract.id)} />
+      </Tooltip>
+    );
+  if (onDeleteContract)
+    actions.push(
+      <Tooltip title="Delete">
+        <DeleteOutlined onClick={() => onDeleteContract(contract.id)} />
+      </Tooltip>
+    );
+
   return (
     <>
-      <Card
-        className="masonry-item"
-        hoverable
-        actions={[
-          <Tooltip title="Edit">
-            <EditOutlined onClick={() => onEditContract(contract.id)} />
-          </Tooltip>,
-          <Tooltip title="Delete">
-            <DeleteOutlined onClick={() => onDeleteContract(contract.id)} />
-          </Tooltip>,
-        ]}
-      >
+      <Card className="masonry-item" hoverable actions={actions}>
         <Flex vertical justify="stretch" gap={5}>
           <div className="contract-name">{contract.template.name}</div>
           {contract.template.description && (
