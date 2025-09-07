@@ -8,18 +8,17 @@ import { useAuth } from "@hooks/auth";
 export const useFetchMyContracts = () => {
   const dispatch = useAppDispatch();
   const contracts = useAppSelector((state) => state.contract.contracts);
-  const { session, refreshToken } = useAuth();
+  const { callAuthenticatedApi } = useAuth();
   const [contractLoading, setContractLoading] = useState<boolean>(false);
 
   const fetchContracts = useCallback(
     async (force: boolean = false): Promise<DeployedContract[]> => {
-      if (!session) throw new Error("Unauthenticated");
       if (!force && contracts.length > 0) return contracts;
-
       try {
         setContractLoading(true);
-        const fetchedContracts = await listMyContracts(session.accessToken);
-        const deployedContracts: DeployedContract[] = fetchedContracts.map(
+        const fetchedContracts = await callAuthenticatedApi(listMyContracts);
+        if (!fetchContracts) return [];
+        const deployedContracts: DeployedContract[] = fetchedContracts!.map(
           (contract) => ({
             id: contract.contractId,
             template: {
