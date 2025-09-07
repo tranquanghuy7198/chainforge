@@ -34,8 +34,8 @@ export const listMyContracts = async (
 };
 
 export const createContractAndTemplate = async (
-  contract: DeployedContract,
-  accessToken: string
+  accessToken: string,
+  contract: DeployedContract
 ): Promise<[string, string]> => {
   const { templateId, contractId } = await makeRequest(
     "/api/contracts",
@@ -55,8 +55,8 @@ export const createContractAndTemplate = async (
 };
 
 export const updateContractAndTemplate = async (
-  contract: DeployedContract,
-  accessToken: string
+  accessToken: string,
+  contract: DeployedContract
 ): Promise<[string, string]> => {
   const { templateId, contractId } = await makeRequest(
     `/api/contracts/template/${contract.template.id}/contract/${contract.id}`,
