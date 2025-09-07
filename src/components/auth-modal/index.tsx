@@ -9,7 +9,7 @@ import { AUTH_KEY, Session } from "@hooks/auth";
 import { Wallet } from "@utils/wallets/wallet";
 import { authWithWallet, requestChallenge } from "@api/auth";
 
-const AuthModal: React.FC<{}> = ({}) => {
+const AuthModal: React.FC = () => {
   const wallets = useAppSelector((state) => state.wallet.wallets);
   const [session, setSession] = useLocalStorageState<Session | null>(AUTH_KEY, {
     defaultValue: null,
