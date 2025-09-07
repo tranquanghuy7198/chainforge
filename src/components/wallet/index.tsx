@@ -10,7 +10,7 @@ import { useFetchBlockchains } from "@hooks/blockchain";
 
 const WalletCard: React.FC<{
   wallet: Wallet;
-  onWalletUpdate: (wallet: Wallet) => void;
+  onWalletUpdate: (wallet: Wallet) => Promise<void>;
 }> = ({ wallet, onWalletUpdate }) => {
   const [notification, contextHolder] = useNotification();
   const { blockchains } = useFetchBlockchains();
@@ -18,7 +18,7 @@ const WalletCard: React.FC<{
   const connectWallet = async (wallet: Wallet): Promise<void> => {
     try {
       await wallet.connect();
-      onWalletUpdate(wallet);
+      await onWalletUpdate(wallet);
     } catch (error) {
       notification.error({
         message: `Cannot connect ${wallet.ui.name}`,
