@@ -7,17 +7,21 @@ import { shorten } from "@utils/utils";
 import useNotification from "antd/es/notification/useNotification";
 import Paragraph from "antd/es/typography/Paragraph";
 import { useFetchBlockchains } from "@hooks/blockchain";
+import { useAppDispatch } from "@redux/hook";
+import { updateWallet } from "@redux/reducers/wallet";
 
 const WalletCard: React.FC<{
   wallet: Wallet;
   onWalletUpdate: (wallet: Wallet) => Promise<void>;
 }> = ({ wallet, onWalletUpdate }) => {
   const [notification, contextHolder] = useNotification();
+  const dispatch = useAppDispatch();
   const { blockchains } = useFetchBlockchains();
 
   const connectWallet = async (wallet: Wallet): Promise<void> => {
     try {
       await wallet.connect();
+      dispatch(updateWallet(wallet));
       await onWalletUpdate(wallet);
     } catch (error) {
       notification.error({
