@@ -74,3 +74,7 @@ export const updateContractAndTemplate = async (
   );
   return [templateId, contractId];
 };
+
+export const deleteContractById = async (accessToken: string, id: string) => {
+  await makeRequest(`/api/contracts/${id}`, "DELETE", undefined, accessToken);
+};

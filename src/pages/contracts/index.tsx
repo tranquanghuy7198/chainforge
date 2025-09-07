@@ -18,6 +18,7 @@ import { useFetchMyContracts } from "@hooks/contract";
 import { useAuth } from "@hooks/auth";
 import {
   createContractAndTemplate,
+  deleteContractById,
   updateContractAndTemplate,
 } from "@api/contracts";
 
@@ -127,10 +128,26 @@ const Contracts: React.FC = () => {
       });
   };
 
-  const deleteContract = (id?: string) => {
-    // TODO: Wait for API
-    // setContracts(contracts.filter((contract) => contract.id !== id));
-  };
+  const deleteContract = useCallback(
+    async (id?: string) => {
+      if (!id) return;
+      try {
+        await callAuthenticatedApi(deleteContractById, id);
+        await fetchContracts(true);
+      } catch (error) {
+        notification.error({
+          message: "Error deleting contract",
+          description: error instanceof Error ? error.message : String(error),
+        });
+      } finally {
+        notification.success({
+          message: "Contract Deleted",
+          description: "A contract has been deleted",
+        });
+      }
+    },
+    [session]
+  );
 
   return (
     <div className="page">
