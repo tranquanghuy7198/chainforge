@@ -8,7 +8,7 @@ import { useAuth } from "@hooks/auth";
 export const useFetchMyContracts = () => {
   const dispatch = useAppDispatch();
   const contracts = useAppSelector((state) => state.contract.contracts);
-  const { callAuthenticatedApi } = useAuth();
+  const { session, callAuthenticatedApi } = useAuth();
   const [contractLoading, setContractLoading] = useState<boolean>(false);
 
   const fetchContracts = useCallback(
@@ -39,7 +39,7 @@ export const useFetchMyContracts = () => {
         setContractLoading(false);
       }
     },
-    [dispatch]
+    [session, dispatch]
   );
 
   useEffect(() => {

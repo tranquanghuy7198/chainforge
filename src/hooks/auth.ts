@@ -55,5 +55,5 @@ export function useAuth() {
     setSession(null);
   }, [setSession]);
 
-  return { callAuthenticatedApi, logout };
+  return { session, callAuthenticatedApi, logout };
 }
