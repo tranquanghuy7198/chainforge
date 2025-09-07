@@ -25,7 +25,12 @@ export const listTrendingContracts = async (): Promise<ContractResponse[]> => {
 export const listMyContracts = async (
   accessToken: string
 ): Promise<ContractResponse[]> => {
-  return await makeRequest("/api/my-contracts", "GET", undefined, accessToken);
+  return await makeRequest(
+    "/api/contracts/my-contracts",
+    "GET",
+    undefined,
+    accessToken
+  );
 };
 
 export const createContractAndTemplate = async (
