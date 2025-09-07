@@ -1,12 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import Header from "@components/header";
-import {
-  CONTRACT_KEY,
-  DeployedContract,
-  NetworkCluster,
-} from "@utils/constants";
+import { DeployedContract, NetworkCluster } from "@utils/constants";
 import ContractCard from "@components/contract-card";
-import useLocalStorageState from "use-local-storage-state";
 import { capitalize } from "@utils/utils";
 import { Drawer } from "antd";
 import ContractForm, {
@@ -18,14 +13,19 @@ import Paragraph from "antd/es/typography/Paragraph";
 import { XBlock, XMasonry } from "react-xmasonry";
 import ConfirmModal from "@components/confirm-modal";
 import { useFetchBlockchains } from "@hooks/blockchain";
+import AuthModal from "@components/auth-modal";
+import { useFetchMyContracts } from "@hooks/contract";
+import { useAuth } from "@hooks/auth";
+import {
+  createContractAndTemplate,
+  updateContractAndTemplate,
+} from "@api/contracts";
 
 const Contracts: React.FC = () => {
   const [notification, contextHolder] = useNotification();
   const { blockchains } = useFetchBlockchains();
-  const [contracts, setContracts] = useLocalStorageState<DeployedContract[]>(
-    CONTRACT_KEY,
-    { defaultValue: [] }
-  );
+  const { contracts } = useFetchMyContracts();
+  const { session, callAuthenticatedApi } = useAuth();
   const [displayedContracts, setDisplayedContracts] = useState<
     DeployedContract[]
   >([]);
@@ -84,18 +84,30 @@ const Contracts: React.FC = () => {
     }
   };
 
-  const saveContract = (contract: DeployedContract) => {
-    setContracts(
-      contracts.some((c) => c.id === contract.id)
-        ? contracts.map((c) => (c.id === contract.id ? contract : c))
-        : [...contracts, contract]
-    );
-    setContractForm({ open: false });
-    notification.success({
-      message: "Contract Saved",
-      description: "A contract has been saved",
-    });
-  };
+  const saveContract = useCallback(
+    async (contract: DeployedContract) => {
+      try {
+        await callAuthenticatedApi(
+          contracts.some((c) => c.id === contract.id)
+            ? updateContractAndTemplate
+            : createContractAndTemplate,
+          contract
+        );
+      } catch (error) {
+        notification.error({
+          message: "Error saving contract",
+          description: error instanceof Error ? error.message : String(error),
+        });
+      } finally {
+        setContractForm({ open: false });
+        notification.success({
+          message: "Contract Saved",
+          description: "A contract has been saved",
+        });
+      }
+    },
+    [session]
+  );
 
   const editContract = (id: string) => {
     const contract = contracts.find((c) => c.id === id);
@@ -115,12 +127,14 @@ const Contracts: React.FC = () => {
   };
 
   const deleteContract = (id?: string) => {
-    setContracts(contracts.filter((contract) => contract.id !== id));
+    // TODO: Wait for API
+    // setContracts(contracts.filter((contract) => contract.id !== id));
   };
 
   return (
     <div className="page">
       {contextHolder}
+      <AuthModal />
       <Header
         header="Contract Explorer"
         options={Object.values(NetworkCluster).map((cluster) => ({
