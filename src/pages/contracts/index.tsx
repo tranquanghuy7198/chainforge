@@ -24,7 +24,7 @@ import {
 const Contracts: React.FC = () => {
   const [notification, contextHolder] = useNotification();
   const { blockchains } = useFetchBlockchains();
-  const { contracts } = useFetchMyContracts();
+  const { contracts, fetchContracts } = useFetchMyContracts();
   const { session, callAuthenticatedApi } = useAuth();
   const [displayedContracts, setDisplayedContracts] = useState<
     DeployedContract[]
@@ -93,6 +93,7 @@ const Contracts: React.FC = () => {
             : createContractAndTemplate,
           contract
         );
+        await fetchContracts(true);
       } catch (error) {
         notification.error({
           message: "Error saving contract",
