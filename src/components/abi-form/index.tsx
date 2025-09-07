@@ -3,10 +3,8 @@ import "@components/abi-form/abi-form.scss";
 import {
   AbiAction,
   Blockchain,
-  CONTRACT_KEY,
   ContractAddress,
   ContractTemplate,
-  DeployedContract,
   NetworkCluster,
 } from "@utils/constants";
 import EvmForm from "@components/abi-form/evm-form";
@@ -16,7 +14,6 @@ import { Wallet } from "@utils/wallets/wallet";
 import { Segmented } from "antd";
 import SolanaForm from "@components/abi-form/solana-form";
 import { EditOutlined, EyeOutlined } from "@ant-design/icons";
-import useLocalStorageState from "use-local-storage-state";
 import { useFetchBlockchains } from "@hooks/blockchain";
 
 const AbiForm: React.FC<{
@@ -29,9 +26,6 @@ const AbiForm: React.FC<{
   const [wallet, setWallet] = useState<Wallet>();
   const [blockchain, setBlockchain] = useState<Blockchain>();
   const [action, setAction] = useState<AbiAction>(defaultAction);
-  const [deployedContracts, setDeployedContracts] = useLocalStorageState<
-    DeployedContract[]
-  >(CONTRACT_KEY, { defaultValue: [] });
 
   const saveDeployedContract = (blockchain: Blockchain, address: string) => {
     // TODO: Save contract with given template
