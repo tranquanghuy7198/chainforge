@@ -1,14 +1,62 @@
-import { listMyContracts, listTrendingContracts } from "@/api/contracts";
-import { setContracts, setTrendingContracts } from "@/redux/reducers/contract";
+import {
+  listMyContracts,
+  listMyTemplates,
+  listTrendingContracts,
+} from "@api/contracts";
+import {
+  setContracts,
+  setTemplates,
+  setTrendingContracts,
+} from "@redux/reducers/contract";
 import { useAppDispatch, useAppSelector } from "@redux/hook";
-import { DeployedContract } from "@utils/constants";
+import { ContractTemplate, DeployedContract } from "@utils/constants";
 import { useCallback, useEffect, useState } from "react";
 import { useAuth } from "@hooks/auth";
+
+export const useFetchMyTemplates = () => {
+  const dispatch = useAppDispatch();
+  const templates = useAppSelector((state) => state.contract.templates);
+  const { callAuthenticatedApi } = useAuth();
+  const [templateLoading, setTemplateLoading] = useState<boolean>(false);
+
+  const fetchTemplates = useCallback(
+    async (force: boolean = false): Promise<ContractTemplate[]> => {
+      if (!force && templates.length > 0) return templates;
+      try {
+        setTemplateLoading(true);
+        const fetchedTemplates = await callAuthenticatedApi(listMyTemplates);
+        if (!fetchedTemplates) return [];
+        const contractTemplates: ContractTemplate[] = fetchedTemplates!.map(
+          (template) => ({
+            id: template.id,
+            name: template.name,
+            description: template.description,
+            abi: template.abi,
+            bytecode: template.bytecode,
+            flattenSource: template.flattenSource,
+            networkClusters: template.networkClusters,
+          })
+        );
+        dispatch(setTemplates(contractTemplates));
+        return contractTemplates;
+      } finally {
+        setTemplateLoading(false);
+      }
+    },
+    [dispatch]
+  );
+
+  useEffect(() => {
+    if (templates.length === 0) fetchTemplates(true);
+  }, [fetchTemplates, templates.length]);
+
+  return { templates, fetchTemplates, templateLoading };
+};
 
 export const useFetchMyContracts = () => {
   const dispatch = useAppDispatch();
   const contracts = useAppSelector((state) => state.contract.contracts);
-  const { session, callAuthenticatedApi } = useAuth();
+  const { callAuthenticatedApi } = useAuth();
   const [contractLoading, setContractLoading] = useState<boolean>(false);
 
   const fetchContracts = useCallback(
@@ -39,7 +87,7 @@ export const useFetchMyContracts = () => {
         setContractLoading(false);
       }
     },
-    [session, dispatch]
+    [dispatch]
   );
 
   useEffect(() => {

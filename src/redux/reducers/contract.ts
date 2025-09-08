@@ -29,5 +29,6 @@ export const contractSlice = createSlice({
   },
 });
 
-export const { setContracts, setTrendingContracts } = contractSlice.actions;
+export const { setTemplates, setContracts, setTrendingContracts } =
+  contractSlice.actions;
 export default contractSlice.reducer;
