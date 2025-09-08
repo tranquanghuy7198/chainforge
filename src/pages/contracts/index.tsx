@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import Header from "@components/header";
 import { DeployedContract, NetworkCluster } from "@utils/constants";
 import ContractCard from "@components/contract-card";
@@ -85,31 +85,28 @@ const Contracts: React.FC = () => {
     }
   };
 
-  const saveContract = useCallback(
-    async (contract: DeployedContract) => {
-      try {
-        await callAuthenticatedApi(
-          contracts.some((c) => c.id === contract.id)
-            ? updateContractAndTemplate
-            : createContractAndTemplate,
-          contract
-        );
-        await fetchContracts(true);
-        notification.success({
-          message: "Contract Saved",
-          description: "A contract has been saved",
-        });
-      } catch (error) {
-        notification.error({
-          message: "Error saving contract",
-          description: error instanceof Error ? error.message : String(error),
-        });
-      } finally {
-        setContractForm({ open: false });
-      }
-    },
-    [session]
-  );
+  const saveContract = async (contract: DeployedContract) => {
+    try {
+      await callAuthenticatedApi(
+        contracts.some((c) => c.id === contract.id)
+          ? updateContractAndTemplate
+          : createContractAndTemplate,
+        contract
+      );
+      await fetchContracts(true);
+      notification.success({
+        message: "Contract Saved",
+        description: "A contract has been saved",
+      });
+    } catch (error) {
+      notification.error({
+        message: "Error saving contract",
+        description: error instanceof Error ? error.message : String(error),
+      });
+    } finally {
+      setContractForm({ open: false });
+    }
+  };
 
   const editContract = (id: string) => {
     const contract = contracts.find((c) => c.id === id);
@@ -128,25 +125,22 @@ const Contracts: React.FC = () => {
       });
   };
 
-  const deleteContract = useCallback(
-    async (id?: string) => {
-      if (!id) return;
-      try {
-        await callAuthenticatedApi(deleteContractById, id);
-        await fetchContracts(true);
-        notification.success({
-          message: "Contract Deleted",
-          description: "A contract has been deleted",
-        });
-      } catch (error) {
-        notification.error({
-          message: "Error deleting contract",
-          description: error instanceof Error ? error.message : String(error),
-        });
-      }
-    },
-    [session]
-  );
+  const deleteContract = async (id?: string) => {
+    if (!id) return;
+    try {
+      await callAuthenticatedApi(deleteContractById, id);
+      await fetchContracts(true);
+      notification.success({
+        message: "Contract Deleted",
+        description: "A contract has been deleted",
+      });
+    } catch (error) {
+      notification.error({
+        message: "Error deleting contract",
+        description: error instanceof Error ? error.message : String(error),
+      });
+    }
+  };
 
   return (
     <div className="page">
