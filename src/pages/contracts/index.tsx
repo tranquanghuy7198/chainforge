@@ -134,15 +134,14 @@ const Contracts: React.FC = () => {
       try {
         await callAuthenticatedApi(deleteContractById, id);
         await fetchContracts(true);
+        notification.success({
+          message: "Contract Deleted",
+          description: "A contract has been deleted",
+        });
       } catch (error) {
         notification.error({
           message: "Error deleting contract",
           description: error instanceof Error ? error.message : String(error),
-        });
-      } finally {
-        notification.success({
-          message: "Contract Deleted",
-          description: "A contract has been deleted",
         });
       }
     },
