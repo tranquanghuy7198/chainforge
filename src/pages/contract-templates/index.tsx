@@ -59,7 +59,7 @@ const ContractTemplates: React.FC = () => {
     form: ContractTemplateFormStructure
   ): ContractTemplate => {
     try {
-      return parseContractTemplateForm(form, templateForm.form?.id);
+      return parseContractTemplateForm(form);
     } catch (e) {
       notification.error({
         message: "Invalid data",

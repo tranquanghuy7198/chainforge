@@ -16,7 +16,8 @@ import VSCodeEditor from "../vscode-editor";
 import { useFetchBlockchains } from "@hooks/blockchain";
 
 export type ContractFormStructure = {
-  id: string;
+  contractId: string;
+  templateId: string;
   name: string;
   description?: string;
   abi: string;
@@ -26,14 +27,12 @@ export type ContractFormStructure = {
 
 export const parseContractForm = (
   form: ContractFormStructure,
-  blockchains: Blockchain[],
-  id?: string
+  blockchains: Blockchain[]
 ): DeployedContract => {
-  const contractId = id ?? v4();
   return {
-    id: contractId,
+    id: form.contractId,
     template: parseContractTemplateForm({
-      id: contractId,
+      id: form.templateId,
       name: form.name,
       desscription: form.description,
       abi: form.abi,
@@ -68,7 +67,16 @@ const ContractForm: React.FC<{
       name="save-contract"
       layout="horizontal"
       initialValues={contractForm.form}
-      onFinish={(values) => saveContract(values)}
+      onFinish={(values) =>
+        saveContract({
+          // Editable values
+          ...values,
+
+          // Create: No IDs - gen new, edit: get IDs from contractForm.form
+          contractId: contractForm.form?.contractId ?? v4(),
+          templateId: contractForm.form?.templateId ?? v4(),
+        })
+      }
     >
       <Form.Item name="name" label="Name" required>
         <Input placeholder="Contract Name" />

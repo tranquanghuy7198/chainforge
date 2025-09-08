@@ -69,7 +69,7 @@ const Contracts: React.FC = () => {
     contract: ContractFormStructure
   ): DeployedContract => {
     try {
-      return parseContractForm(contract, blockchains, contractForm.form?.id);
+      return parseContractForm(contract, blockchains);
     } catch (e) {
       notification.error({
         message: "Invalid data",
@@ -115,7 +115,8 @@ const Contracts: React.FC = () => {
       setContractForm({
         open: true,
         form: {
-          id: contract.id,
+          contractId: contract.id,
+          templateId: contract.template.id,
           name: contract.template.name,
           description: contract.template.description,
           abi: JSON.stringify(contract.template.abi),

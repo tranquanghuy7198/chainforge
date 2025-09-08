@@ -22,11 +22,10 @@ export type ContractTemplateFormStructure = {
 };
 
 export const parseContractTemplateForm = (
-  form: ContractTemplateFormStructure,
-  id?: string
+  form: ContractTemplateFormStructure
 ): ContractTemplate => {
   return {
-    id: id ?? v4(),
+    id: form.id,
     name: form.name,
     description: form.desscription,
     abi: JSON.parse(form.abi),
@@ -83,7 +82,9 @@ const ContractTemplateForm: React.FC<{
       name="save-contract-template"
       layout="horizontal"
       initialValues={templateForm.form}
-      onFinish={(values) => saveContractTemplate(values)}
+      onFinish={(values) =>
+        saveContractTemplate({ ...values, id: templateForm.form?.id ?? v4() })
+      }
     >
       <Form.Item name="networkClusters" label="Network Clusters" required>
         <Select
