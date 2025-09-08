@@ -1,11 +1,6 @@
 import React, { useEffect, useState } from "react";
 import "./contract-templates.scss";
-import useLocalStorageState from "use-local-storage-state";
-import {
-  CONTRACT_TEMPLATE_KEY,
-  ContractTemplate,
-  NetworkCluster,
-} from "@utils/constants";
+import { ContractTemplate, NetworkCluster } from "@utils/constants";
 import Header from "@components/header";
 import ContractTemplateCard from "@components/contract-template-card";
 import { capitalize } from "@utils/utils";
@@ -18,12 +13,16 @@ import ContractTemplateForm, {
 import Paragraph from "antd/es/typography/Paragraph";
 import { XBlock, XMasonry } from "react-xmasonry";
 import ConfirmModal from "@components/confirm-modal";
+import { useAuth } from "@hooks/auth";
+import {
+  createTemplate,
+  deleteTemplateById,
+  updateTemplate,
+} from "@api/contracts";
+import { useFetchMyTemplates } from "@hooks/contract";
 
 const ContractTemplates: React.FC = () => {
   const [notification, contextHolder] = useNotification();
-  const [contractTemplates, setContractTemplates] = useLocalStorageState<
-    ContractTemplate[]
-  >(CONTRACT_TEMPLATE_KEY, { defaultValue: [] });
   const [displayedTemplates, setDisplayedTemplates] = useState<
     ContractTemplate[]
   >([]);
@@ -34,10 +33,12 @@ const ContractTemplates: React.FC = () => {
     form?: ContractTemplateFormStructure;
   }>({ open: false, form: undefined });
   const [confirmDeleteId, setConfirmDeleteId] = useState<string>();
+  const { templates, fetchTemplates } = useFetchMyTemplates();
+  const { callAuthenticatedApi } = useAuth();
 
   useEffect(() => {
     setDisplayedTemplates(
-      contractTemplates.filter((template) => {
+      templates.filter((template) => {
         if (
           searchedName &&
           !template.name.toLowerCase().includes(searchedName.toLowerCase())
@@ -53,7 +54,7 @@ const ContractTemplates: React.FC = () => {
         return true;
       })
     );
-  }, [contractTemplates, selectedClusters, searchedName]);
+  }, [templates, selectedClusters, searchedName]);
 
   const parseToContractTemplate = (
     form: ContractTemplateFormStructure
@@ -75,27 +76,48 @@ const ContractTemplates: React.FC = () => {
     }
   };
 
-  const saveContractTemplate = (template: ContractTemplate) => {
-    setContractTemplates(
-      contractTemplates.some((t) => t.id === template.id)
-        ? contractTemplates.map((t) => (t.id === template.id ? template : t))
-        : [...contractTemplates, template]
-    );
-    setTemplateForm({ open: false });
-    notification.success({
-      message: "Contract Saved",
-      description: "A contract template has been saved",
-    });
+  const saveContractTemplate = async (template: ContractTemplate) => {
+    try {
+      await callAuthenticatedApi(
+        templates.some((t) => t.id === template.id)
+          ? updateTemplate
+          : createTemplate,
+        template
+      );
+      await fetchTemplates(true);
+      notification.success({
+        message: "Template Saved",
+        description: "A contract template has been saved",
+      });
+    } catch (error) {
+      notification.error({
+        message: "Error saving template",
+        description: error instanceof Error ? error.message : String(error),
+      });
+    } finally {
+      setTemplateForm({ open: false });
+    }
   };
 
-  const deleteContractTemplate = (id?: string) => {
-    setContractTemplates(
-      contractTemplates.filter((template) => template.id !== id)
-    );
+  const deleteContractTemplate = async (id?: string) => {
+    if (!id) return;
+    try {
+      await callAuthenticatedApi(deleteTemplateById, id);
+      await fetchTemplates(true);
+      notification.success({
+        message: "Template Deleted",
+        description: "A contract template has been deleted",
+      });
+    } catch (error) {
+      notification.error({
+        message: "Error deleting template",
+        description: error instanceof Error ? error.message : String(error),
+      });
+    }
   };
 
   const editContractTemplate = (id: string) => {
-    const template = contractTemplates.find((template) => template.id === id);
+    const template = templates.find((template) => template.id === id);
     if (!template) notification.error({ message: "Template not found" });
     else
       setTemplateForm({
