@@ -1,9 +1,21 @@
 import {
   ContractAddress,
+  ContractTemplate,
   DeployedContract,
   NetworkCluster,
 } from "@utils/constants";
 import { makeRequest } from "./utils";
+
+type TemplateResponse = {
+  id: string;
+  owner: string;
+  name: string;
+  description?: string;
+  abi: any;
+  bytecode: string;
+  flattenSource?: string;
+  networkClusters: NetworkCluster[];
+};
 
 type ContractResponse = {
   contractId: string;
@@ -22,6 +34,17 @@ export const listTrendingContracts = async (): Promise<ContractResponse[]> => {
   return await makeRequest("/api/contracts", "GET");
 };
 
+export const listMyTemplates = async (
+  accessToken: string
+): Promise<TemplateResponse[]> => {
+  return await makeRequest(
+    "/api/contracts/my-templates",
+    "GET",
+    undefined,
+    accessToken
+  );
+};
+
 export const listMyContracts = async (
   accessToken: string
 ): Promise<ContractResponse[]> => {
@@ -29,6 +52,25 @@ export const listMyContracts = async (
     "/api/contracts/my-contracts",
     "GET",
     undefined,
+    accessToken
+  );
+};
+
+export const createTemplate = async (
+  accessToken: string,
+  template: ContractTemplate
+) => {
+  return await makeRequest(
+    "/api/contracts/template",
+    "POST",
+    {
+      name: template.name,
+      abi: template.abi,
+      bytecode: template.bytecode,
+      networkClusters: template.networkClusters,
+      description: template.description,
+      flattenSource: template.flattenSource,
+    },
     accessToken
   );
 };
@@ -54,6 +96,25 @@ export const createContractAndTemplate = async (
   return [templateId, contractId];
 };
 
+export const updateTemplate = async (
+  accessToken: string,
+  template: ContractTemplate
+) => {
+  return await makeRequest(
+    `/api/contracts/template/${template.id}`,
+    "PUT",
+    {
+      name: template.name,
+      abi: template.abi,
+      bytecode: template.bytecode,
+      networkClusters: template.networkClusters,
+      description: template.description,
+      flattenSource: template.flattenSource,
+    },
+    accessToken
+  );
+};
+
 export const updateContractAndTemplate = async (
   accessToken: string,
   contract: DeployedContract
@@ -73,6 +134,15 @@ export const updateContractAndTemplate = async (
     accessToken
   );
   return [templateId, contractId];
+};
+
+export const deleteTemplateById = async (accessToken: string, id: string) => {
+  await makeRequest(
+    `/api/contracts/template/${id}`,
+    "DELETE",
+    undefined,
+    accessToken
+  );
 };
 
 export const deleteContractById = async (accessToken: string, id: string) => {
