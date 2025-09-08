@@ -95,6 +95,10 @@ const Contracts: React.FC = () => {
           contract
         );
         await fetchContracts(true);
+        notification.success({
+          message: "Contract Saved",
+          description: "A contract has been saved",
+        });
       } catch (error) {
         notification.error({
           message: "Error saving contract",
@@ -102,10 +106,6 @@ const Contracts: React.FC = () => {
         });
       } finally {
         setContractForm({ open: false });
-        notification.success({
-          message: "Contract Saved",
-          description: "A contract has been saved",
-        });
       }
     },
     [session]
