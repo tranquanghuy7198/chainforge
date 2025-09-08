@@ -26,7 +26,7 @@ const Contracts: React.FC = () => {
   const [notification, contextHolder] = useNotification();
   const { blockchains } = useFetchBlockchains();
   const { contracts, fetchContracts } = useFetchMyContracts();
-  const { session, callAuthenticatedApi } = useAuth();
+  const { callAuthenticatedApi } = useAuth();
   const [displayedContracts, setDisplayedContracts] = useState<
     DeployedContract[]
   >([]);
