@@ -152,7 +152,7 @@ const ContractForm: React.FC<{
                     )}
                   <Button
                     type="text"
-                    shape="circle"
+                    size="small"
                     icon={<CloseOutlined />}
                     onClick={() => remove(field.name)}
                   />

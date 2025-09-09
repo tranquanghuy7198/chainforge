@@ -38,6 +38,7 @@ const InstructionController: React.FC<{
         <Button
           {...listeners}
           type="text"
+          size="small"
           icon={<MenuOutlined />}
           className="ix-drag"
         />
@@ -45,7 +46,7 @@ const InstructionController: React.FC<{
         {deletable && (
           <Button
             type="text"
-            shape="circle"
+            size="small"
             icon={<CloseOutlined />}
             onClick={(event) => {
               event.stopPropagation();

@@ -23,6 +23,7 @@ const Bookmark: React.FC<BookmarkProps> = ({
       <Button
         type="text"
         shape="circle"
+        size="small"
         icon={value ? <StarFilled className="bookmark" /> : <StarOutlined />}
         onClick={() => {
           const newValue = !value;
