@@ -237,7 +237,7 @@ const SolanaAdvancedInstructionForm: React.FC<{
     <>
       {contextHolder}
       <Drawer
-        width={1000}
+        width={1050}
         closable={true}
         title={
           <AbiTitle
