@@ -1,6 +1,6 @@
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { Card, Flex } from "antd";
+import { Button, Card, Flex } from "antd";
 import React from "react";
 import "./solana-form.scss";
 import { CloseOutlined, MenuOutlined } from "@ant-design/icons";
@@ -35,11 +35,18 @@ const InstructionController: React.FC<{
       {...attributes}
     >
       <Flex align="center">
-        <MenuOutlined {...listeners} className="ix-drag" />
+        <Button
+          {...listeners}
+          type="text"
+          icon={<MenuOutlined />}
+          className="ix-drag"
+        />
         <div className="ix-title">{name}</div>
         {deletable && (
-          <CloseOutlined
-            className="ix-close"
+          <Button
+            type="text"
+            shape="circle"
+            icon={<CloseOutlined />}
             onClick={(event) => {
               event.stopPropagation();
               onDelete();

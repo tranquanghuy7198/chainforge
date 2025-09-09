@@ -51,7 +51,6 @@
 
 .ix-drag {
   margin-right: 10px;
-  height: max-content;
   cursor: grab;
   :active {
     cursor: grabbing;
@@ -63,11 +62,6 @@
   text-overflow: ellipsis;
   white-space: nowrap;
   overflow: hidden;
-}
-
-.ix-close {
-  margin-left: 10px;
-  cursor: pointer;
 }
 
 .advanced-mode {
