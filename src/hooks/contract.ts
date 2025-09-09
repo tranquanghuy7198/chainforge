@@ -16,7 +16,7 @@ import { useAuth } from "@hooks/auth";
 export const useFetchMyTemplates = () => {
   const dispatch = useAppDispatch();
   const templates = useAppSelector((state) => state.contract.templates);
-  const { callAuthenticatedApi } = useAuth();
+  const { session, callAuthenticatedApi } = useAuth();
   const [templateLoading, setTemplateLoading] = useState<boolean>(false);
 
   const fetchTemplates = useCallback(
@@ -43,7 +43,7 @@ export const useFetchMyTemplates = () => {
         setTemplateLoading(false);
       }
     },
-    [dispatch]
+    [session, dispatch]
   );
 
   useEffect(() => {
@@ -56,7 +56,7 @@ export const useFetchMyTemplates = () => {
 export const useFetchMyContracts = () => {
   const dispatch = useAppDispatch();
   const contracts = useAppSelector((state) => state.contract.contracts);
-  const { callAuthenticatedApi } = useAuth();
+  const { session, callAuthenticatedApi } = useAuth();
   const [contractLoading, setContractLoading] = useState<boolean>(false);
 
   const fetchContracts = useCallback(
@@ -87,7 +87,7 @@ export const useFetchMyContracts = () => {
         setContractLoading(false);
       }
     },
-    [dispatch]
+    [session, dispatch]
   );
 
   useEffect(() => {
