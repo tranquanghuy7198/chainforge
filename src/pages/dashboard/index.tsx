@@ -1,5 +1,6 @@
 import {
   Drawer,
+  Flex,
   FloatButton,
   Image,
   Layout,
@@ -18,13 +19,10 @@ import {
   WalletOutlined,
 } from "@ant-design/icons";
 import "@pages/dashboard/dashboard.scss";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Blockchains from "@pages/blockchains";
 import WalletCard from "@components/wallet";
-import { useAppDispatch, useAppSelector } from "@redux/hook";
-import { fetchBlockchains } from "@api/blockchains";
-import { setBlockchains } from "@redux/reducers/blockchain";
-import { updateWallet } from "@redux/reducers/wallet";
+import { useAppSelector } from "@redux/hook";
 import ContractTemplates from "@pages/contract-templates";
 import Contracts from "@pages/contracts";
 import ProductContact from "@components/contact";
@@ -69,14 +67,9 @@ const items: MenuItem[] = [
 ];
 
 export default function Dashboard() {
-  const dispatch = useAppDispatch();
   const wallets = useAppSelector((state) => state.wallet.wallets);
   let [selectedKey, setSelectedKey] = useState<string>("blockchains");
   let [connectWallet, setConnectWallet] = useState<boolean>(false);
-
-  useEffect(() => {
-    fetchBlockchains().then((chains) => dispatch(setBlockchains(chains)));
-  }, []);
 
   return (
     <Layout hasSider className="main-screen">
@@ -137,13 +130,15 @@ export default function Dashboard() {
         closable={true}
         onClose={() => setConnectWallet(false)}
       >
-        {Object.entries(wallets).map(([key, wallet]) => (
-          <WalletCard
-            key={key}
-            wallet={wallet}
-            onWalletUpdate={(wallet) => dispatch(updateWallet(wallet))}
-          />
-        ))}
+        <Flex vertical gap={10} align="center" justify="stretch">
+          {Object.entries(wallets).map(([key, wallet]) => (
+            <WalletCard
+              key={key}
+              wallet={wallet}
+              onWalletUpdate={async () => {}}
+            />
+          ))}
+        </Flex>
       </Drawer>
     </Layout>
   );
