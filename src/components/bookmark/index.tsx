@@ -1,6 +1,7 @@
 import React from "react";
 import { Button, Tooltip } from "antd";
 import { StarFilled, StarOutlined } from "@ant-design/icons";
+import "./bookmark.scss";
 
 interface BookmarkProps {
   checked?: boolean;
@@ -22,7 +23,7 @@ const Bookmark: React.FC<BookmarkProps> = ({
       <Button
         type="text"
         shape="circle"
-        icon={value ? <StarFilled /> : <StarOutlined />}
+        icon={value ? <StarFilled className="bookmark" /> : <StarOutlined />}
         onClick={() => {
           const newValue = !value;
           if (!isControlled) setInternalChecked(newValue);
