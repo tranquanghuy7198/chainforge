@@ -172,7 +172,7 @@ const Contracts: React.FC = () => {
         </XMasonry>
       </div>
       <Drawer
-        width={750}
+        width={800}
         title={contractForm.form ? contractForm.form.name : "Add Contract"}
         open={contractForm.open}
         closable={true}

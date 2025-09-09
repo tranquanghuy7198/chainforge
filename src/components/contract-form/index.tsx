@@ -150,7 +150,12 @@ const ContractForm: React.FC<{
                         <Input placeholder="Package" />
                       </Form.Item>
                     )}
-                  <CloseOutlined onClick={() => remove(field.name)} />
+                  <Button
+                    type="text"
+                    shape="circle"
+                    icon={<CloseOutlined />}
+                    onClick={() => remove(field.name)}
+                  />
                 </Space>
               ))}
               <Button type="dashed" onClick={() => add()} block>
