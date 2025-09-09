@@ -61,7 +61,7 @@ export const createTemplate = async (
   template: ContractTemplate
 ) => {
   return await makeRequest(
-    "/api/contracts/template",
+    "/api/contracts/templates",
     "POST",
     {
       name: template.name,

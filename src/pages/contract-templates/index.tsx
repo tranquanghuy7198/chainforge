@@ -20,6 +20,7 @@ import {
   updateTemplate,
 } from "@api/contracts";
 import { useFetchMyTemplates } from "@hooks/contract";
+import AuthModal from "@components/auth-modal";
 
 const ContractTemplates: React.FC = () => {
   const [notification, contextHolder] = useNotification();
@@ -142,6 +143,7 @@ const ContractTemplates: React.FC = () => {
   return (
     <div className="page">
       {contextHolder}
+      <AuthModal />
       <Header
         header="Contract Templates"
         options={Object.values(NetworkCluster).map((cluster) => ({
