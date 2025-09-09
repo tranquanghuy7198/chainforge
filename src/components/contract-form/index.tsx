@@ -12,8 +12,9 @@ import { Button, Form, Input, Select, Space } from "antd";
 import { CloseOutlined, PlusOutlined } from "@ant-design/icons";
 import "@components/contract-form/contract-form.scss";
 import SelectOption from "@components/select-option";
-import VSCodeEditor from "../vscode-editor";
+import VSCodeEditor from "@components/vscode-editor";
 import { useFetchBlockchains } from "@hooks/blockchain";
+import Bookmark from "@components/bookmark";
 
 export type ContractFormStructure = {
   contractId: string;
@@ -90,12 +91,21 @@ const ContractForm: React.FC<{
       <Form.Item name="flattenSource" label="Flatten Source">
         <Input.TextArea rows={4} placeholder="Contract flatten source" />
       </Form.Item>
-      <Form.Item label="Addresses">
+      <Form.Item
+        label="Addresses"
+        tooltip="To publish a contract address, you must be its owner or deployer"
+      >
         <Form.List name="addresses">
           {(fields, { add, remove }) => (
             <div className="addresses">
               {fields.map((field) => (
                 <Space key={field.key} align="baseline">
+                  <Form.Item
+                    name={[field.name, "publicity"]}
+                    valuePropName="checked"
+                  >
+                    <Bookmark />
+                  </Form.Item>
                   <Form.Item name={[field.name, "blockchainId"]}>
                     <Select
                       className="contract-chain-select"
