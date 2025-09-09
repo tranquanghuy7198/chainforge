@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Blockchain,
   ContractAddress,
@@ -52,15 +52,29 @@ export const parseContractForm = (
 
 const ContractForm: React.FC<{
   contractForm: { open: boolean; form?: ContractFormStructure };
-  saveContract: (contract: ContractFormStructure) => void;
+  saveContract: (contract: ContractFormStructure) => Promise<void>;
 }> = ({ contractForm, saveContract }) => {
   const { blockchains } = useFetchBlockchains();
   const [form] = useForm();
   const addresses = useWatch<ContractAddress[]>("addresses", form);
+  const [loading, setLoading] = useState<boolean>(false);
 
   useEffect(() => {
     if (contractForm.open) form.resetFields();
   }, [form, contractForm]);
+
+  const save = async (values: any) => {
+    setLoading(true);
+    await saveContract({
+      // Editable values
+      ...values,
+
+      // Create: No IDs - gen new, edit: get IDs from contractForm.form
+      contractId: contractForm.form?.contractId ?? v4(),
+      templateId: contractForm.form?.templateId ?? v4(),
+    });
+    setLoading(false);
+  };
 
   return (
     <Form
@@ -68,16 +82,7 @@ const ContractForm: React.FC<{
       name="save-contract"
       layout="horizontal"
       initialValues={contractForm.form}
-      onFinish={(values) =>
-        saveContract({
-          // Editable values
-          ...values,
-
-          // Create: No IDs - gen new, edit: get IDs from contractForm.form
-          contractId: contractForm.form?.contractId ?? v4(),
-          templateId: contractForm.form?.templateId ?? v4(),
-        })
-      }
+      onFinish={save}
     >
       <Form.Item name="name" label="Name" required>
         <Input placeholder="Contract Name" />
@@ -93,7 +98,7 @@ const ContractForm: React.FC<{
       </Form.Item>
       <Form.Item
         label="Addresses"
-        tooltip="To publish a contract address, you must be its owner or deployer"
+        tooltip="By publishing this contract, you allow everyone to see and interact with it. To do so, you must be its owner or deployer"
       >
         <Form.List name="addresses">
           {(fields, { add, remove }) => (
@@ -156,7 +161,7 @@ const ContractForm: React.FC<{
         </Form.List>
       </Form.Item>
       <Form.Item>
-        <Button type="primary" htmlType="submit">
+        <Button type="primary" htmlType="submit" loading={loading}>
           Save Contract
         </Button>
       </Form.Item>
