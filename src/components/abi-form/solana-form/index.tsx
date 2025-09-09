@@ -5,7 +5,7 @@ import {
   ContractTemplate,
 } from "@utils/constants";
 import { Wallet } from "@utils/wallets/wallet";
-import { Space, Tag, Tooltip } from "antd";
+import { Button, Space, Tag, Tooltip } from "antd";
 import { useState } from "react";
 import { Idl, IdlInstruction } from "@utils/types/solana";
 import CollapseForm from "@components/abi-form/collapse-form";
@@ -57,8 +57,11 @@ const SolanaForm: React.FC<{
             extra:
               action === AbiAction.Write ? (
                 <Tooltip title="Advanced Mode">
-                  <ThunderboltFilled
-                    className="advanced-mode"
+                  <Button
+                    type="text"
+                    shape="circle"
+                    size="small"
+                    icon={<ThunderboltFilled className="advanced-mode" />}
                     onClick={(event) => {
                       event.stopPropagation();
                       setAdvancedIx(instruction);
