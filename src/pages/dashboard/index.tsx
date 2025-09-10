@@ -59,11 +59,11 @@ const items: MenuItem[] = [
       },
     ],
   },
-  {
-    key: "settings",
-    label: "Settings",
-    icon: <SettingFilled />,
-  },
+  // {
+  //   key: "settings",
+  //   label: "Settings",
+  //   icon: <SettingFilled />,
+  // },
 ];
 
 export default function Dashboard() {
