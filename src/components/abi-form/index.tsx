@@ -23,8 +23,7 @@ const AbiForm: React.FC<{
   defaultAction: AbiAction;
   contractTemplate: ContractTemplate;
   contractAddress?: ContractAddress; // not used for Contract Deploy
-  contractId?: string; // not used for Contract Deploy
-}> = ({ contractAddress, defaultAction, contractTemplate, contractId }) => {
+}> = ({ contractAddress, defaultAction, contractTemplate }) => {
   const { blockchains } = useFetchBlockchains();
   const { callAuthenticatedApi } = useAuth();
   const { fetchContracts } = useFetchMyContracts();
