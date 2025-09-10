@@ -136,6 +136,20 @@ export const updateContractAndTemplate = async (
   return [templateId, contractId];
 };
 
+export const addContractAddress = async (
+  accessToken: string,
+  templateId: string,
+  blockchainId: string,
+  address: string
+) => {
+  await makeRequest(
+    `/api/contracts/template/${templateId}/contract`,
+    "PATCH",
+    { contractAddress: { blockchainId, address } },
+    accessToken
+  );
+};
+
 export const deleteTemplateById = async (accessToken: string, id: string) => {
   await makeRequest(
     `/api/contracts/template/${id}`,

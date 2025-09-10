@@ -40,7 +40,10 @@ const SolanaBasicInstructionForm: React.FC<{
   wallet?: Wallet;
   blockchain?: Blockchain;
   instruction: IdlInstruction;
-  saveDeployedContract: (blockchain: Blockchain, address: string) => void;
+  saveDeployedContract: (
+    blockchain: Blockchain,
+    address: string
+  ) => Promise<void>;
 }> = ({
   action,
   contractTemplate,
@@ -66,7 +69,7 @@ const SolanaBasicInstructionForm: React.FC<{
       null,
       { programKeypair: contractTemplate.programKeypair } as SolanaExtra
     );
-    saveDeployedContract(blockchain, response.contractAddress!);
+    await saveDeployedContract(blockchain, response.contractAddress!);
     return response;
   };
 

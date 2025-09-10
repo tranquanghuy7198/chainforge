@@ -15,6 +15,9 @@ import { Segmented } from "antd";
 import SolanaForm from "@components/abi-form/solana-form";
 import { EditOutlined, EyeOutlined } from "@ant-design/icons";
 import { useFetchBlockchains } from "@hooks/blockchain";
+import { useAuth } from "@hooks/auth";
+import { addContractAddress } from "@api/contracts";
+import { useFetchMyContracts } from "@hooks/contract";
 
 const AbiForm: React.FC<{
   defaultAction: AbiAction;
@@ -23,44 +26,23 @@ const AbiForm: React.FC<{
   contractId?: string; // not used for Contract Deploy
 }> = ({ contractAddress, defaultAction, contractTemplate, contractId }) => {
   const { blockchains } = useFetchBlockchains();
+  const { callAuthenticatedApi } = useAuth();
+  const { fetchContracts } = useFetchMyContracts();
   const [wallet, setWallet] = useState<Wallet>();
   const [blockchain, setBlockchain] = useState<Blockchain>();
   const [action, setAction] = useState<AbiAction>(defaultAction);
 
-  const saveDeployedContract = (blockchain: Blockchain, address: string) => {
-    // TODO: Save contract with given template
-    // setDeployedContracts(
-    //   deployedContracts.some(
-    //     (contract) => contract.template.id === contractTemplate.id
-    //   )
-    //     ? deployedContracts.map((contract) =>
-    //         contract.template.id === contractTemplate.id
-    //           ? {
-    //               ...contract,
-    //               addresses: [
-    //                 ...contract.addresses,
-    //                 {
-    //                   blockchainId: blockchain.id,
-    //                   address: address!,
-    //                 },
-    //               ],
-    //             }
-    //           : contract
-    //       )
-    //     : [
-    //         ...deployedContracts,
-    //         {
-    //           id: v4(),
-    //           template: contractTemplate,
-    //           addresses: [
-    //             {
-    //               blockchainId: blockchain.id,
-    //               address: address!,
-    //             },
-    //           ],
-    //         },
-    //       ]
-    // );
+  const saveDeployedContract = async (
+    blockchain: Blockchain,
+    address: string
+  ) => {
+    await callAuthenticatedApi(
+      addContractAddress,
+      contractTemplate.id,
+      blockchain.id,
+      address
+    );
+    await fetchContracts(true);
   };
 
   useEffect(() => {

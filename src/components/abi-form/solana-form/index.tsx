@@ -21,7 +21,10 @@ import SolanaBasicInstructionForm from "@components/abi-form/solana-form/basic-i
 const SolanaForm: React.FC<{
   action: AbiAction;
   contractTemplate: ContractTemplate;
-  saveDeployedContract: (blockchain: Blockchain, address: string) => void;
+  saveDeployedContract: (
+    blockchain: Blockchain,
+    address: string
+  ) => Promise<void>;
   contractAddress?: ContractAddress;
   wallet?: Wallet;
   blockchain?: Blockchain;

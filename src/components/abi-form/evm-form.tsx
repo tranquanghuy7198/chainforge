@@ -29,7 +29,10 @@ const PAYABLE_AMOUNT = "payable";
 const EvmForm: React.FC<{
   action: AbiAction;
   contractTemplate: ContractTemplate;
-  saveDeployedContract: (blockchain: Blockchain, address: string) => void;
+  saveDeployedContract: (
+    blockchain: Blockchain,
+    address: string
+  ) => Promise<void>;
   contractAddress?: ContractAddress;
   wallet?: Wallet;
   blockchain?: Blockchain;
@@ -61,7 +64,7 @@ const EvmForm: React.FC<{
       { payment: payableAmount } as EthereumExtra
     );
     setTxResponses({ ...txResponses, constructor: txResponse });
-    saveDeployedContract(blockchain, txResponse.contractAddress!);
+    await saveDeployedContract(blockchain, txResponse.contractAddress!);
   };
 
   const read = async (
