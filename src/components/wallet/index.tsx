@@ -1,8 +1,12 @@
-import React from "react";
+import React, { useState } from "react";
 import { Wallet } from "@utils/wallets/wallet";
 import { Card, Image, Tooltip } from "antd";
 import "./wallet.scss";
-import { CheckCircleOutlined, PauseCircleOutlined } from "@ant-design/icons";
+import {
+  CheckCircleOutlined,
+  LoadingOutlined,
+  PauseCircleOutlined,
+} from "@ant-design/icons";
 import { shorten } from "@utils/utils";
 import useNotification from "antd/es/notification/useNotification";
 import Paragraph from "antd/es/typography/Paragraph";
@@ -14,12 +18,14 @@ const WalletCard: React.FC<{
   wallet: Wallet;
   onWalletUpdate: (wallet: Wallet) => Promise<void>;
 }> = ({ wallet, onWalletUpdate }) => {
+  const [loading, setLoading] = useState<boolean>(false);
   const [notification, contextHolder] = useNotification();
   const dispatch = useAppDispatch();
   const { blockchains } = useFetchBlockchains();
 
   const connectWallet = async (wallet: Wallet): Promise<void> => {
     try {
+      setLoading(true);
       await wallet.connect();
       dispatch(updateWallet(wallet));
       await onWalletUpdate(wallet);
@@ -34,6 +40,8 @@ const WalletCard: React.FC<{
           </Paragraph>
         ),
       });
+    } finally {
+      setLoading(false);
     }
   };
 
