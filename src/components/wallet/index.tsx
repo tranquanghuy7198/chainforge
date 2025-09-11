@@ -50,7 +50,7 @@ const WalletCard: React.FC<{
       {contextHolder}
       <Card
         hoverable
-        className="wallet-card"
+        className={`wallet-card ${loading ? "loading" : ""} loading`}
         size="small"
         variant="borderless"
         style={{ backgroundColor: wallet.ui.backgroundColor }}
@@ -65,7 +65,7 @@ const WalletCard: React.FC<{
             >
               {wallet.ui.name}
             </div>
-            <div
+            {/* <div
               className="wallet-info-container"
               style={{ color: wallet.address ? "#237804" : "#f5222d" }}
             >
@@ -97,7 +97,7 @@ const WalletCard: React.FC<{
               <div className="wallet-info">
                 {wallet.address ? shorten(wallet.address) : "Not Connected"}
               </div>
-            </div>
+            </div> */}
           </div>
         </div>
       </Card>
