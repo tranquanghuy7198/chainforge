@@ -10,7 +10,7 @@ import "./abi-form.scss";
 
 const TransactionResult: React.FC<{
   blockchain?: Blockchain;
-  wallet: Wallet;
+  wallet?: Wallet;
   txResponse: TxResponse;
 }> = ({ blockchain, wallet, txResponse }) => {
   const [notification, contextHolder] = useNotification();
@@ -19,7 +19,7 @@ const TransactionResult: React.FC<{
 
   useEffect(() => {
     // If we cannot detect wallet, do not bother users
-    if (!wallet.address) {
+    if (!wallet || !wallet.address) {
       setLinked(true);
       return;
     }
@@ -37,6 +37,7 @@ const TransactionResult: React.FC<{
 
   const link = async () => {
     try {
+      if (!wallet) throw new Error(`Cannot connect wallet`);
       await wallet.connect();
       if (!wallet.address)
         throw new Error(`Cannot connect to ${wallet.ui.name} wallet`);
@@ -81,7 +82,7 @@ const TransactionResult: React.FC<{
           ))
         }
       />
-      {wallet.address && !linked && (
+      {wallet && wallet.address && !linked && (
         <Alert
           showIcon
           type="warning"
