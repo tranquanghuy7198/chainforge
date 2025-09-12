@@ -50,13 +50,27 @@ export const authWithWallet = async (
   });
 };
 
+export const checkWalletStatus = async (
+  accessToken: string,
+  address: string,
+  networkCluster: NetworkCluster
+): Promise<boolean> => {
+  const { isLinked } = await makeRequest(
+    `/token/link/wallet/${address}?address=${address}&networkCluster=${networkCluster}`,
+    "GET",
+    undefined,
+    accessToken
+  );
+  return isLinked;
+};
+
 export const linkWallet = async (
+  accessToken: string,
   address: string,
   timestamp: number,
   nonce: string,
   signature: string,
-  networkCluster: NetworkCluster,
-  accessToken: string
+  networkCluster: NetworkCluster
 ) => {
   await makeRequest(
     "/token/link/wallet",
