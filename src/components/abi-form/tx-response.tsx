@@ -3,6 +3,7 @@ import React, { useEffect } from "react";
 import { Blockchain, TX_PATTERN, TxResponse } from "@utils/constants";
 import { useAuth } from "@hooks/auth";
 import { checkWalletStatus } from "@api/auth";
+import { shorten } from "@utils/utils";
 import "./abi-form.scss";
 
 const TransactionResult: React.FC<{
@@ -24,7 +25,7 @@ const TransactionResult: React.FC<{
   }, [txResponse]);
 
   return (
-    <Space>
+    <Space direction="vertical" className="tx-response">
       <Alert
         type="info"
         className="tx-response"
@@ -44,8 +45,11 @@ const TransactionResult: React.FC<{
       />
       {!linked && (
         <Alert
+          showIcon
           type="warning"
-          message={`Wallet ${txResponse.walletAddress} is not connected to your account.`}
+          message={`Wallet ${shorten(
+            txResponse.walletAddress
+          )} is not connected to your account.`}
           action={
             <Button size="small" type="text">
               LINK
