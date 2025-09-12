@@ -56,7 +56,7 @@ export const checkWalletStatus = async (
   networkCluster: NetworkCluster
 ): Promise<boolean> => {
   const { isLinked } = await makeRequest(
-    `/token/link/wallet/${address}?address=${address}&networkCluster=${networkCluster}`,
+    `/token/link/wallet?address=${address}&networkCluster=${networkCluster}`,
     "GET",
     undefined,
     accessToken

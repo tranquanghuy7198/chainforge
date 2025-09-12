@@ -6,6 +6,7 @@ import { checkWalletStatus, linkWallet, requestChallenge } from "@api/auth";
 import { shorten } from "@utils/utils";
 import { Wallet } from "@utils/wallets/wallet";
 import useNotification from "antd/es/notification/useNotification";
+import { LinkOutlined } from "@ant-design/icons";
 import "./abi-form.scss";
 
 const TransactionResult: React.FC<{
@@ -53,7 +54,13 @@ const TransactionResult: React.FC<{
         signature,
         wallet.networkCluster
       );
-      setLinked(false);
+      setLinked(true);
+      notification.success({
+        message: "Wallet linked",
+        description: `Wallet ${shorten(
+          wallet.address
+        )} has been successfully linked to your account`,
+      });
     } catch (error) {
       notification.error({
         message: "Cannot connect wallet",
@@ -90,7 +97,7 @@ const TransactionResult: React.FC<{
             wallet.address
           )} is not connected to your account.`}
           action={
-            <Button size="small" type="text" onClick={link}>
+            <Button size="small" onClick={link} icon={<LinkOutlined />}>
               LINK
             </Button>
           }
