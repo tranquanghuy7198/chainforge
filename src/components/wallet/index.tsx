@@ -50,10 +50,15 @@ const WalletCard: React.FC<{
       {contextHolder}
       <Card
         hoverable
-        className={`wallet-card ${loading ? "loading" : ""} loading`}
+        className={`wallet-card ${loading ? "loading" : ""}`}
         size="small"
-        variant="borderless"
-        style={{ backgroundColor: wallet.ui.backgroundColor }}
+        style={{
+          border: `3px solid ${
+            loading ? "transparent" : wallet.ui.backgroundColor
+          }`,
+          background: `linear-gradient(${wallet.ui.backgroundColor}, ${wallet.ui.backgroundColor}) padding-box,
+            conic-gradient(from var(--border-angle), hsl(190deg 20% 10%) 50%, ${wallet.ui.backgroundColor}) border-box`,
+        }}
         onClick={() => connectWallet(wallet)}
       >
         <div className="wallet-card-content">
