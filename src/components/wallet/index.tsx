@@ -91,7 +91,9 @@ const WalletCard: React.FC<{
               )}
               <div
                 className="wallet-info"
-                style={{ color: wallet.address ? "#237804" : "#f5222d" }}
+                style={{
+                  color: wallet.address ? "black" : "#f5222d",
+                }}
               >
                 {wallet.address ? shorten(wallet.address) : "Not Connected"}
               </div>
