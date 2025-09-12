@@ -1,18 +1,13 @@
 import React, { useState } from "react";
 import { Wallet } from "@utils/wallets/wallet";
-import { Card, Image, Tooltip } from "antd";
-import "./wallet.scss";
-import {
-  CheckCircleOutlined,
-  LoadingOutlined,
-  PauseCircleOutlined,
-} from "@ant-design/icons";
+import { Card, Image, Space, Tooltip } from "antd";
 import { shorten } from "@utils/utils";
 import useNotification from "antd/es/notification/useNotification";
 import Paragraph from "antd/es/typography/Paragraph";
 import { useFetchBlockchains } from "@hooks/blockchain";
 import { useAppDispatch } from "@redux/hook";
 import { updateWallet } from "@redux/reducers/wallet";
+import "./wallet.scss";
 
 const WalletCard: React.FC<{
   wallet: Wallet;
@@ -70,10 +65,7 @@ const WalletCard: React.FC<{
             >
               {wallet.ui.name}
             </div>
-            {/* <div
-              className="wallet-info-container"
-              style={{ color: wallet.address ? "#237804" : "#f5222d" }}
-            >
+            <Space>
               {wallet.address && wallet.chainId && (
                 <Tooltip
                   title={
@@ -97,12 +89,13 @@ const WalletCard: React.FC<{
                   />
                 </Tooltip>
               )}
-              {wallet.address && !wallet.chainId && <CheckCircleOutlined />}
-              {!wallet.address && <PauseCircleOutlined />}
-              <div className="wallet-info">
+              <div
+                className="wallet-info"
+                style={{ color: wallet.address ? "#237804" : "#f5222d" }}
+              >
                 {wallet.address ? shorten(wallet.address) : "Not Connected"}
               </div>
-            </div> */}
+            </Space>
           </div>
         </div>
       </Card>
