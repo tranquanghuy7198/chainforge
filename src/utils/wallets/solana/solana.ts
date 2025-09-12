@@ -108,8 +108,6 @@ class Solana extends Wallet {
     const signedTxs = await this.provider.signAllTransactions(txs);
     const txSignature = await executeDeploymentTxs(connection, signedTxs);
     return {
-      walletAddress: this.address!,
-      networkCluster: this.networkCluster,
       contractAddress: programId.toBase58(),
       txHash: txSignature,
     };
@@ -144,8 +142,6 @@ class Solana extends Wallet {
       .accounts(accounts)
       .view();
     return {
-      walletAddress: this.address!,
-      networkCluster: this.networkCluster,
       data: JSON.stringify(JSON.parse(SuperJSON.stringify(result)).json),
     };
   }
@@ -191,11 +187,7 @@ class Solana extends Wallet {
       lastValidBlockHeight,
       minContextSlot,
     });
-    return {
-      walletAddress: this.address!,
-      networkCluster: this.networkCluster,
-      txHash: signature,
-    };
+    return { txHash: signature };
   }
 }
 

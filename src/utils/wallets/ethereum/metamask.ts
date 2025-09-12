@@ -71,8 +71,6 @@ export class MetaMask extends Wallet {
     );
     await contract.waitForDeployment();
     return {
-      walletAddress: this.address!,
-      networkCluster: this.networkCluster,
       contractAddress:
         typeof contract.target === "string"
           ? contract.target
@@ -122,8 +120,6 @@ export class MetaMask extends Wallet {
     const contract = new ethers.Contract(contractAddress, abi, this.provider);
     const response = await contract[method](...args);
     return {
-      walletAddress: this.address!,
-      networkCluster: this.networkCluster,
       data: JSON.stringify(JSON.parse(SuperJSON.stringify(response)).json),
     };
   }
@@ -143,11 +139,7 @@ export class MetaMask extends Wallet {
       ...args,
       extra.payment ? { value: extra.payment } : {}
     )) as ContractTransactionResponse;
-    return {
-      walletAddress: this.address!,
-      networkCluster: this.networkCluster,
-      txHash: response.hash,
-    };
+    return { txHash: response.hash };
   }
 
   public clone(): Wallet {

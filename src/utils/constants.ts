@@ -81,8 +81,6 @@ export type EvmAbiFunction = {
 export type EvmAbi = EvmAbiFunction[];
 
 export type TxResponse = {
-  walletAddress: string;
-  networkCluster: NetworkCluster;
   contractAddress?: string; // Deploy
   txHash?: string; // Deploy + Write
   data?: string; // Read
