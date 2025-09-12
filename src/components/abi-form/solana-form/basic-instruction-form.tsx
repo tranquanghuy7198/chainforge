@@ -229,7 +229,11 @@ const SolanaBasicInstructionForm: React.FC<{
           {capitalize(action.toString())}
         </Button>
         {txResp && (
-          <TransactionResult blockchain={blockchain} txResponse={txResp} />
+          <TransactionResult
+            blockchain={blockchain}
+            wallet={wallet}
+            txResponse={txResp}
+          />
         )}
       </Flex>
     </>
