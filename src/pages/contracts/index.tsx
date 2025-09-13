@@ -14,7 +14,10 @@ import { XBlock, XMasonry } from "react-xmasonry";
 import ConfirmModal from "@components/confirm-modal";
 import { useFetchBlockchains } from "@hooks/blockchain";
 import AuthModal from "@components/auth-modal";
-import { useFetchMyContracts } from "@hooks/contract";
+import {
+  useFetchMyContracts,
+  useFetchTrendingContracts,
+} from "@hooks/contract";
 import { useAuth } from "@hooks/auth";
 import {
   createContractAndTemplate,
@@ -25,6 +28,7 @@ import {
 const Contracts: React.FC = () => {
   const [notification, contextHolder] = useNotification();
   const { blockchains } = useFetchBlockchains();
+  const { fetchTrendingContracts } = useFetchTrendingContracts();
   const { contracts, fetchContracts } = useFetchMyContracts();
   const { callAuthenticatedApi } = useAuth();
   const [displayedContracts, setDisplayedContracts] = useState<
@@ -94,6 +98,7 @@ const Contracts: React.FC = () => {
         contract
       );
       await fetchContracts(true);
+      await fetchTrendingContracts(true); // This can affect trending contracts
       notification.success({
         message: "Contract Saved",
         description: "A contract has been saved",
@@ -131,6 +136,7 @@ const Contracts: React.FC = () => {
     try {
       await callAuthenticatedApi(deleteContractById, id);
       await fetchContracts(true);
+      await fetchTrendingContracts(true); // This can affect trending contracts
       notification.success({
         message: "Contract Deleted",
         description: "A contract has been deleted",
