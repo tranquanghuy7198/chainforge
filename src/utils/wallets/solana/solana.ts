@@ -8,7 +8,7 @@ import {
   BaseMessageSignerWalletAdapter,
   WalletReadyState,
 } from "@solana/wallet-adapter-base";
-import { AnchorProvider, Idl, Program } from "@coral-xyz/anchor";
+import { AnchorProvider, Idl, Program, utils } from "@coral-xyz/anchor";
 import { Connection, Keypair, PublicKey, Transaction } from "@solana/web3.js";
 import SuperJSON from "superjson";
 import { SolanaExtra } from "@utils/wallets/solana/utils";
@@ -17,7 +17,6 @@ import {
   buildDeploymentTxs,
   executeDeploymentTxs,
 } from "solana-bpf";
-import bs58 from "bs58";
 
 class Solana extends Wallet {
   public provider: BaseMessageSignerWalletAdapter;
@@ -59,7 +58,7 @@ class Solana extends Wallet {
     const signature = await this.provider.signMessage(
       Buffer.from(message, "utf-8")
     );
-    return bs58.encode(signature);
+    return utils.bytes.bs58.encode(signature);
   }
 
   public async deploy(
