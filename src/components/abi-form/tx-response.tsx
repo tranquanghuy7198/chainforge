@@ -56,10 +56,10 @@ const TransactionResult: React.FC<{
       );
       setLinked(true);
       notification.success({
-        message: "Wallet linked",
+        message: "Wallet connected",
         description: `Wallet ${shorten(
           wallet.address
-        )} has been successfully linked to your account`,
+        )} has been successfully connected to your account`,
       });
     } catch (error) {
       notification.error({
@@ -91,14 +91,20 @@ const TransactionResult: React.FC<{
       />
       {wallet && wallet.address && !linked && (
         <Alert
+          closable
           showIcon
           type="warning"
           message={`Wallet ${shorten(
             wallet.address
           )} is not connected to your account.`}
           action={
-            <Button size="small" onClick={link} icon={<LinkOutlined />}>
-              LINK
+            <Button
+              variant="filled"
+              onClick={link}
+              icon={<LinkOutlined />}
+              color="primary"
+            >
+              Connect
             </Button>
           }
         />
