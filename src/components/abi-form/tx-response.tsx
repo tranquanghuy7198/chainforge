@@ -17,6 +17,7 @@ const TransactionResult: React.FC<{
   const [notification, contextHolder] = useNotification();
   const { callAuthenticatedApi } = useAuth();
   const [linked, setLinked] = useState<boolean>(true);
+  const [loading, setLoading] = useState<boolean>(false);
 
   useEffect(() => {
     // If we cannot detect wallet, do not bother users
@@ -38,6 +39,7 @@ const TransactionResult: React.FC<{
 
   const link = async () => {
     try {
+      setLoading(true);
       if (!wallet) throw new Error(`Cannot connect wallet`);
       await wallet.connect();
       if (!wallet.address)
@@ -66,6 +68,8 @@ const TransactionResult: React.FC<{
         message: "Cannot connect wallet",
         description: error instanceof Error ? error.message : String(error),
       });
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -91,18 +95,17 @@ const TransactionResult: React.FC<{
       />
       {wallet && wallet.address && !linked && (
         <Alert
-          closable
           showIcon
           type="warning"
           message={`Wallet ${shorten(
             wallet.address
-          )} is not connected to your account.`}
+          )} is not connected to your account`}
           action={
             <Button
-              variant="filled"
+              type="primary"
               onClick={link}
               icon={<LinkOutlined />}
-              color="primary"
+              loading={loading}
             >
               Connect
             </Button>
