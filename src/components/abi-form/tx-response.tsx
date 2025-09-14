@@ -1,4 +1,4 @@
-import { Alert, Button, Space } from "antd";
+import { Alert, Button, Space, Typography } from "antd";
 import React, { useEffect, useState } from "react";
 import { Blockchain, TX_PATTERN, TxResponse } from "@utils/constants";
 import { useAuth } from "@hooks/auth";
@@ -97,9 +97,13 @@ const TransactionResult: React.FC<{
         <Alert
           showIcon
           type="warning"
-          message={`Wallet ${shorten(
-            wallet.address
-          )} is not connected to your account`}
+          message={
+            <div>
+              Wallet{" "}
+              <Typography.Text code>{shorten(wallet.address)}</Typography.Text>{" "}
+              is not connected to your account
+            </div>
+          }
           action={
             <Button
               type="primary"
