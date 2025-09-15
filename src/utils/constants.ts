@@ -58,7 +58,6 @@ export type ContractAddress = {
 };
 
 export type DeployedContract = {
-  id: string;
   template: ContractTemplate;
   addresses: ContractAddress[];
 };

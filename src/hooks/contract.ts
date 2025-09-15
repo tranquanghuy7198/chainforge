@@ -1,7 +1,7 @@
 import {
   listMyContracts,
   listMyTemplates,
-  listTrendingContracts,
+  listPopularContracts,
 } from "@api/contracts";
 import {
   setContracts,
@@ -68,7 +68,6 @@ export const useFetchMyContracts = () => {
         if (!fetchContracts) return [];
         const deployedContracts: DeployedContract[] = fetchedContracts!.map(
           (contract) => ({
-            id: contract.contractId,
             template: {
               id: contract.templateId,
               name: contract.name,
@@ -97,23 +96,22 @@ export const useFetchMyContracts = () => {
   return { contracts, fetchContracts, contractLoading };
 };
 
-export const useFetchTrendingContracts = () => {
+export const useFetchPopularContracts = () => {
   const dispatch = useAppDispatch();
   const trendingContracts = useAppSelector(
     (state) => state.contract.trendingContracts
   );
   const [trendingLoading, setTrendingLoading] = useState<boolean>(false);
 
-  const fetchTrendingContracts = useCallback(
+  const fetchPopularContracts = useCallback(
     async (force: boolean = false): Promise<DeployedContract[]> => {
       if (!force && trendingContracts.length > 0) return trendingContracts;
 
       try {
         setTrendingLoading(true);
-        const fetchedTrendingContracts = await listTrendingContracts();
+        const fetchedTrendingContracts = await listPopularContracts();
         const parsedTrendingContracts: DeployedContract[] =
           fetchedTrendingContracts.map((contract) => ({
-            id: contract.contractId,
             template: {
               id: contract.templateId,
               name: contract.name,
@@ -135,8 +133,12 @@ export const useFetchTrendingContracts = () => {
   );
 
   useEffect(() => {
-    if (trendingContracts.length === 0) fetchTrendingContracts(true);
-  }, [fetchTrendingContracts, trendingContracts.length]);
+    if (trendingContracts.length === 0) fetchPopularContracts(true);
+  }, [fetchPopularContracts, trendingContracts.length]);
 
-  return { trendingContracts, fetchTrendingContracts, trendingLoading };
+  return {
+    trendingContracts,
+    fetchPopularContracts,
+    trendingLoading,
+  };
 };

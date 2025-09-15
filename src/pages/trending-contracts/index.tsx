@@ -5,11 +5,11 @@ import ContractCard from "@components/contract-card";
 import { capitalize } from "@utils/utils";
 import { XBlock, XMasonry } from "react-xmasonry";
 import { useFetchBlockchains } from "@hooks/blockchain";
-import { useFetchTrendingContracts } from "@/hooks/contract";
+import { useFetchPopularContracts } from "@/hooks/contract";
 
 const TrendingContracts: React.FC = () => {
   const { blockchains } = useFetchBlockchains();
-  const { trendingContracts } = useFetchTrendingContracts();
+  const { trendingContracts } = useFetchPopularContracts();
   const [displayedContracts, setDisplayedContracts] = useState<
     DeployedContract[]
   >([]);
@@ -58,7 +58,7 @@ const TrendingContracts: React.FC = () => {
       <div className="masonry-container">
         <XMasonry center={false} targetBlockWidth={300}>
           {displayedContracts.map((contract) => (
-            <XBlock key={contract.id}>
+            <XBlock key={contract.template.id}>
               <ContractCard contract={contract} />
             </XBlock>
           ))}

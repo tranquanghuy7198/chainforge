@@ -17,7 +17,6 @@ import { useFetchBlockchains } from "@hooks/blockchain";
 import Bookmark from "@components/bookmark";
 
 export type ContractFormStructure = {
-  contractId: string;
   templateId: string;
   name: string;
   description?: string;
@@ -31,7 +30,6 @@ export const parseContractForm = (
   blockchains: Blockchain[]
 ): DeployedContract => {
   return {
-    id: form.contractId,
     template: parseContractTemplateForm({
       id: form.templateId,
       name: form.name,
@@ -66,11 +64,7 @@ const ContractForm: React.FC<{
   const save = async (values: any) => {
     setLoading(true);
     await saveContract({
-      // Editable values
       ...values,
-
-      // Create: No IDs - gen new, edit: get IDs from contractForm.form
-      contractId: contractForm.form?.contractId ?? v4(),
       templateId: contractForm.form?.templateId ?? v4(),
     });
     setLoading(false);

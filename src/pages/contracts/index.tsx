@@ -16,19 +16,21 @@ import { useFetchBlockchains } from "@hooks/blockchain";
 import AuthModal from "@components/auth-modal";
 import {
   useFetchMyContracts,
-  useFetchTrendingContracts,
+  useFetchMyTemplates,
+  useFetchPopularContracts,
 } from "@hooks/contract";
 import { useAuth } from "@hooks/auth";
 import {
   createContractAndTemplate,
-  deleteContractById,
+  deleteContractAddresses,
   updateContractAndTemplate,
 } from "@api/contracts";
 
 const Contracts: React.FC = () => {
   const [notification, contextHolder] = useNotification();
   const { blockchains } = useFetchBlockchains();
-  const { fetchTrendingContracts } = useFetchTrendingContracts();
+  const { fetchPopularContracts } = useFetchPopularContracts();
+  const { fetchTemplates } = useFetchMyTemplates();
   const { contracts, fetchContracts } = useFetchMyContracts();
   const { callAuthenticatedApi } = useAuth();
   const [displayedContracts, setDisplayedContracts] = useState<
@@ -92,13 +94,14 @@ const Contracts: React.FC = () => {
   const saveContract = async (contract: DeployedContract) => {
     try {
       await callAuthenticatedApi(
-        contracts.some((c) => c.id === contract.id)
+        contracts.some((c) => c.template.id === contract.template.id)
           ? updateContractAndTemplate
           : createContractAndTemplate,
         contract
       );
       await fetchContracts(true);
-      await fetchTrendingContracts(true); // This can affect trending contracts
+      await fetchTemplates(true); // This can affect my templates
+      await fetchPopularContracts(true); // This can affect popular contracts
       notification.success({
         message: "Contract Saved",
         description: "A contract has been saved",
@@ -113,14 +116,13 @@ const Contracts: React.FC = () => {
     }
   };
 
-  const editContract = (id: string) => {
-    const contract = contracts.find((c) => c.id === id);
+  const editContract = (templateId: string) => {
+    const contract = contracts.find((c) => c.template.id === templateId);
     if (!contract) notification.error({ message: "Contract not found" });
     else
       setContractForm({
         open: true,
         form: {
-          contractId: contract.id,
           templateId: contract.template.id,
           name: contract.template.name,
           description: contract.template.description,
@@ -131,12 +133,13 @@ const Contracts: React.FC = () => {
       });
   };
 
-  const deleteContract = async (id?: string) => {
-    if (!id) return;
+  const deleteContract = async (templateId?: string) => {
+    if (!templateId) return;
     try {
-      await callAuthenticatedApi(deleteContractById, id);
+      await callAuthenticatedApi(deleteContractAddresses, templateId);
       await fetchContracts(true);
-      await fetchTrendingContracts(true); // This can affect trending contracts
+      await fetchTemplates(true); // This can affect my templates
+      await fetchPopularContracts(true); // This can affect popular contracts
       notification.success({
         message: "Contract Deleted",
         description: "A contract has been deleted",
@@ -167,7 +170,7 @@ const Contracts: React.FC = () => {
       <div className="masonry-container">
         <XMasonry center={false} targetBlockWidth={300}>
           {displayedContracts.map((contract) => (
-            <XBlock key={contract.id}>
+            <XBlock key={contract.template.id}>
               <ContractCard
                 contract={contract}
                 onDeleteContract={setConfirmDeleteId}

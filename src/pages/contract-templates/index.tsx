@@ -19,7 +19,11 @@ import {
   deleteTemplateById,
   updateTemplate,
 } from "@api/contracts";
-import { useFetchMyTemplates } from "@hooks/contract";
+import {
+  useFetchMyContracts,
+  useFetchMyTemplates,
+  useFetchPopularContracts,
+} from "@hooks/contract";
 import AuthModal from "@components/auth-modal";
 
 const ContractTemplates: React.FC = () => {
@@ -35,6 +39,8 @@ const ContractTemplates: React.FC = () => {
   }>({ open: false, form: undefined });
   const [confirmDeleteId, setConfirmDeleteId] = useState<string>();
   const { templates, fetchTemplates } = useFetchMyTemplates();
+  const { fetchContracts } = useFetchMyContracts();
+  const { fetchPopularContracts } = useFetchPopularContracts();
   const { callAuthenticatedApi } = useAuth();
 
   useEffect(() => {
@@ -86,6 +92,8 @@ const ContractTemplates: React.FC = () => {
         template
       );
       await fetchTemplates(true);
+      await fetchContracts(true); // This can affect my contracts
+      await fetchPopularContracts(true); // This can affect popular contracts
       notification.success({
         message: "Template Saved",
         description: "A contract template has been saved",
@@ -105,6 +113,8 @@ const ContractTemplates: React.FC = () => {
     try {
       await callAuthenticatedApi(deleteTemplateById, id);
       await fetchTemplates(true);
+      await fetchContracts(true); // This can affect my contracts
+      await fetchPopularContracts(true); // This can affect popular contracts
       notification.success({
         message: "Template Deleted",
         description: "A contract template has been deleted",
