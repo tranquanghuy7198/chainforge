@@ -46,7 +46,7 @@ const TrendingContracts: React.FC = () => {
   return (
     <div className="page">
       <Header
-        header="Trending Contracts"
+        header="Popular Contracts"
         options={Object.values(NetworkCluster).map((cluster) => ({
           value: cluster.toString(),
           label: capitalize(cluster.toString()),
