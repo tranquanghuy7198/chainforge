@@ -38,8 +38,8 @@ const items: MenuItem[] = [
     icon: <AppstoreFilled />,
   },
   {
-    key: "trending-contracts",
-    label: "Trending Contracts",
+    key: "popular-contracts",
+    label: "Popular Contracts",
     icon: <StarFilled />,
   },
   {
@@ -95,8 +95,8 @@ export default function Dashboard() {
           <ContractTemplates key={"contract-templates"} />
         )}
         {selectedKey === "contracts" && <Contracts key={"contracts"} />}
-        {selectedKey === "trending-contracts" && (
-          <TrendingContracts key={"trending-contracts"} />
+        {selectedKey === "popular-contracts" && (
+          <TrendingContracts key={"popular-contracts"} />
         )}
       </Layout>
       <FloatButton
