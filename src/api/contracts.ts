@@ -4,7 +4,7 @@ import {
   DeployedContract,
   NetworkCluster,
 } from "@utils/constants";
-import { makeRequest } from "./utils";
+import { makeRequest } from "@api/utils";
 
 type TemplateResponse = {
   id: string;

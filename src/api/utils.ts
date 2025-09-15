@@ -1,4 +1,4 @@
-import { CHAINFORGE_API } from "./constants";
+import { CHAINFORGE_API } from "@api/constants";
 
 export class ApiError extends Error {
   status: number;

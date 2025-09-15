@@ -24,7 +24,7 @@ import {
 import lodash from "lodash";
 import "@components/abi-form/solana-form/solana-form.scss";
 import SolanaExtraAccountInput from "@components/abi-form/solana-form/extra-account-input";
-import VSCodeEditor from "@/components/vscode-editor";
+import VSCodeEditor from "@components/vscode-editor";
 
 const SolanaInstructionForm: React.FC<{
   action: AbiAction;

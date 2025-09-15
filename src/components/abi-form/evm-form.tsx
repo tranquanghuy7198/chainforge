@@ -22,7 +22,7 @@ import Paragraph from "antd/es/typography/Paragraph";
 import { EthereumExtra } from "@utils/wallets/ethereum/utils";
 import CollapseForm from "@components/abi-form/collapse-form";
 import TransactionResult from "@components/abi-form/tx-response";
-import VSCodeEditor from "../vscode-editor";
+import VSCodeEditor from "@components/vscode-editor";
 
 const PAYABLE_AMOUNT = "payable";
 

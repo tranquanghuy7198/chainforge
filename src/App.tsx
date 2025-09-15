@@ -4,7 +4,7 @@ import Dashboard from "@pages/dashboard";
 import { Provider } from "react-redux";
 import { store } from "@redux/store";
 import { ConfigProvider, theme } from "antd";
-import { PRIMARY_COLOR } from "./utils/constants";
+import { PRIMARY_COLOR } from "@utils/constants";
 
 const App: React.FC = () => {
   return (

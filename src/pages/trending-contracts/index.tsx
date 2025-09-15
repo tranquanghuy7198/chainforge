@@ -5,7 +5,7 @@ import ContractCard from "@components/contract-card";
 import { capitalize } from "@utils/utils";
 import { XBlock, XMasonry } from "react-xmasonry";
 import { useFetchBlockchains } from "@hooks/blockchain";
-import { useFetchPopularContracts } from "@/hooks/contract";
+import { useFetchPopularContracts } from "@hooks/contract";
 
 const TrendingContracts: React.FC = () => {
   const { blockchains } = useFetchBlockchains();
