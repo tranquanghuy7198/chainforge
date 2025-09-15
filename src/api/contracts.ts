@@ -18,7 +18,6 @@ type TemplateResponse = {
 };
 
 type ContractResponse = {
-  contractId: string;
   templateId: string;
   owner: string;
   name: string;
@@ -30,7 +29,7 @@ type ContractResponse = {
   addresses: ContractAddress[];
 };
 
-export const listTrendingContracts = async (): Promise<ContractResponse[]> => {
+export const listPopularContracts = async (): Promise<ContractResponse[]> => {
   return await makeRequest("/api/contracts", "GET");
 };
 
@@ -78,8 +77,8 @@ export const createTemplate = async (
 export const createContractAndTemplate = async (
   accessToken: string,
   contract: DeployedContract
-): Promise<[string, string]> => {
-  const { templateId, contractId } = await makeRequest(
+): Promise<string> => {
+  const { templateId } = await makeRequest(
     "/api/contracts",
     "POST",
     {
@@ -93,7 +92,7 @@ export const createContractAndTemplate = async (
     },
     accessToken
   );
-  return [templateId, contractId];
+  return templateId;
 };
 
 export const updateTemplate = async (
@@ -101,7 +100,7 @@ export const updateTemplate = async (
   template: ContractTemplate
 ) => {
   return await makeRequest(
-    `/api/contracts/template/${template.id}`,
+    `/api/contracts/templates/${template.id}`,
     "PUT",
     {
       name: template.name,
@@ -118,22 +117,25 @@ export const updateTemplate = async (
 export const updateContractAndTemplate = async (
   accessToken: string,
   contract: DeployedContract
-): Promise<[string, string]> => {
-  const { templateId, contractId } = await makeRequest(
-    `/api/contracts/template/${contract.template.id}/contract/${contract.id}`,
+): Promise<string> => {
+  const { templateId } = await makeRequest(
+    `/api/contracts/${contract.template.id}`,
     "PUT",
     {
       name: contract.template.name,
       abi: contract.template.abi,
       bytecode: contract.template.bytecode,
       networkClusters: contract.template.networkClusters,
-      addresses: contract.addresses,
+      addresses: contract.addresses.map((address) => ({
+        ...address,
+        templateId: contract.template.id,
+      })),
       description: contract.template.description,
       flattenSource: contract.template.flattenSource,
     },
     accessToken
   );
-  return [templateId, contractId];
+  return templateId;
 };
 
 export const addContractAddress = async (
@@ -143,22 +145,30 @@ export const addContractAddress = async (
   address: string
 ) => {
   await makeRequest(
-    `/api/contracts/template/${templateId}/contract`,
+    `/api/contracts/templates/${templateId}/addresses`,
     "PATCH",
-    { contractAddress: { blockchainId, address } },
+    { addresses: { templateId, blockchainId, address } },
     accessToken
   );
 };
 
 export const deleteTemplateById = async (accessToken: string, id: string) => {
   await makeRequest(
-    `/api/contracts/template/${id}`,
+    `/api/contracts/templates/${id}`,
     "DELETE",
     undefined,
     accessToken
   );
 };
 
-export const deleteContractById = async (accessToken: string, id: string) => {
-  await makeRequest(`/api/contracts/${id}`, "DELETE", undefined, accessToken);
+export const deleteContractAddresses = async (
+  accessToken: string,
+  templateId: string
+) => {
+  await makeRequest(
+    `/api/contracts/templates/${templateId}/addresses`,
+    "DELETE",
+    undefined,
+    accessToken
+  );
 };
