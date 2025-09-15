@@ -100,7 +100,9 @@ const TransactionResult: React.FC<{
           message={
             <div>
               Wallet{" "}
-              <Typography.Text code>{shorten(wallet.address)}</Typography.Text>{" "}
+              <Typography.Text code type="warning">
+                {shorten(wallet.address)}
+              </Typography.Text>{" "}
               is not connected to your account
             </div>
           }
