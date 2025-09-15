@@ -1,8 +1,9 @@
-import { Image, Space } from "antd";
+import { Button, Image, Space, Typography } from "antd";
 import React from "react";
 import { shorten } from "@utils/utils";
 import { ADDRESS_PATTERN, Blockchain } from "@utils/constants";
-import { ExportOutlined } from "@ant-design/icons";
+import { CheckOutlined, CopyOutlined, ExportOutlined } from "@ant-design/icons";
+import "./abi-form.scss";
 
 const AbiTitle: React.FC<{
   name: string;
@@ -24,6 +25,23 @@ const AbiTitle: React.FC<{
       >
         {shorten(address)} <ExportOutlined />
       </a>
+      <Typography.Text
+        copyable={{
+          text: address,
+          icon: [
+            <Button
+              type="text"
+              size="small"
+              icon={<CopyOutlined className="copy-address" />}
+            />,
+            <Button
+              type="text"
+              size="small"
+              icon={<CheckOutlined className="copy-done" />}
+            />,
+          ],
+        }}
+      />
     </Space>
   );
 };
