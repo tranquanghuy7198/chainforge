@@ -5,6 +5,7 @@ import { Provider } from "react-redux";
 import { store } from "@redux/store";
 import { ConfigProvider, theme } from "antd";
 import { PRIMARY_COLOR } from "@utils/constants";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
 
 const App: React.FC = () => {
   return (
@@ -19,7 +20,11 @@ const App: React.FC = () => {
       }}
     >
       <Provider store={store}>
-        <Dashboard />
+        <BrowserRouter>
+          <Routes>
+            <Route path="/xxx" element={<Dashboard />} />
+          </Routes>
+        </BrowserRouter>
       </Provider>
     </ConfigProvider>
   );
