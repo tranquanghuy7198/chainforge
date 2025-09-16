@@ -22,18 +22,20 @@ import WalletCard from "@components/wallet";
 import { useAppSelector } from "@redux/hook";
 import ProductContact from "@components/contact";
 import logo from "@assets/chainforge.png";
+import { useNavigate } from "react-router-dom";
 import "./main-layout.scss";
 
 type MenuItem = Required<MenuProps>["items"][number];
 
+// NOTE: Keys should match with paths in App.tsx
 const items: MenuItem[] = [
   {
-    key: "blockchains",
+    key: "/blockchains",
     label: "Blockchains",
     icon: <AppstoreFilled />,
   },
   {
-    key: "popular-contracts",
+    key: "/popular-contracts",
     label: "Popular Contracts",
     icon: <StarFilled />,
   },
@@ -43,12 +45,12 @@ const items: MenuItem[] = [
     icon: <FileTextFilled />,
     children: [
       {
-        key: "contract-templates",
+        key: "/contract-templates",
         label: "Contract Templates",
         icon: <AlignLeftOutlined />,
       },
       {
-        key: "contracts",
+        key: "/contracts",
         label: "Contract Explorer",
         icon: <SearchOutlined />,
       },
@@ -63,8 +65,8 @@ const items: MenuItem[] = [
 
 const MainLayout: React.FC<{ screen: ReactNode }> = ({ screen }) => {
   const wallets = useAppSelector((state) => state.wallet.wallets);
-  let [selectedKey, setSelectedKey] = useState<string>("blockchains");
-  let [connectWallet, setConnectWallet] = useState<boolean>(false);
+  const navigate = useNavigate();
+  const [connectWallet, setConnectWallet] = useState<boolean>(false);
 
   return (
     <Layout hasSider className="main-screen">
@@ -77,24 +79,14 @@ const MainLayout: React.FC<{ screen: ReactNode }> = ({ screen }) => {
           className="menu"
           defaultSelectedKeys={["blockchains"]}
           defaultOpenKeys={["blockchains"]}
-          onSelect={({ key }) => setSelectedKey(key)}
+          onSelect={({ key }) => navigate(key)}
           theme="light"
           mode="inline"
           items={items}
         />
         <ProductContact />
       </Layout.Sider>
-      <Layout>
-        {screen}
-        {/* {selectedKey === "blockchains" && <Blockchains key={"blockchains"} />}
-        {selectedKey === "contract-templates" && (
-          <ContractTemplates key={"contract-templates"} />
-        )}
-        {selectedKey === "contracts" && <Contracts key={"contracts"} />}
-        {selectedKey === "popular-contracts" && (
-          <TrendingContracts key={"popular-contracts"} />
-        )} */}
-      </Layout>
+      <Layout>{screen}</Layout>
       <FloatButton
         className="float-btn"
         type="primary"
