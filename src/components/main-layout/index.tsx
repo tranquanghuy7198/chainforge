@@ -22,7 +22,7 @@ import WalletCard from "@components/wallet";
 import { useAppSelector } from "@redux/hook";
 import ProductContact from "@components/contact";
 import logo from "@assets/chainforge.png";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import "./main-layout.scss";
 
 type MenuItem = Required<MenuProps>["items"][number];
@@ -66,6 +66,7 @@ const items: MenuItem[] = [
 const MainLayout: React.FC<{ screen: ReactNode }> = ({ screen }) => {
   const wallets = useAppSelector((state) => state.wallet.wallets);
   const navigate = useNavigate();
+  const location = useLocation();
   const [connectWallet, setConnectWallet] = useState<boolean>(false);
 
   return (
@@ -77,7 +78,7 @@ const MainLayout: React.FC<{ screen: ReactNode }> = ({ screen }) => {
         </div>
         <Menu
           className="menu"
-          defaultSelectedKeys={["blockchains"]}
+          defaultSelectedKeys={[location.pathname]}
           defaultOpenKeys={["blockchains"]}
           onSelect={({ key }) => navigate(key)}
           theme="light"
