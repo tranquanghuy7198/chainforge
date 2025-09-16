@@ -1,77 +1,67 @@
-import {
-  StandardWalletAdapter,
-  WalletStandardAdapterProvider,
-} from "@mysten/wallet-adapter-wallet-standard";
-import { Wallet, WalletUI } from "@utils/wallets/wallet";
+import { Wallet } from "@utils/wallets/wallet";
 import { Blockchain, NetworkCluster } from "@utils/constants";
 import SuiIcon from "@assets/wallets/sui.svg";
-import { registerSlushWallet, SLUSH_WALLET_NAME } from "@mysten/slush-wallet";
+import { SLUSH_WALLET_NAME, SlushWallet } from "@mysten/slush-wallet";
+import {
+  getWallets,
+  IdentifierString,
+  StandardConnect,
+  WalletAccount,
+} from "@wallet-standard/core";
+import { SuiSignPersonalMessage } from "@mysten/wallet-standard";
 
-// WARNING: Be careful when changing Sui wallet names here because those names must match the extension names
-// https://github.com/suiet/wallet-kit/blob/main/packages/kit/src/hooks/useAvaibleWallets.ts#L20
-const SuiWalletNames = {
-  SUI_WALLET: "Sui Wallet",
-  SUIET_WALLET: "Suiet",
-  ETHOS_WALLET: "Ethos Wallet",
-  SURF_WALLET: "Surf Wallet",
-  GLASS_WALLET: "GlassWallet",
-  MORPHIS_WALLET: "Morphis Wallet",
-  MARTIAN_WALLET: "Martian Sui Wallet",
-  ONEKEY_WALLET: "OneKey Wallet",
-  SPACECY_WALLET: "Spacecy Sui Wallet",
-};
+export class Slush extends Wallet {
+  public key: string = "SLUSH";
+  private provider?: SlushWallet;
+  private account?: WalletAccount;
 
-class Sui extends Wallet {
-  public key: string;
-  public adapter?: StandardWalletAdapter;
-
-  constructor({
-    ui,
-    installLink,
-    key,
-  }: {
-    ui: WalletUI;
-    installLink: string;
-    key: string;
-  }) {
-    super({
-      ui,
-      installLink,
-      networkCluster: NetworkCluster.Sui,
-    });
-    this.key = key;
-  }
-
-  public async connect(blockchain?: Blockchain): Promise<void> {
-    const allAdapters = new WalletStandardAdapterProvider().get();
-    this.adapter = allAdapters.find((adapter) => adapter.name === this.ui.name);
-    if (!this.adapter)
-      throw new Error(
-        `${this.ui.name} is not detected in your browser. Install at ${this.installLink}`
-      );
-    await this.adapter.connect();
-    const accounts = await this.adapter.getAccounts();
-    if (accounts.length === 0)
-      throw new Error(
-        `${this.ui.name} is not detected in your browser. Install at ${this.installLink}`
-      );
-    this.address = accounts[0].address;
-  }
-}
-
-export class Slush extends Sui {
   constructor() {
-    const slushWallet = registerSlushWallet("Chainforge");
+    const wallet = getWallets()
+      .get()
+      .find((w) => w.id === "com.mystenlabs.suiwallet");
+    const slushWallet = wallet ? (wallet as SlushWallet) : undefined;
     super({
       ui: {
-        name: slushWallet?.wallet.name ?? SLUSH_WALLET_NAME,
-        icon: slushWallet?.wallet.icon ?? SuiIcon,
+        name: slushWallet?.name ?? SLUSH_WALLET_NAME,
+        icon: slushWallet?.icon ?? SuiIcon,
         backgroundColor: "#00B8D9",
         titleColor: "#aff3ffff",
       },
       installLink:
         "https://chrome.google.com/webstore/detail/sui-wallet/opcgpfmipidbgpenhmajoajpbobppdil",
-      key: "SuiWallet",
+      networkCluster: NetworkCluster.Sui,
     });
+    this.provider = slushWallet;
+  }
+
+  public async connect(blockchain?: Blockchain): Promise<void> {
+    if (!this.provider)
+      throw new Error(
+        `Slush is not detected in your browser. Install at ${this.installLink}`
+      );
+    const connections = await this.provider.features[StandardConnect].connect();
+    if (connections.accounts.length === 0)
+      throw new Error(
+        `Slush is not detected in your browser. Install at ${this.installLink}`
+      );
+    const account = connections.accounts[0];
+    this.account = account;
+    this.address = account.address;
+    if (
+      blockchain &&
+      account.chains.includes(blockchain.chainId as unknown as IdentifierString)
+    )
+      this.chainId = blockchain.chainId;
+  }
+
+  public async signMessage(message: string): Promise<string> {
+    await this.connect();
+    const { signature } = await this.provider!.features[
+      SuiSignPersonalMessage
+    ].signPersonalMessage({
+      message: Buffer.from(message, "utf-8"),
+      account: this.account!,
+    });
+    return signature;
   }
 }
