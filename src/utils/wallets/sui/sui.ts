@@ -10,6 +10,8 @@ import {
 } from "@wallet-standard/core";
 import { SuiSignPersonalMessage } from "@mysten/wallet-standard";
 
+const SLUSH_EXTENSION_ID = "com.mystenlabs.suiwallet";
+
 export class Slush extends Wallet {
   public key: string = "SLUSH";
   private provider?: SlushWallet;
@@ -18,7 +20,7 @@ export class Slush extends Wallet {
   constructor() {
     const wallet = getWallets()
       .get()
-      .find((w) => w.id === "com.mystenlabs.suiwallet");
+      .find((w) => w.id === SLUSH_EXTENSION_ID);
     const slushWallet = wallet ? (wallet as SlushWallet) : undefined;
     super({
       ui: {
