@@ -6,6 +6,7 @@ import { capitalize } from "@utils/utils";
 import { XBlock, XMasonry } from "react-xmasonry";
 import { useFetchBlockchains } from "@hooks/blockchain";
 import { useFetchPopularContracts } from "@hooks/contract";
+import MainLayout from "@components/main-layout";
 
 const TrendingContracts: React.FC = () => {
   const { blockchains } = useFetchBlockchains();
@@ -44,27 +45,31 @@ const TrendingContracts: React.FC = () => {
   }, [trendingContracts, blockchains, selectedClusters, searchedName]);
 
   return (
-    <div className="page">
-      <Header
-        header="Popular Contracts"
-        options={Object.values(NetworkCluster).map((cluster) => ({
-          value: cluster.toString(),
-          label: capitalize(cluster.toString()),
-        }))}
-        onSelected={setSelectedClusters}
-        onSearched={setSearchedName}
-        defaultSelectAll={false}
-      />
-      <div className="masonry-container">
-        <XMasonry center={false} targetBlockWidth={300}>
-          {displayedContracts.map((contract) => (
-            <XBlock key={contract.template.id}>
-              <ContractCard contract={contract} />
-            </XBlock>
-          ))}
-        </XMasonry>
-      </div>
-    </div>
+    <MainLayout
+      screen={
+        <div className="page">
+          <Header
+            header="Popular Contracts"
+            options={Object.values(NetworkCluster).map((cluster) => ({
+              value: cluster.toString(),
+              label: capitalize(cluster.toString()),
+            }))}
+            onSelected={setSelectedClusters}
+            onSearched={setSearchedName}
+            defaultSelectAll={false}
+          />
+          <div className="masonry-container">
+            <XMasonry center={false} targetBlockWidth={300}>
+              {displayedContracts.map((contract) => (
+                <XBlock key={contract.template.id}>
+                  <ContractCard contract={contract} />
+                </XBlock>
+              ))}
+            </XMasonry>
+          </div>
+        </div>
+      }
+    />
   );
 };
 

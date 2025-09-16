@@ -14,20 +14,15 @@ import {
   AppstoreFilled,
   FileTextFilled,
   SearchOutlined,
-  SettingFilled,
   StarFilled,
   WalletOutlined,
 } from "@ant-design/icons";
-import "@pages/dashboard/dashboard.scss";
-import { useState } from "react";
-import Blockchains from "@pages/blockchains";
+import React, { ReactNode, useState } from "react";
 import WalletCard from "@components/wallet";
 import { useAppSelector } from "@redux/hook";
-import ContractTemplates from "@pages/contract-templates";
-import Contracts from "@pages/contracts";
 import ProductContact from "@components/contact";
 import logo from "@assets/chainforge.png";
-import TrendingContracts from "@pages/trending-contracts";
+import "./main-layout.scss";
 
 type MenuItem = Required<MenuProps>["items"][number];
 
@@ -66,7 +61,7 @@ const items: MenuItem[] = [
   // },
 ];
 
-export default function Dashboard() {
+const MainLayout: React.FC<{ screen: ReactNode }> = ({ screen }) => {
   const wallets = useAppSelector((state) => state.wallet.wallets);
   let [selectedKey, setSelectedKey] = useState<string>("blockchains");
   let [connectWallet, setConnectWallet] = useState<boolean>(false);
@@ -90,14 +85,15 @@ export default function Dashboard() {
         <ProductContact />
       </Layout.Sider>
       <Layout>
-        {selectedKey === "blockchains" && <Blockchains key={"blockchains"} />}
+        {screen}
+        {/* {selectedKey === "blockchains" && <Blockchains key={"blockchains"} />}
         {selectedKey === "contract-templates" && (
           <ContractTemplates key={"contract-templates"} />
         )}
         {selectedKey === "contracts" && <Contracts key={"contracts"} />}
         {selectedKey === "popular-contracts" && (
           <TrendingContracts key={"popular-contracts"} />
-        )}
+        )} */}
       </Layout>
       <FloatButton
         className="float-btn"
@@ -142,4 +138,6 @@ export default function Dashboard() {
       </Drawer>
     </Layout>
   );
-}
+};
+
+export default MainLayout;

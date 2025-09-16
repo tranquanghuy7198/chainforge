@@ -1,11 +1,14 @@
 import React from "react";
 import "./App.css";
-import Dashboard from "@pages/dashboard";
 import { Provider } from "react-redux";
 import { store } from "@redux/store";
 import { ConfigProvider, theme } from "antd";
 import { PRIMARY_COLOR } from "@utils/constants";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
+import Blockchains from "@pages/blockchains";
+import TrendingContracts from "@pages/trending-contracts";
+import ContractTemplates from "@pages/contract-templates";
+import Contracts from "@pages/contracts";
 
 const App: React.FC = () => {
   return (
@@ -22,7 +25,10 @@ const App: React.FC = () => {
       <Provider store={store}>
         <BrowserRouter>
           <Routes>
-            <Route path="/xxx" element={<Dashboard />} />
+            <Route path="/blockchains" element={<Blockchains />} />
+            <Route path="/popular-contracts" element={<TrendingContracts />} />
+            <Route path="/contract-templates" element={<ContractTemplates />} />
+            <Route path="/contracts" element={<Contracts />} />
           </Routes>
         </BrowserRouter>
       </Provider>
