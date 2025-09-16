@@ -63,7 +63,7 @@ const items: MenuItem[] = [
   // },
 ];
 
-const MainLayout: React.FC<{ screen: ReactNode }> = ({ screen }) => {
+const MainLayout: React.FC<{ children: ReactNode }> = ({ children }) => {
   const wallets = useAppSelector((state) => state.wallet.wallets);
   const navigate = useNavigate();
   const location = useLocation();
@@ -87,7 +87,7 @@ const MainLayout: React.FC<{ screen: ReactNode }> = ({ screen }) => {
         />
         <ProductContact />
       </Layout.Sider>
-      <Layout>{screen}</Layout>
+      <Layout>{children}</Layout>
       <FloatButton
         className="float-btn"
         type="primary"

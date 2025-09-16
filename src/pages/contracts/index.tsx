@@ -154,63 +154,59 @@ const Contracts: React.FC = () => {
   };
 
   return (
-    <MainLayout
-      screen={
-        <div className="page">
-          {contextHolder}
-          <AuthModal />
-          <Header
-            header="Contract Explorer"
-            options={Object.values(NetworkCluster).map((cluster) => ({
-              value: cluster.toString(),
-              label: capitalize(cluster.toString()),
-            }))}
-            onSelected={setSelectedClusters}
-            onSearched={setSearchedName}
-            onAddRequested={() =>
-              setContractForm({ open: true, form: undefined })
-            }
-            defaultSelectAll={false}
-          />
-          <div className="masonry-container">
-            <XMasonry center={false} targetBlockWidth={300}>
-              {displayedContracts.map((contract) => (
-                <XBlock key={contract.template.id}>
-                  <ContractCard
-                    contract={contract}
-                    onDeleteContract={setConfirmDeleteId}
-                    onEditContract={editContract}
-                  />
-                </XBlock>
-              ))}
-            </XMasonry>
-          </div>
-          <Drawer
-            width={800}
-            title={contractForm.form ? contractForm.form.name : "Add Contract"}
-            open={contractForm.open}
-            closable={true}
-            onClose={() => setContractForm({ ...contractForm, open: false })}
-          >
-            <ContractForm
-              contractForm={contractForm}
-              saveContract={(contract) =>
-                saveContract(parseToContract(contract))
-              }
-            />
-          </Drawer>
-          <ConfirmModal
-            showModal={confirmDeleteId !== undefined}
-            danger
-            onOk={() => deleteContract(confirmDeleteId)}
-            onCancel={() => setConfirmDeleteId(undefined)}
-            title="Delete this contract?"
-            description="This action cannot be undone. All information associated with this contract will be lost."
-            okText="Delete Contract"
-          />
+    <MainLayout>
+      <div className="page">
+        {contextHolder}
+        <AuthModal />
+        <Header
+          header="Contract Explorer"
+          options={Object.values(NetworkCluster).map((cluster) => ({
+            value: cluster.toString(),
+            label: capitalize(cluster.toString()),
+          }))}
+          onSelected={setSelectedClusters}
+          onSearched={setSearchedName}
+          onAddRequested={() =>
+            setContractForm({ open: true, form: undefined })
+          }
+          defaultSelectAll={false}
+        />
+        <div className="masonry-container">
+          <XMasonry center={false} targetBlockWidth={300}>
+            {displayedContracts.map((contract) => (
+              <XBlock key={contract.template.id}>
+                <ContractCard
+                  contract={contract}
+                  onDeleteContract={setConfirmDeleteId}
+                  onEditContract={editContract}
+                />
+              </XBlock>
+            ))}
+          </XMasonry>
         </div>
-      }
-    />
+        <Drawer
+          width={800}
+          title={contractForm.form ? contractForm.form.name : "Add Contract"}
+          open={contractForm.open}
+          closable={true}
+          onClose={() => setContractForm({ ...contractForm, open: false })}
+        >
+          <ContractForm
+            contractForm={contractForm}
+            saveContract={(contract) => saveContract(parseToContract(contract))}
+          />
+        </Drawer>
+        <ConfirmModal
+          showModal={confirmDeleteId !== undefined}
+          danger
+          onOk={() => deleteContract(confirmDeleteId)}
+          onCancel={() => setConfirmDeleteId(undefined)}
+          title="Delete this contract?"
+          description="This action cannot be undone. All information associated with this contract will be lost."
+          okText="Delete Contract"
+        />
+      </div>
+    </MainLayout>
   );
 };
 

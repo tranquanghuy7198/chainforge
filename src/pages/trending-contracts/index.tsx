@@ -45,31 +45,29 @@ const TrendingContracts: React.FC = () => {
   }, [trendingContracts, blockchains, selectedClusters, searchedName]);
 
   return (
-    <MainLayout
-      screen={
-        <div className="page">
-          <Header
-            header="Popular Contracts"
-            options={Object.values(NetworkCluster).map((cluster) => ({
-              value: cluster.toString(),
-              label: capitalize(cluster.toString()),
-            }))}
-            onSelected={setSelectedClusters}
-            onSearched={setSearchedName}
-            defaultSelectAll={false}
-          />
-          <div className="masonry-container">
-            <XMasonry center={false} targetBlockWidth={300}>
-              {displayedContracts.map((contract) => (
-                <XBlock key={contract.template.id}>
-                  <ContractCard contract={contract} />
-                </XBlock>
-              ))}
-            </XMasonry>
-          </div>
+    <MainLayout>
+      <div className="page">
+        <Header
+          header="Popular Contracts"
+          options={Object.values(NetworkCluster).map((cluster) => ({
+            value: cluster.toString(),
+            label: capitalize(cluster.toString()),
+          }))}
+          onSelected={setSelectedClusters}
+          onSearched={setSearchedName}
+          defaultSelectAll={false}
+        />
+        <div className="masonry-container">
+          <XMasonry center={false} targetBlockWidth={300}>
+            {displayedContracts.map((contract) => (
+              <XBlock key={contract.template.id}>
+                <ContractCard contract={contract} />
+              </XBlock>
+            ))}
+          </XMasonry>
         </div>
-      }
-    />
+      </div>
+    </MainLayout>
   );
 };
 
