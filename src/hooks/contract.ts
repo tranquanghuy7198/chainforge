@@ -65,7 +65,7 @@ export const useFetchMyContracts = () => {
       try {
         setContractLoading(true);
         const fetchedContracts = await callAuthenticatedApi(listMyContracts);
-        if (!fetchContracts) return [];
+        if (!fetchedContracts) return [];
         const deployedContracts: DeployedContract[] = fetchedContracts!.map(
           (contract) => ({
             template: {
