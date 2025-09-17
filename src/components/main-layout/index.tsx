@@ -40,7 +40,7 @@ const items: MenuItem[] = [
     icon: <StarFilled />,
   },
   {
-    key: "my-contracts",
+    key: "/my-contracts",
     label: "My Contracts",
     icon: <FileTextFilled />,
     children: [
@@ -79,7 +79,13 @@ const MainLayout: React.FC<{ children: ReactNode }> = ({ children }) => {
         <Menu
           className="menu"
           defaultSelectedKeys={[location.pathname]}
-          defaultOpenKeys={["blockchains"]}
+          defaultOpenKeys={items
+            .filter((item: any) =>
+              item.children?.some(
+                (subItem: any) => subItem.key === location.pathname
+              )
+            )
+            .map((item) => item!.key as string)}
           onSelect={({ key }) => navigate(key)}
           theme="light"
           mode="inline"
