@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { AbiAction, ContractAddress, DeployedContract } from "@utils/constants";
 import { Card, Drawer, Flex, Image, Space, Tooltip } from "antd";
 import {
@@ -8,11 +8,12 @@ import {
   QuestionCircleFilled,
 } from "@ant-design/icons";
 import "@components/contract-card/contract-card.scss";
-import { shorten } from "@utils/utils";
+import { compareAddr, shorten } from "@utils/utils";
 import AbiForm from "@components/abi-form";
 import AbiTitle from "@components/abi-form/abi-title";
 import Paragraph from "antd/es/typography/Paragraph";
 import { useFetchBlockchains } from "@hooks/blockchain";
+import { useSearchParams } from "react-router-dom";
 
 const ContractCard: React.FC<{
   contract: DeployedContract;
@@ -21,6 +22,26 @@ const ContractCard: React.FC<{
 }> = ({ contract, onDeleteContract, onEditContract }) => {
   const { blockchains } = useFetchBlockchains();
   const [contractAddress, setContractAddress] = useState<ContractAddress>();
+  const [params] = useSearchParams();
+
+  useEffect(() => {
+    const templateIdParam = params.get("templateId");
+    const blockchainIdParam = params.get("blockchainId");
+    const addressParam = params.get("address") || "";
+    if (templateIdParam === contract.template.id)
+      setContractAddress(
+        contract.addresses.find(
+          (address) =>
+            address.blockchainId === blockchainIdParam &&
+            compareAddr(
+              address.address,
+              addressParam,
+              blockchains.find((chain) => chain.id === blockchainIdParam)
+                ?.networkCluster
+            )
+        )
+      );
+  }, [params, contract]);
 
   const actions: React.ReactNode[] = [];
   if (onEditContract)
