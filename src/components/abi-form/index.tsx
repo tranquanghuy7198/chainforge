@@ -11,9 +11,9 @@ import EvmForm from "@components/abi-form/evm-form";
 import SuiForm from "@components/abi-form/sui-form";
 import AbiWalletForm from "@components/abi-form/abi-wallet-form";
 import { Wallet } from "@utils/wallets/wallet";
-import { Segmented } from "antd";
+import { Button, Flex, Segmented } from "antd";
 import SolanaForm from "@components/abi-form/solana-form";
-import { EditOutlined, EyeOutlined } from "@ant-design/icons";
+import { EditOutlined, EyeOutlined, SendOutlined } from "@ant-design/icons";
 import { useFetchBlockchains } from "@hooks/blockchain";
 import { useAuth } from "@hooks/auth";
 import { addContractAddress } from "@api/contracts";
@@ -59,25 +59,35 @@ const AbiForm: React.FC<{
         onWalletSelected={setWallet}
         onBlockchainSelected={setBlockchain}
       />
-      {defaultAction !== AbiAction.Deploy && (
-        <Segmented<AbiAction>
-          defaultValue={defaultAction}
-          options={[
-            {
-              label: "Read Contract",
-              value: AbiAction.Read,
-              icon: <EyeOutlined />,
-            },
-            {
-              label: "Write Contract",
-              value: AbiAction.Write,
-              icon: <EditOutlined />,
-            },
-          ]}
-          onChange={(value) => setAction(value)}
-          className="action-selector"
-        />
-      )}
+      <Flex align="center" justify="space-between" className="action-selector">
+        {defaultAction !== AbiAction.Deploy && (
+          <Segmented<AbiAction>
+            defaultValue={defaultAction}
+            options={[
+              {
+                label: "Read Contract",
+                value: AbiAction.Read,
+                icon: <EyeOutlined />,
+              },
+              {
+                label: "Write Contract",
+                value: AbiAction.Write,
+                icon: <EditOutlined />,
+              },
+            ]}
+            onChange={(value) => setAction(value)}
+          />
+        )}
+        <Button
+          type="link"
+          variant="filled"
+          color="primary"
+          icon={<SendOutlined />}
+          iconPosition="end"
+        >
+          Share
+        </Button>
+      </Flex>
       {contractTemplate.networkClusters.includes(NetworkCluster.Sui) ? (
         <SuiForm action={action} abi={contractTemplate.abi} />
       ) : contractTemplate.networkClusters.includes(NetworkCluster.Solana) ? (
