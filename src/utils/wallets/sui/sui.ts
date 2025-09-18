@@ -38,14 +38,16 @@ export class Slush extends Wallet {
 
   public async connect(blockchain?: Blockchain): Promise<void> {
     // Slush is asynchronously injected, try to detect again
-    const detectedWallet = getWallets()
-      .get()
-      .find((w) => w.id === SLUSH_EXTENSION_ID);
-    if (!detectedWallet)
-      throw new Error(
-        `Slush is not detected in your browser. Install at ${this.installLink}`
-      );
-    this.provider = detectedWallet as SlushWallet;
+    if (!this.provider) {
+      const detectedWallet = getWallets()
+        .get()
+        .find((w) => w.id === SLUSH_EXTENSION_ID);
+      if (!detectedWallet)
+        throw new Error(
+          `Slush is not detected in your browser. Install at ${this.installLink}`
+        );
+      this.provider = detectedWallet as SlushWallet;
+    }
 
     // Now connect
     const connections = await this.provider.features[StandardConnect].connect();
