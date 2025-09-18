@@ -63,14 +63,16 @@ const AbiForm: React.FC<{
       setSharing(true);
       if (!blockchain || !contractAddress)
         throw new Error("Blockchain or contract address not found");
-      await callAuthenticatedApi(
-        addContractAddress,
-        contractTemplate.id,
-        blockchain.id,
-        contractAddress.address,
-        true // Must publish before sharing so others can access it
-      );
-      await fetchContracts(true);
+      if (!contractAddress.publicity) {
+        await callAuthenticatedApi(
+          addContractAddress,
+          contractTemplate.id,
+          blockchain.id,
+          contractAddress.address,
+          true // Must publish before sharing so others can access it
+        );
+        await fetchContracts(true);
+      }
       setShare(true);
     } catch (error) {
       notification.error({
