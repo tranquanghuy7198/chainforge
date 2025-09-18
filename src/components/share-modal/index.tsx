@@ -4,6 +4,7 @@ import {
   FacebookFilled,
   LinkedinFilled,
   LinkOutlined,
+  RedditCircleFilled,
   XOutlined,
 } from "@ant-design/icons";
 import "./share-modal.scss";
@@ -20,7 +21,15 @@ const ShareModel: React.FC<{
     //
   };
 
+  const shareToReddit = async () => {
+    //
+  };
+
   const shareToFacebook = async () => {
+    //
+  };
+
+  const shareToLinkedin = async () => {
     //
   };
 
@@ -35,20 +44,20 @@ const ShareModel: React.FC<{
       onClick: shareToX,
     },
     {
+      icon: <RedditCircleFilled />,
+      onClick: shareToReddit,
+    },
+    {
       icon: <FacebookFilled />,
       onClick: shareToFacebook,
     },
     {
       icon: <LinkedinFilled />,
-      onClick: shareToX,
+      onClick: shareToLinkedin,
     },
     {
       icon: <LinkedinFilled />,
-      onClick: shareToX,
-    },
-    {
-      icon: <LinkedinFilled />,
-      onClick: shareToX,
+      onClick: shareToLinkedin,
     },
   ];
 
