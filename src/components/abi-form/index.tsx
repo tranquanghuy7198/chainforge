@@ -18,6 +18,7 @@ import { useFetchBlockchains } from "@hooks/blockchain";
 import { useAuth } from "@hooks/auth";
 import { addContractAddress } from "@api/contracts";
 import { useFetchMyContracts } from "@hooks/contract";
+import ShareModel from "@components/share-modal";
 
 const AbiForm: React.FC<{
   defaultAction: AbiAction;
@@ -30,6 +31,7 @@ const AbiForm: React.FC<{
   const [wallet, setWallet] = useState<Wallet>();
   const [blockchain, setBlockchain] = useState<Blockchain>();
   const [action, setAction] = useState<AbiAction>(defaultAction);
+  const [share, setShare] = useState<boolean>(false);
 
   const saveDeployedContract = async (
     blockchain: Blockchain,
@@ -84,6 +86,7 @@ const AbiForm: React.FC<{
           color="primary"
           icon={<SendOutlined />}
           iconPosition="end"
+          onClick={() => setShare(true)}
         >
           Share
         </Button>
@@ -115,6 +118,11 @@ const AbiForm: React.FC<{
           saveDeployedContract={saveDeployedContract}
         />
       )}
+      <ShareModel
+        shareableUrl={`${window.location.origin}/#/popular-contracts?templateId=${contractTemplate.id}&blockchainId=${contractAddress?.blockchainId}&address=${contractAddress?.address}`}
+        showModal={share}
+        onHide={() => setShare(false)}
+      />
     </div>
   );
 };
