@@ -10,7 +10,7 @@ import {
 import "./share-modal.scss";
 import useMessage from "antd/es/message/useMessage";
 
-const ShareModel: React.FC<{
+const ShareModal: React.FC<{
   shareableUrl: string;
   showModal: boolean;
   onHide: () => void;
@@ -112,4 +112,4 @@ const ShareModel: React.FC<{
   );
 };
 
-export default ShareModel;
+export default ShareModal;

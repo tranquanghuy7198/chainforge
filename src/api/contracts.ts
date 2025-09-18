@@ -142,12 +142,13 @@ export const addContractAddress = async (
   accessToken: string,
   templateId: string,
   blockchainId: string,
-  address: string
+  address: string,
+  publicity: boolean
 ) => {
   await makeRequest(
     `/api/contracts/templates/${templateId}/addresses`,
     "PATCH",
-    { addresses: { templateId, blockchainId, address } },
+    { addresses: { templateId, blockchainId, address, publicity } },
     accessToken
   );
 };

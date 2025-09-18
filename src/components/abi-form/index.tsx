@@ -18,8 +18,9 @@ import { useFetchBlockchains } from "@hooks/blockchain";
 import { useAuth } from "@hooks/auth";
 import { addContractAddress } from "@api/contracts";
 import { useFetchMyContracts } from "@hooks/contract";
-import ShareModel from "@components/share-modal";
+import ShareModal from "@components/share-modal";
 import { buildShareableUrl } from "@utils/share";
+import useNotification from "antd/es/notification/useNotification";
 
 const AbiForm: React.FC<{
   defaultAction: AbiAction;
@@ -33,6 +34,7 @@ const AbiForm: React.FC<{
   const [blockchain, setBlockchain] = useState<Blockchain>();
   const [action, setAction] = useState<AbiAction>(defaultAction);
   const [share, setShare] = useState<boolean>(false);
+  const [notification, contextHolder] = useNotification();
 
   const saveDeployedContract = async (
     blockchain: Blockchain,
@@ -42,7 +44,8 @@ const AbiForm: React.FC<{
       addContractAddress,
       contractTemplate.id,
       blockchain.id,
-      address
+      address,
+      false // Default as private after deploying
     );
     await fetchContracts(true);
   };
@@ -54,16 +57,41 @@ const AbiForm: React.FC<{
     if (selectedChain) setBlockchain(selectedChain);
   }, [contractAddress, blockchains]);
 
+  const shareContract = async () => {
+    try {
+      if (!blockchain || !contractAddress)
+        throw new Error("Blockchain or contract address not found");
+      await callAuthenticatedApi(
+        addContractAddress,
+        contractTemplate.id,
+        blockchain.id,
+        contractAddress.address,
+        true // Must publish before sharing so others can access it
+      );
+      setShare(true);
+    } catch (error) {
+      notification.error({
+        message: "Cannot share contract",
+        description: error instanceof Error ? error.message : String(error),
+      });
+    }
+  };
+
   return (
     <div>
+      {contextHolder}
       <AbiWalletForm
         contractAddress={contractAddress}
         networkClusters={contractTemplate.networkClusters}
         onWalletSelected={setWallet}
         onBlockchainSelected={setBlockchain}
       />
-      <Flex align="center" justify="space-between" className="action-selector">
-        {defaultAction !== AbiAction.Deploy && (
+      {defaultAction !== AbiAction.Deploy && (
+        <Flex
+          align="center"
+          justify="space-between"
+          className="action-selector"
+        >
           <Segmented<AbiAction>
             defaultValue={defaultAction}
             options={[
@@ -80,18 +108,18 @@ const AbiForm: React.FC<{
             ]}
             onChange={(value) => setAction(value)}
           />
-        )}
-        <Button
-          type="link"
-          variant="filled"
-          color="primary"
-          icon={<SendOutlined />}
-          iconPosition="end"
-          onClick={() => setShare(true)}
-        >
-          Share
-        </Button>
-      </Flex>
+          <Button
+            type="link"
+            variant="filled"
+            color="primary"
+            icon={<SendOutlined />}
+            iconPosition="end"
+            onClick={shareContract}
+          >
+            Share
+          </Button>
+        </Flex>
+      )}
       {contractTemplate.networkClusters.includes(NetworkCluster.Sui) ? (
         <SuiForm action={action} abi={contractTemplate.abi} />
       ) : contractTemplate.networkClusters.includes(NetworkCluster.Solana) ? (
@@ -119,7 +147,7 @@ const AbiForm: React.FC<{
           saveDeployedContract={saveDeployedContract}
         />
       )}
-      <ShareModel
+      <ShareModal
         shareableUrl={buildShareableUrl(
           `${window.location.origin}/#/popular-contracts`,
           contractTemplate.id,
