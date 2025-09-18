@@ -20,6 +20,7 @@ export class MetaMask extends Wallet {
   public provider: BrowserProvider | null;
 
   constructor() {
+    // MetaMask is synchronously injected - https://github.com/MetaMask/detect-provider?tab=readme-ov-file#advanced-topics - no need to poll injection
     let ethereum: Eip1193Provider = (window as any).ethereum?.providers
       ? (window as any).ethereum.providers.find((p: any) => !!p.isMetaMask)
       : (window as any).ethereum;
