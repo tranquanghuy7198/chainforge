@@ -19,6 +19,7 @@ import { useAuth } from "@hooks/auth";
 import { addContractAddress } from "@api/contracts";
 import { useFetchMyContracts } from "@hooks/contract";
 import ShareModel from "@components/share-modal";
+import { buildShareableUrl } from "@utils/share";
 
 const AbiForm: React.FC<{
   defaultAction: AbiAction;
@@ -119,7 +120,12 @@ const AbiForm: React.FC<{
         />
       )}
       <ShareModel
-        shareableUrl={`${window.location.origin}/#/popular-contracts?templateId=${contractTemplate.id}&blockchainId=${contractAddress?.blockchainId}&address=${contractAddress?.address}`}
+        shareableUrl={buildShareableUrl(
+          `${window.location.origin}/#/popular-contracts`,
+          contractTemplate.id,
+          contractAddress?.blockchainId ?? "",
+          contractAddress?.address ?? ""
+        )}
         showModal={share}
         onHide={() => setShare(false)}
       />
