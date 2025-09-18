@@ -35,6 +35,7 @@ const AbiForm: React.FC<{
   const [action, setAction] = useState<AbiAction>(defaultAction);
   const [share, setShare] = useState<boolean>(false);
   const [notification, contextHolder] = useNotification();
+  const [sharing, setSharing] = useState<boolean>(false);
 
   const saveDeployedContract = async (
     blockchain: Blockchain,
@@ -59,6 +60,7 @@ const AbiForm: React.FC<{
 
   const shareContract = async () => {
     try {
+      setSharing(true);
       if (!blockchain || !contractAddress)
         throw new Error("Blockchain or contract address not found");
       await callAuthenticatedApi(
@@ -68,12 +70,15 @@ const AbiForm: React.FC<{
         contractAddress.address,
         true // Must publish before sharing so others can access it
       );
+      await fetchContracts(true);
       setShare(true);
     } catch (error) {
       notification.error({
         message: "Cannot share contract",
         description: error instanceof Error ? error.message : String(error),
       });
+    } finally {
+      setSharing(false);
     }
   };
 
@@ -114,6 +119,7 @@ const AbiForm: React.FC<{
             color="primary"
             icon={<SendOutlined />}
             iconPosition="end"
+            loading={sharing}
             onClick={shareContract}
           >
             Share
