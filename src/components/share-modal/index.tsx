@@ -18,7 +18,16 @@ const ShareModal: React.FC<{
   const [message, contextHolder] = useMessage();
 
   const shareToX = async () => {
-    //
+    const text = encodeURIComponent(
+      "🚀 Discover trending smart contract templates on our Web3 platform! Explore, deploy, and share seamlessly. #Web3 #Blockchain #SmartContracts #DeFi"
+    );
+    console.log(shareableUrl);
+    window.open(
+      `https://twitter.com/intent/tweet?text=${text}&url=${encodeURIComponent(
+        shareableUrl
+      )}`,
+      "_blank"
+    );
   };
 
   const shareToReddit = async () => {
