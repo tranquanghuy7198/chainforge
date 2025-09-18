@@ -65,8 +65,8 @@ const ShareModel: React.FC<{
         <Flex vertical align="center" gap={5}>
           <div className="primary-title">Share Contract</div>
           <Flex vertical align="center" className="description">
-            <div>Share this contract</div>
-            <div>Allow everyone to use it</div>
+            <div>Make this contract publicly accessible</div>
+            <div>Allow everyone to see and interact on-chain</div>
           </Flex>
         </Flex>
         <Flex vertical gap={5}>
