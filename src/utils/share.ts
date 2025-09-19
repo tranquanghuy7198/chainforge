@@ -1,6 +1,7 @@
 import { sha256 } from "ethers";
 import { NetworkCluster } from "@utils/constants";
 import { normalizeAddr } from "@utils/utils";
+import urlJoin from "url-join";
 
 export const CONTRACT_PARAM = "c";
 
@@ -18,7 +19,7 @@ export const buildContractHash = (
 };
 
 export const buildShareableUrl = (
-  baseUrl: string,
+  pathname: string,
   templateId: string,
   blockchainId: string,
   address: string,
@@ -34,6 +35,12 @@ export const buildShareableUrl = (
   }).toString();
 
   // TODO: Remove this when possible
+  const baseUrl = urlJoin(
+    window.location.origin,
+    window.location.pathname,
+    "#",
+    pathname
+  );
   if (baseUrl.includes("#")) {
     const [origin, hash] = baseUrl.split("#", 2);
     return `${origin}#${hash}${hash.includes("?") ? "&" : "?"}${params}`;

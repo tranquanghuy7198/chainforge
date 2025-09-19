@@ -157,7 +157,7 @@ const AbiForm: React.FC<{
       )}
       <ShareModal
         shareableUrl={buildShareableUrl(
-          `${window.location.origin}/#/popular-contracts`,
+          "/popular-contracts",
           contractTemplate.id,
           contractAddress?.blockchainId ?? "",
           contractAddress?.address ?? "",
