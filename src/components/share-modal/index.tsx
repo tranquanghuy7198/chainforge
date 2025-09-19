@@ -90,8 +90,9 @@ const ShareModal: React.FC<{
         <Flex vertical gap={5}>
           <div>Share link via</div>
           <Flex justify="space-between">
-            {shareablePlatforms.map(({ icon, onClick }) => (
+            {shareablePlatforms.map(({ icon, onClick }, index) => (
               <Button
+                key={index}
                 color="default"
                 type="text"
                 variant="filled"
