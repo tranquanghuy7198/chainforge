@@ -8,12 +8,13 @@ import {
   QuestionCircleFilled,
 } from "@ant-design/icons";
 import "@components/contract-card/contract-card.scss";
-import { compareAddr, shorten } from "@utils/utils";
+import { shorten } from "@utils/utils";
 import AbiForm from "@components/abi-form";
 import AbiTitle from "@components/abi-form/abi-title";
 import Paragraph from "antd/es/typography/Paragraph";
 import { useFetchBlockchains } from "@hooks/blockchain";
 import { useSearchParams } from "react-router-dom";
+import { buildContractHash, CONTRACT_PARAM } from "@utils/share";
 
 const ContractCard: React.FC<{
   contract: DeployedContract;
@@ -25,22 +26,20 @@ const ContractCard: React.FC<{
   const [params] = useSearchParams();
 
   useEffect(() => {
-    const templateIdParam = params.get("templateId");
-    const blockchainIdParam = params.get("blockchainId");
-    const addressParam = params.get("address") || "";
-    if (templateIdParam === contract.template.id)
-      setContractAddress(
-        contract.addresses.find(
-          (address) =>
-            address.blockchainId === blockchainIdParam &&
-            compareAddr(
-              address.address,
-              addressParam,
-              blockchains.find((chain) => chain.id === blockchainIdParam)
-                ?.networkCluster
-            )
-        )
-      );
+    const contractHash = params.get(CONTRACT_PARAM);
+    for (const address of contract.addresses)
+      if (
+        buildContractHash(
+          contract.template.id,
+          address.blockchainId,
+          address.address,
+          blockchains.find((chain) => chain.id === address.blockchainId)
+            ?.networkCluster
+        ) === contractHash
+      ) {
+        setContractAddress(address);
+        break;
+      }
   }, [params, contract]);
 
   const actions: React.ReactNode[] = [];

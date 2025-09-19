@@ -160,7 +160,8 @@ const AbiForm: React.FC<{
           `${window.location.origin}/#/popular-contracts`,
           contractTemplate.id,
           contractAddress?.blockchainId ?? "",
-          contractAddress?.address ?? ""
+          contractAddress?.address ?? "",
+          blockchain?.networkCluster
         )}
         showModal={share}
         onHide={() => setShare(false)}

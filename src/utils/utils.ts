@@ -22,11 +22,10 @@ export const evmFunctionSelector = (func: EvmAbiFunction): string => {
   return keccak256(toUtf8Bytes(functionSignature)).slice(2, 10);
 };
 
-export const compareAddr = (
-  addr1: string,
-  addr2: string,
+export const normalizeAddr = (
+  address: string,
   networkCluster?: NetworkCluster
-): boolean => {
+): string => {
   if (
     networkCluster &&
     [
@@ -36,6 +35,6 @@ export const compareAddr = (
       NetworkCluster.Ronin,
     ].includes(networkCluster)
   )
-    return addr1.toLowerCase() === addr2.toLowerCase();
-  return addr1 === addr2;
+    return address.toLowerCase();
+  return address;
 };
