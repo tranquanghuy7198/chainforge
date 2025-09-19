@@ -1,17 +1,25 @@
-export const TEMPLATE_ID_PARAM = "templateId";
-export const BLOCKCHAIN_ID_PARAM = "blockchainId";
-export const ADDRESS_PARAM = "address";
+import { sha256 } from "ethers";
+
+export const CONTRACT_PARAM = "c";
+
+export const buildContractHash = (
+  templateId: string,
+  blockchainId: string,
+  address: string
+): string => {
+  const encoder = new TextEncoder();
+  const contract = encoder.encode(`${templateId}|${blockchainId}|${address}`);
+  return sha256(contract).slice(0, 16).replaceAll("0x", "");
+};
 
 export const buildShareableUrl = (
   baseUrl: string,
   templateId: string,
   blockchainId: string,
   address: string
-) => {
+): string => {
   const params = new URLSearchParams({
-    [TEMPLATE_ID_PARAM]: templateId,
-    [BLOCKCHAIN_ID_PARAM]: blockchainId,
-    [ADDRESS_PARAM]: address,
+    [CONTRACT_PARAM]: buildContractHash(templateId, blockchainId, address),
   }).toString();
 
   // TODO: Remove this when possible
