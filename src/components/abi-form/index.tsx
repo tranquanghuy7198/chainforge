@@ -21,6 +21,7 @@ import { useFetchMyContracts } from "@hooks/contract";
 import ShareModal from "@components/share-modal";
 import { buildShareableUrl } from "@utils/share";
 import useNotification from "antd/es/notification/useNotification";
+import { POPULAR_CONTRACTS } from "@utils/routes";
 
 const AbiForm: React.FC<{
   defaultAction: AbiAction;
@@ -157,7 +158,7 @@ const AbiForm: React.FC<{
       )}
       <ShareModal
         shareableUrl={buildShareableUrl(
-          "/popular-contracts",
+          POPULAR_CONTRACTS,
           contractTemplate.id,
           contractAddress?.blockchainId ?? "",
           contractAddress?.address ?? "",

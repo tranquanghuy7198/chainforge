@@ -23,6 +23,12 @@ import { useAppSelector } from "@redux/hook";
 import ProductContact from "@components/contact";
 import logo from "@assets/chainforge.png";
 import { useLocation, useNavigate } from "react-router-dom";
+import {
+  BLOCKCHAINS,
+  MY_CONTRACTS,
+  MY_TEMPLATES,
+  POPULAR_CONTRACTS,
+} from "@utils/routes";
 import "./main-layout.scss";
 
 type MenuItem = Required<MenuProps>["items"][number];
@@ -30,12 +36,12 @@ type MenuItem = Required<MenuProps>["items"][number];
 // NOTE: Keys should match with paths in App.tsx
 const items: MenuItem[] = [
   {
-    key: "/blockchains",
+    key: BLOCKCHAINS,
     label: "Blockchains",
     icon: <AppstoreFilled />,
   },
   {
-    key: "/popular-contracts",
+    key: POPULAR_CONTRACTS,
     label: "Popular Contracts",
     icon: <StarFilled />,
   },
@@ -45,12 +51,12 @@ const items: MenuItem[] = [
     icon: <FileTextFilled />,
     children: [
       {
-        key: "/contract-templates",
+        key: MY_TEMPLATES,
         label: "Contract Templates",
         icon: <AlignLeftOutlined />,
       },
       {
-        key: "/contracts",
+        key: MY_CONTRACTS,
         label: "Contract Explorer",
         icon: <SearchOutlined />,
       },

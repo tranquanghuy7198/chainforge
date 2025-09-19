@@ -9,6 +9,12 @@ import Blockchains from "@pages/blockchains";
 import TrendingContracts from "@pages/trending-contracts";
 import ContractTemplates from "@pages/contract-templates";
 import Contracts from "@pages/contracts";
+import {
+  BLOCKCHAINS,
+  MY_CONTRACTS,
+  MY_TEMPLATES,
+  POPULAR_CONTRACTS,
+} from "@utils/routes";
 
 const App: React.FC = () => {
   return (
@@ -25,11 +31,11 @@ const App: React.FC = () => {
       <Provider store={store}>
         <HashRouter>
           <Routes>
-            <Route path="/" element={<Navigate to="/blockchains" replace />} />
-            <Route path="/blockchains" element={<Blockchains />} />
-            <Route path="/popular-contracts" element={<TrendingContracts />} />
-            <Route path="/contract-templates" element={<ContractTemplates />} />
-            <Route path="/contracts" element={<Contracts />} />
+            <Route path="/" element={<Navigate to={BLOCKCHAINS} replace />} />
+            <Route path={BLOCKCHAINS} element={<Blockchains />} />
+            <Route path={POPULAR_CONTRACTS} element={<TrendingContracts />} />
+            <Route path={MY_TEMPLATES} element={<ContractTemplates />} />
+            <Route path={MY_CONTRACTS} element={<Contracts />} />
           </Routes>
         </HashRouter>
       </Provider>
