@@ -30,31 +30,34 @@ const ShareModal: React.FC<{
   };
 
   const shareToReddit = async () => {
-    const shareUrl = new URL("https://www.reddit.com/submit");
-    shareUrl.searchParams.set("url", shareableUrl);
-    shareUrl.searchParams.set(
-      "title",
-      "🚀 Discover trending smart contract templates on our Web3 platform!"
-    );
-    window.open(shareUrl.toString(), "_blank", "width=800,height=600");
+    message.info("Available soon...");
+    // const shareUrl = new URL("https://www.reddit.com/submit");
+    // shareUrl.searchParams.set("url", shareableUrl);
+    // shareUrl.searchParams.set(
+    //   "title",
+    //   "🚀 Discover trending smart contract templates on our Web3 platform!"
+    // );
+    // window.open(shareUrl.toString(), "_blank", "width=800,height=600");
   };
 
   const shareToFacebook = async () => {
-    const shareUrl = new URL("https://www.facebook.com/sharer/sharer.php");
-    shareUrl.searchParams.set("u", shareableUrl);
-    shareUrl.searchParams.set(
-      "quote",
-      "🚀 Discover trending smart contract templates on our Web3 platform!"
-    );
-    window.open(shareUrl.toString(), "_blank");
+    message.info("Available soon...");
+    // const shareUrl = new URL("https://www.facebook.com/sharer/sharer.php");
+    // shareUrl.searchParams.set("u", shareableUrl);
+    // shareUrl.searchParams.set(
+    //   "quote",
+    //   "🚀 Discover trending smart contract templates on our Web3 platform!"
+    // );
+    // window.open(shareUrl.toString(), "_blank");
   };
 
   const shareToLinkedin = async () => {
-    window.open(
-      "https://www.linkedin.com/sharing/share-offsite/?url=" +
-        encodeURIComponent(shareableUrl),
-      "_blank"
-    );
+    message.info("Available soon...");
+    // window.open(
+    //   "https://www.linkedin.com/sharing/share-offsite/?url=" +
+    //     encodeURIComponent(shareableUrl),
+    //   "_blank"
+    // );
   };
 
   const copyLink = () => {
