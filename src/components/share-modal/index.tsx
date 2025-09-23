@@ -41,9 +41,8 @@ const ShareModal: React.FC<{
   };
 
   const shareToFacebook = async () => {
-    message.info("Available soon...");
     const shareUrl = new URL("https://www.facebook.com/sharer.php");
-    shareUrl.searchParams.set("u", encodeURIComponent(shareableUrl));
+    shareUrl.searchParams.set("u", shareableUrl);
     shareUrl.searchParams.set(
       "quote",
       "🚀 Discover trending smart contract templates on our Web3 platform!"
