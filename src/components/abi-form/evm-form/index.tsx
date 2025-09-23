@@ -23,6 +23,7 @@ import CollapseForm from "@components/abi-form/collapse-form";
 import TransactionResult from "@components/abi-form/tx-response";
 import VSCodeEditor from "@components/vscode-editor";
 import "@/styles.scss";
+import { funcSignature } from "@components/abi-form/evm-form/utils";
 
 const PAYABLE_AMOUNT = "payable";
 
@@ -148,7 +149,7 @@ const EvmForm: React.FC<{
 
     // Pre-tx UI handling
     setLoading(true);
-    const { [func.name || func.type]: _, ...newTxResponses } = txResponses;
+    const { [funcSignature(func)]: _, ...newTxResponses } = txResponses;
     setTxResponses(newTxResponses);
 
     // Execute
@@ -156,12 +157,12 @@ const EvmForm: React.FC<{
       if (action === AbiAction.Deploy)
         await deploy(wallet, blockchain, parsedParams, payableAmount);
       else if (action === AbiAction.Read)
-        await read(wallet, blockchain, func.name!, parsedParams);
+        await read(wallet, blockchain, funcSignature(func), parsedParams);
       else if (action === AbiAction.Write)
         await write(
           wallet,
           blockchain,
-          func.name!,
+          funcSignature(func),
           parsedParams,
           payableAmount
         );
@@ -200,7 +201,7 @@ const EvmForm: React.FC<{
             return false;
           })
           .map((func) => ({
-            key: func.name || func.type,
+            key: funcSignature(func),
             label: (
               <Space>
                 <div className="function-name">{func.name || func.type}</div>
@@ -214,7 +215,7 @@ const EvmForm: React.FC<{
             children: (
               <>
                 <Form
-                  name={func.name || func.type}
+                  name={funcSignature(func)}
                   layout="horizontal"
                   onFinish={(values) => execute(func, values)}
                 >
@@ -263,11 +264,11 @@ const EvmForm: React.FC<{
                     </Button>
                   </Form.Item>
                 </Form>
-                {Object.keys(txResponses).includes(func.name || func.type) && (
+                {Object.keys(txResponses).includes(funcSignature(func)) && (
                   <TransactionResult
                     blockchain={blockchain}
                     wallet={wallet}
-                    txResponse={txResponses[func.name || func.type]}
+                    txResponse={txResponses[funcSignature(func)]}
                   />
                 )}
               </>
