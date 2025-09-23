@@ -9,7 +9,6 @@ import {
   TxResponse,
 } from "@utils/constants";
 import { Button, Form, Input, Space, Tag, Tooltip } from "antd";
-import "./abi-form.scss";
 import { Wallet } from "@utils/wallets/wallet";
 import { capitalize, evmFunctionSelector } from "@utils/utils";
 import {
@@ -23,6 +22,7 @@ import { EthereumExtra } from "@utils/wallets/ethereum/utils";
 import CollapseForm from "@components/abi-form/collapse-form";
 import TransactionResult from "@components/abi-form/tx-response";
 import VSCodeEditor from "@components/vscode-editor";
+import "@/styles.scss";
 
 const PAYABLE_AMOUNT = "payable";
 
