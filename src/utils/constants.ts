@@ -62,23 +62,6 @@ export type DeployedContract = {
   addresses: ContractAddress[];
 };
 
-export type EvmAbiField = {
-  internalType: string;
-  name: string;
-  type: string;
-};
-
-export type EvmAbiFunction = {
-  name?: string; // No name for constructor
-  inputs: EvmAbiField[];
-  outputs?: any; // No outputs for constructor
-  stateMutability: "view" | "payable" | "nonpayable";
-  type: "constructor" | "function" | "event";
-  anonymous?: boolean; // For events only
-};
-
-export type EvmAbi = EvmAbiFunction[];
-
 export type TxResponse = {
   contractAddress?: string; // Deploy
   txHash?: string; // Deploy + Write
