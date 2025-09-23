@@ -23,7 +23,7 @@ import CollapseForm from "@components/abi-form/collapse-form";
 import TransactionResult from "@components/abi-form/tx-response";
 import VSCodeEditor from "@components/vscode-editor";
 import "@/styles.scss";
-import { funcSignature } from "@components/abi-form/evm-form/utils";
+import { funcSignature, paramKey } from "@components/abi-form/evm-form/utils";
 
 const PAYABLE_AMOUNT = "payable";
 
@@ -140,8 +140,8 @@ const EvmForm: React.FC<{
 
     // Parse function params
     const payableAmount = params[PAYABLE_AMOUNT];
-    const parsedParams = func.inputs.map((param) => {
-      const rawParam = params[param.name];
+    const parsedParams = func.inputs.map((param, paramIdx) => {
+      const rawParam = params[paramKey(param, paramIdx)];
       if (param.type.includes("tuple") || param.type.includes("[]"))
         return JSON.parse(rawParam);
       return rawParam;
@@ -219,10 +219,10 @@ const EvmForm: React.FC<{
                   layout="horizontal"
                   onFinish={(values) => execute(func, values)}
                 >
-                  {func.inputs.map((param) => (
+                  {func.inputs.map((param, paramIdx) => (
                     <Form.Item
-                      key={param.name}
-                      name={param.name}
+                      key={paramKey(param, paramIdx)}
+                      name={paramKey(param, paramIdx)}
                       label={param.name}
                       required
                     >

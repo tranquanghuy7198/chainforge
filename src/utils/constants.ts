@@ -62,7 +62,7 @@ export type DeployedContract = {
   addresses: ContractAddress[];
 };
 
-type EvmAbiField = {
+export type EvmAbiField = {
   internalType: string;
   name: string;
   type: string;
