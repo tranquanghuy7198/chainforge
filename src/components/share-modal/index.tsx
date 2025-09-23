@@ -48,12 +48,9 @@ const ShareModal: React.FC<{
   };
 
   const shareToLinkedin = async () => {
-    message.info("Available soon...");
-    // window.open(
-    //   "https://www.linkedin.com/sharing/share-offsite/?url=" +
-    //     encodeURIComponent(shareableUrl),
-    //   "_blank"
-    // );
+    const shareUrl = new URL("https://www.linkedin.com/sharing/share-offsite/");
+    shareUrl.searchParams.set("url", shareableUrl);
+    window.open(shareUrl.toString(), "_blank");
   };
 
   const copyLink = () => {
