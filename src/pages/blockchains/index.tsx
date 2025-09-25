@@ -84,6 +84,7 @@ const Blockchains: React.FC = () => {
           <Form
             name="add-blockchain"
             layout="horizontal"
+            autoComplete="off"
             onFinish={(values) => requestChain(values)}
           >
             <Form.Item name="name" label="Name" required>

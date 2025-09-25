@@ -183,7 +183,12 @@ const SolanaInstructionForm: React.FC<{
   return (
     <div className="ix-form">
       {contextHolder}
-      <Form form={form} name={instruction.name} layout="horizontal">
+      <Form
+        form={form}
+        name={instruction.name}
+        layout="horizontal"
+        autoComplete="off"
+      >
         {instruction.accounts
           .map((account) =>
             "accounts" in account ? account.accounts : [account]

@@ -82,6 +82,7 @@ const ContractTemplateForm: React.FC<{
       name="save-contract-template"
       layout="horizontal"
       initialValues={templateForm.form}
+      autoComplete="off"
       onFinish={(values) =>
         saveContractTemplate({ ...values, id: templateForm.form?.id ?? v4() })
       }

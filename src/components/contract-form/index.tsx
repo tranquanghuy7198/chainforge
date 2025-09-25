@@ -76,6 +76,7 @@ const ContractForm: React.FC<{
       name="save-contract"
       layout="horizontal"
       initialValues={contractForm.form}
+      autoComplete="off"
       onFinish={save}
     >
       <Form.Item name="name" label="Name" required>

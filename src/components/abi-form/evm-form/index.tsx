@@ -221,6 +221,7 @@ const EvmForm: React.FC<{
                 <Form
                   name={funcSignature(func)}
                   layout="horizontal"
+                  autoComplete="off"
                   onFinish={(values) => execute(func, values)}
                 >
                   {func.inputs.map((param, paramIdx) => (
