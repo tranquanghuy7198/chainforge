@@ -15,7 +15,6 @@ import {
   EyeOutlined,
 } from "@ant-design/icons";
 import useNotification from "antd/es/notification/useNotification";
-import Paragraph from "antd/es/typography/Paragraph";
 import { EthereumExtra } from "@utils/wallets/ethereum/utils";
 import CollapseForm from "@components/abi-form/collapse-form";
 import TransactionResult from "@components/abi-form/tx-response";
@@ -28,6 +27,7 @@ import {
   funcSignature,
   paramKey,
 } from "@components/abi-form/evm-form/utils";
+import ContractCallError from "@components/abi-form/contract-call-error";
 
 const PAYABLE_AMOUNT = "payable";
 
@@ -173,13 +173,7 @@ const EvmForm: React.FC<{
     } catch (e) {
       notification.error({
         message: "Execution Failed",
-        description: (
-          <Paragraph
-            ellipsis={{ rows: 4, expandable: true, symbol: "View Full" }}
-          >
-            {e instanceof Error ? e.message : String(e)}
-          </Paragraph>
-        ),
+        description: <ContractCallError error={e} />,
       });
     }
 

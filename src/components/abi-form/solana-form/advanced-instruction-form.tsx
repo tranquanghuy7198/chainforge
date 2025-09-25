@@ -46,11 +46,11 @@ import {
   TransactionInstruction,
 } from "@solana/web3.js";
 import { SolanaExtra } from "@utils/wallets/solana/utils";
-import Paragraph from "antd/es/typography/Paragraph";
 import {
   restrictToVerticalAxis,
   restrictToWindowEdges,
 } from "@dnd-kit/modifiers";
+import ContractCallError from "@components/abi-form/contract-call-error";
 
 const SolanaAdvancedInstructionForm: React.FC<{
   contractTemplate: ContractTemplate;
@@ -219,13 +219,7 @@ const SolanaAdvancedInstructionForm: React.FC<{
     } catch (e) {
       notification.error({
         message: "Execution Failed",
-        description: (
-          <Paragraph
-            ellipsis={{ rows: 4, expandable: true, symbol: "View Full" }}
-          >
-            {e instanceof Error ? e.message : String(e)}
-          </Paragraph>
-        ),
+        description: <ContractCallError error={e} />,
       });
     }
 

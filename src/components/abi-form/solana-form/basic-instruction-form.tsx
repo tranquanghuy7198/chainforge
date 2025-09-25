@@ -31,7 +31,7 @@ import useNotification from "antd/es/notification/useNotification";
 import camelcase from "camelcase";
 import { AccountMeta, PublicKey } from "@solana/web3.js";
 import { SolanaExtra } from "@utils/wallets/solana/utils";
-import Paragraph from "antd/es/typography/Paragraph";
+import ContractCallError from "@components/abi-form/contract-call-error";
 
 const SolanaBasicInstructionForm: React.FC<{
   action: AbiAction;
@@ -183,13 +183,7 @@ const SolanaBasicInstructionForm: React.FC<{
     } catch (e) {
       notification.error({
         message: "Execution Failed",
-        description: (
-          <Paragraph
-            ellipsis={{ rows: 4, expandable: true, symbol: "View Full" }}
-          >
-            {e instanceof Error ? e.message : String(e)}
-          </Paragraph>
-        ),
+        description: <ContractCallError error={e} />,
       });
     }
 
