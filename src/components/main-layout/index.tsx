@@ -29,6 +29,7 @@ import {
   MY_TEMPLATES,
   POPULAR_CONTRACTS,
 } from "@utils/routes";
+import ProfileCard from "@components/profile-card";
 import "./main-layout.scss";
 
 type MenuItem = Required<MenuProps>["items"][number];
@@ -97,6 +98,7 @@ const MainLayout: React.FC<{ children: ReactNode }> = ({ children }) => {
           mode="inline"
           items={items}
         />
+        <ProfileCard />
         <ProductContact />
       </Layout.Sider>
       <Layout>{children}</Layout>
