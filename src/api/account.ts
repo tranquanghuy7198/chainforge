@@ -14,5 +14,5 @@ export type ProfileResponse = {
 export const getProfile = async (
   accessToken: string
 ): Promise<ProfileResponse> => {
-  return await makeRequest("/account", "GET", undefined, accessToken);
+  return await makeRequest("/api/account", "GET", undefined, accessToken);
 };
