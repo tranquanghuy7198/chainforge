@@ -1,5 +1,10 @@
 import { CHAINFORGE_API } from "@api/constants";
 
+type ApiErrorResponse = {
+  error: string; // Overall error
+  message: string; // Detailed description
+};
+
 export class ApiError extends Error {
   status: number;
 
@@ -30,7 +35,15 @@ export const makeRequest = async (
     body: body ? JSON.stringify(body) : undefined,
     credentials: "include",
   });
-  if (response.status >= 400)
-    throw new ApiError(response.status, JSON.stringify(response.json()));
-  return await response.json();
+
+  // Handle response
+  const responseData = await response.json();
+  if (response.status >= 400) {
+    const errorData = responseData as ApiErrorResponse;
+    throw new ApiError(
+      response.status,
+      errorData.message || errorData.error || JSON.stringify(errorData)
+    );
+  }
+  return responseData;
 };
