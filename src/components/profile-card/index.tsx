@@ -17,7 +17,7 @@ const ProfileCard: React.FC = () => {
       <Card.Meta
         avatar={<></>}
         title={profile.username}
-        description={profile.accountId}
+        description={profile.accountId.split("-")[0]}
       />
     </Card>
   ) : (
