@@ -7,6 +7,14 @@ import { Wallet } from "@utils/wallets/wallet";
 import { Blockchain, NetworkCluster } from "@utils/constants";
 import { WalletIcon } from "@wallet-standard/core";
 
+const APTOS_NETWORKS: Record<Network, number> = {
+  mainnet: 1,
+  testnet: 2,
+  devnet: 42,
+  local: 42,
+  custom: 42,
+};
+
 export class AptosWallet extends Wallet {
   private adapter: AdapterWallet | undefined;
 
@@ -19,7 +27,6 @@ export class AptosWallet extends Wallet {
   ) {
     const core = new WalletCore();
     const wallet = core.wallets.find((w) => w.name === key);
-    console.log(wallet);
     super({
       ui: {
         name: wallet?.name || key,
@@ -47,10 +54,14 @@ export class AptosWallet extends Wallet {
     }
 
     // Now connect
-    await this.adapter.features["aptos:connect"].connect(true, {
-      name: "mainnet" as Network,
-      chainId: 1,
-    });
+    const network = blockchain ? (blockchain.chainId as Network) : undefined;
+    await this.adapter.features["aptos:connect"].connect(
+      true,
+      network ? { name: network, chainId: APTOS_NETWORKS[network] } : undefined
+    );
+    this.address = this.adapter.accounts[0].address;
+    if (blockchain && this.adapter.chains.includes(`aptos:${network}`))
+      this.chainId = network;
   }
 }
 
