@@ -1,16 +1,10 @@
 import { Card } from "antd";
-import React, { useEffect } from "react";
-import { useAuth } from "@hooks/auth";
-import { getProfile, ProfileResponse } from "@api/account";
+import React from "react";
+import { useFetchProfile } from "@hooks/account";
 import "./profile-card.scss";
 
 const ProfileCard: React.FC = () => {
-  const { session, callAuthenticatedApi } = useAuth();
-  const [profile, setProfile] = React.useState<ProfileResponse | null>(null);
-
-  useEffect(() => {
-    callAuthenticatedApi(getProfile).then(setProfile);
-  }, [session]);
+  const { profile } = useFetchProfile();
 
   return profile ? (
     <Card size="small" hoverable className="profile-card">
