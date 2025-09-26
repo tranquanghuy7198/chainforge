@@ -55,13 +55,26 @@ export class AptosWallet extends Wallet {
 
     // Now connect
     const network = blockchain ? (blockchain.chainId as Network) : undefined;
-    await this.adapter.features["aptos:connect"].connect(
+    const result = await this.adapter.features["aptos:connect"].connect(
       true,
       network ? { name: network, chainId: APTOS_NETWORKS[network] } : undefined
     );
+    if (result.status === "Rejected")
+      throw new Error("User rejected connection");
     this.address = this.adapter.accounts[0].address;
     if (blockchain && this.adapter.chains.includes(`aptos:${network}`))
       this.chainId = network;
+  }
+
+  public async signMessage(message: string, nonce?: string): Promise<string> {
+    if (!nonce) throw new Error("Invalid message data, nonce is required");
+    await this.connect();
+    const result = await this.adapter!.features[
+      "aptos:signMessage"
+    ].signMessage({ address: true, application: true, message, nonce });
+    if (result.status === "Rejected")
+      throw new Error("User rejected signature");
+    return result.args.signature.toString();
   }
 }
 
