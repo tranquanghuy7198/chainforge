@@ -61,7 +61,7 @@ export class AptosWallet extends Wallet {
     );
     if (result.status === "Rejected")
       throw new Error("User rejected connection");
-    this.address = this.adapter.accounts[0].address;
+    this.address = result.args.address.toString();
     if (blockchain && this.adapter.chains.includes(`aptos:${network}`))
       this.chainId = network;
   }
