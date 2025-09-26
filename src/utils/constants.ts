@@ -10,6 +10,7 @@ export enum NetworkCluster {
   Ronin = "ronin",
   Solana = "solana",
   Sui = "sui",
+  Aptos = "aptos",
   Cosmos = "cosmos",
   FlowChain = "flowchain",
 }
