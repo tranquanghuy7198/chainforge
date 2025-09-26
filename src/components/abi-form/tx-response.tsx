@@ -47,7 +47,7 @@ const TransactionResult: React.FC<{
       const [timestamp, nonce, challenge] = await requestChallenge(
         wallet.address
       );
-      const signature = await wallet.signMessage(challenge);
+      const signature = await wallet.signMessage(challenge, nonce);
       await callAuthenticatedApi(
         linkWallet,
         wallet.address,
