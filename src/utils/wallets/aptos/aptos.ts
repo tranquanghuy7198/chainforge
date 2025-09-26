@@ -10,9 +10,9 @@ import { WalletIcon } from "@wallet-standard/core";
 const APTOS_NETWORKS: Record<Network, number> = {
   mainnet: 1,
   testnet: 2,
-  devnet: 42,
-  local: 42,
-  custom: 42,
+  devnet: 204,
+  local: 204,
+  custom: 204,
 };
 
 export class AptosWallet extends Wallet {
