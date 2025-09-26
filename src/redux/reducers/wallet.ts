@@ -3,7 +3,7 @@ import { MetaMask } from "@utils/wallets/ethereum/metamask";
 import { Wallet } from "@utils/wallets/wallet";
 import { Phantom, Solflare } from "@utils/wallets/solana/solana";
 import { Slush } from "@utils/wallets/sui/sui";
-import { Petra } from "@utils/wallets/aptos/petra";
+import { Petra } from "@/utils/wallets/aptos/aptos";
 
 interface WalletState {
   wallets: Record<string, Wallet>;
