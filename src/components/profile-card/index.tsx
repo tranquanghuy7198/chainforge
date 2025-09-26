@@ -1,7 +1,7 @@
 import { Card } from "antd";
 import React, { useEffect } from "react";
-import { useAuth } from "@/hooks/auth";
-import { getProfile, ProfileResponse } from "@/api/account";
+import { useAuth } from "@hooks/auth";
+import { getProfile, ProfileResponse } from "@api/account";
 import "./profile-card.scss";
 
 const ProfileCard: React.FC = () => {
