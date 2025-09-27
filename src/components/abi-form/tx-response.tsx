@@ -42,15 +42,13 @@ const TransactionResult: React.FC<{
       setLoading(true);
       if (!wallet) throw new Error(`Cannot connect wallet`);
       await wallet.connect();
-      if (!wallet.address)
-        throw new Error(`Cannot connect to ${wallet.ui.name} wallet`);
-      const [timestamp, nonce, challenge] = await requestChallenge(
-        wallet.address
-      );
+      const key = wallet.verificationKey;
+      if (!key) throw new Error(`Cannot connect to ${wallet.ui.name} wallet`);
+      const [timestamp, nonce, challenge] = await requestChallenge(key);
       const signature = await wallet.signMessage(challenge, nonce);
       await callAuthenticatedApi(
         linkWallet,
-        wallet.verificationKey,
+        key,
         timestamp,
         nonce,
         signature,
@@ -60,7 +58,7 @@ const TransactionResult: React.FC<{
       notification.success({
         message: "Wallet connected",
         description: `Wallet ${shorten(
-          wallet.address
+          wallet.address!
         )} has been successfully connected to your account`,
       });
     } catch (error) {
