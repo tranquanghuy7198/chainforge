@@ -43,7 +43,8 @@ export class AptosWallet extends Wallet {
   }
 
   get verificationKey(): string {
-    if (!this.publicKey) throw new Error("Wallet not connected");
+    if (!this.publicKey)
+      throw new Error(`Cannot connect to ${this.ui.name} wallet`);
     return this.publicKey;
   }
 

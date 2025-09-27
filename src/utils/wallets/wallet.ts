@@ -32,7 +32,8 @@ export class Wallet {
   }
 
   get verificationKey(): string {
-    if (!this.address) throw new Error("Wallet not connected");
+    if (!this.address)
+      throw new Error(`Cannot connect to ${this.ui.name} wallet`);
     return this.address;
   }
 

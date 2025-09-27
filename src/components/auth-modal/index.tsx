@@ -16,11 +16,8 @@ const AuthModal: React.FC = () => {
   });
 
   const onWalletUpdate = async (wallet: Wallet) => {
-    // Connect wallet
-    const key = wallet.verificationKey;
-    if (!key) throw new Error(`Cannot connect ${wallet.ui.name} wallet`);
-
     // Get challenge, sign and authenticate
+    const key = wallet.verificationKey;
     const [timestamp, nonce, challenge] = await requestChallenge(key);
     const signature = await wallet.signMessage(challenge, nonce);
     const authResponse = await authWithWallet(

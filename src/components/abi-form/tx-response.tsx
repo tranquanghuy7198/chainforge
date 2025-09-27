@@ -43,7 +43,6 @@ const TransactionResult: React.FC<{
       if (!wallet) throw new Error(`Cannot connect wallet`);
       await wallet.connect();
       const key = wallet.verificationKey;
-      if (!key) throw new Error(`Cannot connect to ${wallet.ui.name} wallet`);
       const [timestamp, nonce, challenge] = await requestChallenge(key);
       const signature = await wallet.signMessage(challenge, nonce);
       await callAuthenticatedApi(
