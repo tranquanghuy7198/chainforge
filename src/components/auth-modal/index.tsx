@@ -24,7 +24,7 @@ const AuthModal: React.FC = () => {
     const [timestamp, nonce, challenge] = await requestChallenge(address);
     const signature = await wallet.signMessage(challenge, nonce);
     const authResponse = await authWithWallet(
-      address,
+      wallet.verificationKey,
       timestamp,
       nonce,
       signature,
