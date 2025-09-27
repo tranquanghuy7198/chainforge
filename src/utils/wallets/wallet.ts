@@ -31,6 +31,11 @@ export class Wallet {
     this.networkCluster = networkCluster;
   }
 
+  get verificationKey(): string {
+    if (!this.address) throw new Error("Wallet not connected");
+    return this.address;
+  }
+
   public async connect(blockchain?: Blockchain) {
     console.log(blockchain);
     throw new Error("Method not implemented.");

@@ -17,6 +17,7 @@ const APTOS_NETWORKS: Record<Network, number> = {
 
 export class AptosWallet extends Wallet {
   private adapter: AdapterWallet | undefined;
+  private publicKey: string | undefined;
 
   constructor(
     key: string,
@@ -41,6 +42,11 @@ export class AptosWallet extends Wallet {
     this.adapter = wallet;
   }
 
+  get verificationKey(): string {
+    if (!this.publicKey) throw new Error("Wallet not connected");
+    return this.publicKey;
+  }
+
   public async connect(blockchain?: Blockchain) {
     // Try detecting once more
     if (!this.adapter) {
@@ -62,6 +68,7 @@ export class AptosWallet extends Wallet {
     if (result.status === "Rejected")
       throw new Error("User rejected connection");
     this.address = result.args.address.toString();
+    this.publicKey = result.args.publicKey.toString();
     if (blockchain && this.adapter.chains.includes(`aptos:${network}`))
       this.chainId = network;
   }
