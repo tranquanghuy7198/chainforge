@@ -18,8 +18,8 @@ import {
   EditOutlined,
   EyeOutlined,
 } from "@ant-design/icons";
-import { capitalize } from "@/utils/utils";
-import { TYPE_PARAM, typeParamKey } from "./utils";
+import { capitalize } from "@utils/utils";
+import { TYPE_PARAM, typeParamKey } from "@components/abi-form/sui-form/utils";
 
 const SuiForm: React.FC<{
   action: AbiAction;
