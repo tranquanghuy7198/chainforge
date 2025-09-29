@@ -5,6 +5,7 @@ import {
 
 export const TYPE_PARAM = "typeParam";
 export const PARAM = "param";
+export const TX_CONTEXT = "0x2::tx_context::TxContext";
 
 export type TxRawData = {
   [TYPE_PARAM]?: string[];

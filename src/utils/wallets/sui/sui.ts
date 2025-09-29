@@ -1,5 +1,5 @@
 import { Wallet } from "@utils/wallets/wallet";
-import { Blockchain, NetworkCluster } from "@utils/constants";
+import { Blockchain, NetworkCluster, TxResponse } from "@utils/constants";
 import SuiIcon from "@assets/wallets/sui.svg";
 import { SLUSH_WALLET_NAME, SlushWallet } from "@mysten/slush-wallet";
 import {
@@ -8,7 +8,11 @@ import {
   StandardConnect,
   WalletAccount,
 } from "@wallet-standard/core";
-import { SuiSignPersonalMessage } from "@mysten/wallet-standard";
+import {
+  SuiSignAndExecuteTransaction,
+  SuiSignPersonalMessage,
+} from "@mysten/wallet-standard";
+import { Transaction } from "@mysten/sui/dist/cjs/transactions";
 
 const SLUSH_EXTENSION_ID = "com.mystenlabs.suiwallet";
 
@@ -74,5 +78,32 @@ export class Slush extends Wallet {
       account: this.account!,
     });
     return signature;
+  }
+
+  public async writeContract(
+    blockchain: Blockchain,
+    contractAddress: string,
+    abi: any,
+    method: string,
+    args: [string[], string[]],
+    extra: any
+  ): Promise<TxResponse> {
+    await this.connect(blockchain);
+    const [typeArgs] = args;
+    const tx = new Transaction();
+    tx.moveCall({
+      target: `${contractAddress}::${method}`,
+      typeArguments: typeArgs,
+      arguments: [],
+    });
+    const txResponse = await this.provider!.features[
+      SuiSignAndExecuteTransaction
+    ].signAndExecuteTransaction({
+      transaction: tx,
+      account: this.account!,
+      chain: blockchain.chainId as unknown as IdentifierString,
+    });
+    console.log(txResponse);
+    return {};
   }
 }

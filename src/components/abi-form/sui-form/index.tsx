@@ -8,7 +8,10 @@ import {
 import { Wallet } from "@utils/wallets/wallet";
 import useNotification from "antd/es/notification/useNotification";
 import { useState } from "react";
-import { SuiMoveNormalizedModule } from "@mysten/sui/dist/cjs/client";
+import {
+  SuiMoveNormalizedFunction,
+  SuiMoveNormalizedModule,
+} from "@mysten/sui/dist/cjs/client";
 import { Button, Form, Input } from "antd";
 import CollapseForm from "@components/abi-form/collapse-form";
 import TransactionResult from "@components/abi-form/tx-response";
@@ -20,10 +23,14 @@ import {
 } from "@ant-design/icons";
 import { capitalize } from "@utils/utils";
 import {
+  PARAM,
   paramName,
+  TX_CONTEXT,
+  TxRawData,
   TYPE_PARAM,
   typeParamName,
 } from "@components/abi-form/sui-form/utils";
+import ContractCallError from "@components/abi-form/contract-call-error";
 
 const SuiForm: React.FC<{
   action: AbiAction;
@@ -49,6 +56,138 @@ const SuiForm: React.FC<{
   );
   const [loading, setLoading] = useState<boolean>(false);
 
+  // const deploy = async (
+  //   wallet: Wallet,
+  //   blockchain: Blockchain,
+  //   parsedParams: any[],
+  //   payableAmount?: string
+  // ) => {
+  //   const txResponse = await wallet.deploy(
+  //     blockchain,
+  //     contractTemplate.abi,
+  //     contractTemplate.bytecode,
+  //     parsedParams,
+  //     { payment: payableAmount } as EthereumExtra
+  //   );
+  //   setTxResponses({ ...txResponses, constructor: txResponse });
+  //   await saveDeployedContract(blockchain, txResponse.contractAddress!);
+  // };
+
+  // const read = async (
+  //   wallet: Wallet,
+  //   blockchain: Blockchain,
+  //   funcName: string,
+  //   parsedParams: any[]
+  // ) => {
+  //   if (!contractAddress) {
+  //     notification.error({
+  //       message: "No contract selected",
+  //       description: "You must select a contract first",
+  //     });
+  //     return;
+  //   }
+
+  //   const response = await wallet.readContract(
+  //     blockchain,
+  //     contractAddress.address,
+  //     contractTemplate.abi,
+  //     funcName,
+  //     parsedParams
+  //   );
+  //   setTxResponses({ ...txResponses, [funcName]: response });
+  // };
+
+  const write = async (
+    wallet: Wallet,
+    blockchain: Blockchain,
+    funcName: string,
+    parsedParams: any[],
+    payableAmount?: string
+  ) => {
+    if (!contractAddress) {
+      notification.error({
+        message: "No contract selected",
+        description: "You must select a contract first",
+      });
+      return;
+    }
+
+    // const response = await wallet.writeContract(
+    //   blockchain,
+    //   contractAddress.address,
+    //   contractTemplate.abi,
+    //   funcName,
+    //   parsedParams,
+    //   { payment: payableAmount } as EthereumExtra
+    // );
+    // setTxResponses({ ...txResponses, [funcName]: response });
+  };
+
+  const execute = async (
+    funcName: string,
+    funcData: SuiMoveNormalizedFunction,
+    params: TxRawData
+  ) => {
+    // Check for necessary information
+    if (!wallet) {
+      notification.error({
+        message: "No wallet selected",
+        description: "You must select a wallet first",
+      });
+      return;
+    }
+    if (!blockchain) {
+      notification.error({
+        message: "No blockchain selected",
+        description: "You must select a blockchain first",
+      });
+      return;
+    }
+
+    // Parse function params
+    // const payableAmount = params[PAYABLE_AMOUNT];
+    // const parsedParams = params[PARAM]?.map((param, paramIdx) => {
+    //   const parsedParam = param.startsWith("0x")?param:JSON.parse(param)
+    //   if ()
+    //     tx
+    // })
+    // const parsedParams = func.inputs.map((param, paramIdx) => {
+    //   const rawParam = params[paramKey(param, paramIdx)];
+    //   if (param.type.includes("tuple") || param.type.includes("[]"))
+    //     return JSON.parse(rawParam);
+    //   return rawParam;
+    // });
+
+    // Pre-tx UI handling
+    setLoading(true);
+    const { [funcName]: _, ...newTxResponses } = txResponses;
+    setTxResponses(newTxResponses);
+
+    // Execute
+    try {
+      // if (action === AbiAction.Deploy)
+      //   await deploy(wallet, blockchain, parsedParams, payableAmount);
+      // else if (action === AbiAction.Read)
+      //   await read(wallet, blockchain, funcSignature(func), parsedParams);
+      // else if (action === AbiAction.Write)
+      // await write(
+      //   wallet,
+      //   blockchain,
+      //   funcSignature(func),
+      //   parsedParams,
+      //   payableAmount
+      // );
+    } catch (e) {
+      notification.error({
+        message: "Execution Failed",
+        description: <ContractCallError error={e} />,
+      });
+    }
+
+    // Post-tx UI handling
+    setLoading(false);
+  };
+
   return (
     <>
       {contextHolder}
@@ -64,12 +203,12 @@ const SuiForm: React.FC<{
                 name={funcName}
                 layout="horizontal"
                 autoComplete="off"
-                onFinish={(values) => console.log(funcName, funcData, values)}
+                onFinish={(values) => execute(funcName, funcData, values)}
               >
                 {funcData.typeParameters.map((typeParam, index) => (
                   <Form.Item
-                    key={`Type${index}`}
-                    name={[TYPE_PARAM, `Type${index}`]}
+                    key={index}
+                    name={[TYPE_PARAM, index]}
                     label={`Type${index}`}
                     required
                   >
@@ -79,19 +218,24 @@ const SuiForm: React.FC<{
                     />
                   </Form.Item>
                 ))}
-                {funcData.parameters.map((param, index) => (
-                  <Form.Item
-                    key={`Arg${index}`}
-                    name={[TYPE_PARAM, `Arg${index}`]}
-                    label={`Arg${index}`}
-                    required
-                  >
-                    <Input
-                      placeholder={paramName(param, funcData.typeParameters)}
-                      disabled={loading}
-                    />
-                  </Form.Item>
-                ))}
+                {funcData.parameters
+                  .filter(
+                    (param) =>
+                      paramName(param, funcData.typeParameters) !== TX_CONTEXT
+                  )
+                  .map((param, index) => (
+                    <Form.Item
+                      key={index}
+                      name={[PARAM, index]}
+                      label={`Arg${index}`}
+                      required
+                    >
+                      <Input
+                        placeholder={paramName(param, funcData.typeParameters)}
+                        disabled={loading}
+                      />
+                    </Form.Item>
+                  ))}
                 <Form.Item>
                   <Button
                     type="primary"
