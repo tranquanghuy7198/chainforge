@@ -130,7 +130,14 @@ const AbiForm: React.FC<{
         </Flex>
       )}
       {contractTemplate.networkClusters.includes(NetworkCluster.Sui) ? (
-        <SuiForm action={action} abi={contractTemplate.abi} />
+        <SuiForm
+          action={action}
+          contractTemplate={contractTemplate}
+          contractAddress={contractAddress}
+          wallet={wallet}
+          blockchain={blockchain}
+          saveDeployedContract={saveDeployedContract}
+        />
       ) : contractTemplate.networkClusters.includes(NetworkCluster.Solana) ? (
         <SolanaForm
           action={action}
@@ -145,6 +152,8 @@ const AbiForm: React.FC<{
       ) : contractTemplate.networkClusters.includes(
           NetworkCluster.FlowChain
         ) ? (
+        <>Available soon</>
+      ) : contractTemplate.networkClusters.includes(NetworkCluster.Aptos) ? (
         <>Available soon</>
       ) : (
         <EvmForm
