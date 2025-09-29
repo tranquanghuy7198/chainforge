@@ -6,6 +6,11 @@ import {
 export const TYPE_PARAM = "typeParam";
 export const PARAM = "param";
 
+export type TxRawData = {
+  [TYPE_PARAM]?: string[];
+  [PARAM]?: string[];
+};
+
 export const typeParamName = (
   typeParam: SuiMoveAbilitySet,
   index: number
@@ -33,11 +38,7 @@ export const paramName = (
       prefix
     );
   if ("Vector" in param)
-    return `${prefix}${paramName(
-      param.Vector,
-      typeParams,
-      `${prefix}Vector<`
-    )}>`;
+    return `${paramName(param.Vector, typeParams, `${prefix}Vector<`)}>`;
   if ("Struct" in param) {
     const typeArgsName = param.Struct.typeArguments
       .map((typeArg) => paramName(typeArg, typeParams))
