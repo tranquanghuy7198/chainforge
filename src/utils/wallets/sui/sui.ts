@@ -12,7 +12,7 @@ import {
   SuiSignAndExecuteTransaction,
   SuiSignPersonalMessage,
 } from "@mysten/wallet-standard";
-import { Transaction } from "@mysten/sui/dist/cjs/transactions";
+import { Transaction } from "@mysten/sui/transactions";
 
 const SLUSH_EXTENSION_ID = "com.mystenlabs.suiwallet";
 
@@ -103,7 +103,6 @@ export class Slush extends Wallet {
       account: this.account!,
       chain: blockchain.chainId as unknown as IdentifierString,
     });
-    console.log(txResponse);
-    return {};
+    return { txHash: txResponse.digest };
   }
 }

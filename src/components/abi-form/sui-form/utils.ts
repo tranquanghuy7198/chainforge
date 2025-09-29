@@ -1,7 +1,4 @@
-import {
-  SuiMoveAbilitySet,
-  SuiMoveNormalizedType,
-} from "@mysten/sui/dist/cjs/client";
+import { SuiMoveAbilitySet, SuiMoveNormalizedType } from "@mysten/sui/client";
 
 export const TYPE_PARAM = "typeParam";
 export const PARAM = "param";

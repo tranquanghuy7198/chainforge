@@ -11,7 +11,7 @@ import { useState } from "react";
 import {
   SuiMoveNormalizedFunction,
   SuiMoveNormalizedModule,
-} from "@mysten/sui/dist/cjs/client";
+} from "@mysten/sui/client";
 import { Button, Form, Input } from "antd";
 import CollapseForm from "@components/abi-form/collapse-form";
 import TransactionResult from "@components/abi-form/tx-response";
