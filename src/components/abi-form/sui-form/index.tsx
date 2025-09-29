@@ -19,7 +19,11 @@ import {
   EyeOutlined,
 } from "@ant-design/icons";
 import { capitalize } from "@utils/utils";
-import { TYPE_PARAM, typeParamKey } from "@components/abi-form/sui-form/utils";
+import {
+  paramName,
+  TYPE_PARAM,
+  typeParamName,
+} from "@components/abi-form/sui-form/utils";
 
 const SuiForm: React.FC<{
   action: AbiAction;
@@ -64,19 +68,29 @@ const SuiForm: React.FC<{
               >
                 {funcData.typeParameters.map((typeParam, index) => (
                   <Form.Item
-                    key={typeParamKey(typeParam, index)}
-                    name={[TYPE_PARAM, typeParamKey(typeParam, index)]}
+                    key={`Type${index}`}
+                    name={[TYPE_PARAM, `Type${index}`]}
                     label={`Type${index}`}
                     required
                   >
                     <Input
-                      placeholder={typeParamKey(typeParam, index)}
+                      placeholder={typeParamName(typeParam, index)}
                       disabled={loading}
                     />
                   </Form.Item>
                 ))}
                 {funcData.parameters.map((param, index) => (
-                  <></>
+                  <Form.Item
+                    key={`Arg${index}`}
+                    name={[TYPE_PARAM, `Arg${index}`]}
+                    label={`Arg${index}`}
+                    required
+                  >
+                    <Input
+                      placeholder={paramName(param, funcData.typeParameters)}
+                      disabled={loading}
+                    />
+                  </Form.Item>
                 ))}
                 <Form.Item>
                   <Button
