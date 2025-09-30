@@ -10,6 +10,7 @@ export type TxRawData = {
   [PARAM]?: string[];
 };
 
+// Human-readable type param name, to use as an input placeholder
 export const typeParamName = (
   typeParam: SuiMoveAbilitySet,
   index: number
@@ -19,6 +20,7 @@ export const typeParamName = (
   }`;
 };
 
+// Human-readable param name, to use as an input placeholder
 export const paramName = (
   param: SuiMoveNormalizedType,
   typeParams: SuiMoveAbilitySet[],

@@ -140,9 +140,10 @@ const ContractForm: React.FC<{
                     blockchains.find(
                       (chain) =>
                         chain.id === addresses[field.name]?.blockchainId
+                      // TODO: Sui and Aptos
                     )?.networkCluster === NetworkCluster.Sui && (
-                      <Form.Item name={[field.name, "package"]}>
-                        <Input placeholder="Package" />
+                      <Form.Item name={[field.name, "module"]}>
+                        <Input placeholder="Module" />
                       </Form.Item>
                     )}
                   <Button

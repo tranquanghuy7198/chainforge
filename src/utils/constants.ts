@@ -54,7 +54,7 @@ export type ContractTemplate = {
 export type ContractAddress = {
   blockchainId: string;
   address: string;
-  package?: string;
+  module?: string;
   publicity: boolean;
 };
 
