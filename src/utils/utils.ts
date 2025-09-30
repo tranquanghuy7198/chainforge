@@ -1,3 +1,4 @@
+import { normalizeSuiAddress } from "@mysten/sui/utils";
 import { NetworkCluster } from "@utils/constants";
 
 export const capitalize = (value: string): string => {
@@ -18,17 +19,16 @@ export const normalizeAddr = (
   address: string,
   networkCluster?: NetworkCluster
 ): string => {
-  if (
-    networkCluster &&
-    [
-      NetworkCluster.Ethereum,
-      NetworkCluster.KardiaChain,
-      NetworkCluster.Klaytn,
-      NetworkCluster.Ronin,
-      NetworkCluster.Sui,
-      NetworkCluster.Aptos,
-    ].includes(networkCluster)
-  )
-    return address.toLowerCase();
-  return address;
+  switch (networkCluster) {
+    case NetworkCluster.Ethereum:
+    case NetworkCluster.Klaytn:
+    case NetworkCluster.KardiaChain:
+    case NetworkCluster.Ronin:
+    case NetworkCluster.Aptos:
+      return address.toLowerCase();
+    case NetworkCluster.Sui:
+      return normalizeSuiAddress(address, true);
+    default:
+      return address;
+  }
 };
