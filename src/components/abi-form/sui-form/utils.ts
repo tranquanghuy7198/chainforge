@@ -1,3 +1,4 @@
+import { shorten } from "@utils/utils";
 import { SuiMoveAbilitySet, SuiMoveNormalizedType } from "@mysten/sui/client";
 
 export const TYPE_PARAM = "typeParam";
@@ -42,7 +43,7 @@ export const paramName = (
       .map((typeArg) => paramName(typeArg, typeParams))
       .join(", ");
     return `${[
-      param.Struct.address,
+      shorten(param.Struct.address),
       param.Struct.module,
       param.Struct.name,
     ].join("::")}${typeArgsName ? `<${typeArgsName}>` : ""}`;

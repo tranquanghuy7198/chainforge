@@ -5,7 +5,8 @@ export const capitalize = (value: string): string => {
 };
 
 export const shorten = (value: string): string => {
-  return `${value.slice(0, 8)}...${value.slice(-6)}`;
+  if (value.length > 14) return `${value.slice(0, 8)}...${value.slice(-6)}`;
+  return value;
 };
 
 export const concat = (values: string[]): string => {
