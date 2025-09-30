@@ -8,10 +8,7 @@ import {
 import { Wallet } from "@utils/wallets/wallet";
 import useNotification from "antd/es/notification/useNotification";
 import { useState } from "react";
-import {
-  SuiMoveNormalizedFunction,
-  SuiMoveNormalizedModule,
-} from "@mysten/sui/client";
+import { SuiMoveNormalizedModule } from "@mysten/sui/client";
 import { Button, Form, Input } from "antd";
 import CollapseForm from "@components/abi-form/collapse-form";
 import TransactionResult from "@components/abi-form/tx-response";
@@ -124,11 +121,7 @@ const SuiForm: React.FC<{
     setTxResponses({ ...txResponses, [funcName]: response });
   };
 
-  const execute = async (
-    funcName: string,
-    funcData: SuiMoveNormalizedFunction,
-    params: TxRawData
-  ) => {
+  const execute = async (funcName: string, params: TxRawData) => {
     // Check for necessary information
     if (!wallet) {
       notification.error({
@@ -206,7 +199,7 @@ const SuiForm: React.FC<{
                   name={funcName}
                   layout="horizontal"
                   autoComplete="off"
-                  onFinish={(values) => execute(funcName, funcData, values)}
+                  onFinish={(values) => execute(funcName, values)}
                 >
                   {funcData.typeParameters.map((typeParam, index) => (
                     <Form.Item
