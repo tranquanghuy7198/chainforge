@@ -13,8 +13,7 @@ export const parseParam = (
     return parseParam(tx, rawParam, type.MutableReference);
   if (typeof type === "object" && "Vector" in type)
     return parseVector(tx, rawParam, type.Vector);
-  if (typeof type === "object" && "Struct" in type)
-    return parseStruct(tx, rawParam, type.Struct);
+  if (typeof type === "object" && "Struct" in type) return tx.object(rawParam);
   if (typeof type === "object" && "TypeParameter" in type)
     throw new Error(
       `TypeParameter ${type.TypeParameter} requires type argument context. ` +
@@ -83,20 +82,6 @@ const parseVector = (
   throw new Error(
     `Unsupported vector element type: ${JSON.stringify(elementType)}`
   );
-};
-
-const parseStruct = (
-  tx: Transaction,
-  rawParam: string,
-  structType: {
-    address: string;
-    module: string;
-    name: string;
-    typeArguments: SuiMoveNormalizedType[];
-  }
-): any => {
-  // Structs are object IDs - use tx.object()
-  return tx.object(rawParam);
 };
 
 const buildStructTypeString = (structType: {
