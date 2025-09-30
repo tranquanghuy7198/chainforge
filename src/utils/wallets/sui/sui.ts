@@ -13,6 +13,8 @@ import {
   SuiSignPersonalMessage,
 } from "@mysten/wallet-standard";
 import { Transaction } from "@mysten/sui/transactions";
+import { parseParam } from "@utils/wallets/sui/utils";
+import { SuiMoveNormalizedModule } from "@mysten/sui/client";
 
 const SLUSH_EXTENSION_ID = "com.mystenlabs.suiwallet";
 
@@ -88,14 +90,22 @@ export class Slush extends Wallet {
     args: [string[], string[]],
     extra: any
   ): Promise<TxResponse> {
+    // Connect first
     await this.connect(blockchain);
-    const [typeArgs] = args;
+
+    // Parse arguments and build transaction
+    const [typeParams, params] = args;
+    const funcAbi = (abi as SuiMoveNormalizedModule).exposedFunctions[method];
     const tx = new Transaction();
     tx.moveCall({
       target: `${contractAddress}::${method}`,
-      typeArguments: typeArgs,
-      arguments: [],
+      typeArguments: typeParams,
+      arguments: params.map((param, index) =>
+        parseParam(tx, param, funcAbi.parameters[index])
+      ),
     });
+
+    // Sign and execute transaction
     const txResponse = await this.provider!.features[
       SuiSignAndExecuteTransaction
     ].signAndExecuteTransaction({
