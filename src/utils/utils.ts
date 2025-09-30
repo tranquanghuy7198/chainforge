@@ -25,6 +25,8 @@ export const normalizeAddr = (
       NetworkCluster.KardiaChain,
       NetworkCluster.Klaytn,
       NetworkCluster.Ronin,
+      NetworkCluster.Sui,
+      NetworkCluster.Aptos,
     ].includes(networkCluster)
   )
     return address.toLowerCase();
