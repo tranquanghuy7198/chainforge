@@ -102,8 +102,8 @@ const SuiForm: React.FC<{
     wallet: Wallet,
     blockchain: Blockchain,
     funcName: string,
-    parsedParams: any[],
-    payableAmount?: string
+    rawTypeParams: string[],
+    rawParams: string[]
   ) => {
     if (!contractAddress) {
       notification.error({
@@ -113,15 +113,15 @@ const SuiForm: React.FC<{
       return;
     }
 
-    // const response = await wallet.writeContract(
-    //   blockchain,
-    //   contractAddress.address,
-    //   contractTemplate.abi,
-    //   funcName,
-    //   parsedParams,
-    //   { payment: payableAmount } as EthereumExtra
-    // );
-    // setTxResponses({ ...txResponses, [funcName]: response });
+    const response = await wallet.writeContract(
+      blockchain,
+      `${contractAddress.address}::${contractAddress.module}`,
+      contractTemplate.abi,
+      funcName,
+      [rawTypeParams, rawParams],
+      null
+    );
+    setTxResponses({ ...txResponses, [funcName]: response });
   };
 
   const execute = async (
@@ -171,13 +171,13 @@ const SuiForm: React.FC<{
       // else if (action === AbiAction.Read)
       //   await read(wallet, blockchain, funcSignature(func), parsedParams);
       // else if (action === AbiAction.Write)
-      // await write(
-      //   wallet,
-      //   blockchain,
-      //   funcSignature(func),
-      //   parsedParams,
-      //   payableAmount
-      // );
+      await write(
+        wallet,
+        blockchain,
+        funcName,
+        params[TYPE_PARAM] ?? [],
+        params[PARAM] ?? []
+      );
     } catch (e) {
       notification.error({
         message: "Execution Failed",
