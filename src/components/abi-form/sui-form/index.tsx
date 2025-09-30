@@ -23,6 +23,7 @@ import {
 } from "@ant-design/icons";
 import { capitalize } from "@utils/utils";
 import {
+  funcAction,
   PARAM,
   paramName,
   TX_CONTEXT,
@@ -194,77 +195,82 @@ const SuiForm: React.FC<{
       <CollapseForm
         items={Object.entries(
           (contractTemplate.abi as SuiMoveNormalizedModule).exposedFunctions
-        ).map(([funcName, funcData]) => ({
-          key: funcName,
-          label: <div className="function-name">{funcName}</div>,
-          children: (
-            <>
-              <Form
-                name={funcName}
-                layout="horizontal"
-                autoComplete="off"
-                onFinish={(values) => execute(funcName, funcData, values)}
-              >
-                {funcData.typeParameters.map((typeParam, index) => (
-                  <Form.Item
-                    key={index}
-                    name={[TYPE_PARAM, index]}
-                    label={`Type${index}`}
-                    required
-                  >
-                    <Input
-                      placeholder={typeParamName(typeParam, index)}
-                      disabled={loading}
-                    />
-                  </Form.Item>
-                ))}
-                {funcData.parameters
-                  .filter(
-                    (param) =>
-                      paramName(param, funcData.typeParameters) !== TX_CONTEXT
-                  )
-                  .map((param, index) => (
+        )
+          .filter(([_, funcData]) => funcAction(funcData) === action)
+          .map(([funcName, funcData]) => ({
+            key: funcName,
+            label: <div className="function-name">{funcName}</div>,
+            children: (
+              <>
+                <Form
+                  name={funcName}
+                  layout="horizontal"
+                  autoComplete="off"
+                  onFinish={(values) => execute(funcName, funcData, values)}
+                >
+                  {funcData.typeParameters.map((typeParam, index) => (
                     <Form.Item
                       key={index}
-                      name={[PARAM, index]}
-                      label={`Arg${index}`}
+                      name={[TYPE_PARAM, index]}
+                      label={`Type${index}`}
                       required
                     >
                       <Input
-                        placeholder={paramName(param, funcData.typeParameters)}
+                        placeholder={typeParamName(typeParam, index)}
                         disabled={loading}
                       />
                     </Form.Item>
                   ))}
-                <Form.Item>
-                  <Button
-                    type="primary"
-                    htmlType="submit"
-                    loading={loading}
-                    icon={
-                      action === AbiAction.Deploy ? (
-                        <CloudUploadOutlined />
-                      ) : action === AbiAction.Read ? (
-                        <EyeOutlined />
-                      ) : (
-                        <EditOutlined />
-                      )
-                    }
-                  >
-                    {capitalize(action.toString())}
-                  </Button>
-                </Form.Item>
-              </Form>
-              {Object.keys(txResponses).includes(funcName) && (
-                <TransactionResult
-                  blockchain={blockchain}
-                  wallet={wallet}
-                  txResponse={txResponses[funcName]}
-                />
-              )}
-            </>
-          ),
-        }))}
+                  {funcData.parameters
+                    .filter(
+                      (param) =>
+                        paramName(param, funcData.typeParameters) !== TX_CONTEXT
+                    )
+                    .map((param, index) => (
+                      <Form.Item
+                        key={index}
+                        name={[PARAM, index]}
+                        label={`Arg${index}`}
+                        required
+                      >
+                        <Input
+                          placeholder={paramName(
+                            param,
+                            funcData.typeParameters
+                          )}
+                          disabled={loading}
+                        />
+                      </Form.Item>
+                    ))}
+                  <Form.Item>
+                    <Button
+                      type="primary"
+                      htmlType="submit"
+                      loading={loading}
+                      icon={
+                        action === AbiAction.Deploy ? (
+                          <CloudUploadOutlined />
+                        ) : action === AbiAction.Read ? (
+                          <EyeOutlined />
+                        ) : (
+                          <EditOutlined />
+                        )
+                      }
+                    >
+                      {capitalize(action.toString())}
+                    </Button>
+                  </Form.Item>
+                </Form>
+                {Object.keys(txResponses).includes(funcName) && (
+                  <TransactionResult
+                    blockchain={blockchain}
+                    wallet={wallet}
+                    txResponse={txResponses[funcName]}
+                  />
+                )}
+              </>
+            ),
+          }))}
       />
     </>
   );

@@ -1,5 +1,10 @@
 import { shorten } from "@utils/utils";
-import { SuiMoveAbilitySet, SuiMoveNormalizedType } from "@mysten/sui/client";
+import {
+  SuiMoveAbilitySet,
+  SuiMoveNormalizedFunction,
+  SuiMoveNormalizedType,
+} from "@mysten/sui/client";
+import { AbiAction } from "@utils/constants";
 
 export const TYPE_PARAM = "typeParam";
 export const PARAM = "param";
@@ -8,6 +13,14 @@ export const TX_CONTEXT = "0x2::tx_context::TxContext";
 export type TxRawData = {
   [TYPE_PARAM]?: string[];
   [PARAM]?: string[];
+};
+
+export const funcAction = (
+  func: SuiMoveNormalizedFunction
+): AbiAction | null => {
+  if (!func.isEntry) return null;
+  if (func.visibility !== "Public") return null;
+  return AbiAction.Write; // TODO: Distinguish read and write
 };
 
 // Human-readable type param name, to use as an input placeholder
