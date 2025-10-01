@@ -15,7 +15,7 @@ import { AbiAction, Blockchain } from "@utils/constants";
 import camelcase from "camelcase";
 import { HEX_STRING, NUMBER_ARRAY } from "@utils/regexes";
 
-export const DEPLOYMENT_INSTRUCTION = "deploy";
+export const SOLANA_DEPLOYMENT_INSTRUCTION = "deploy";
 export const ACCOUNT_PARAM = "account";
 export const EXTRA_ACCOUNT_PARAM = "extraAccount";
 export const EXTRA_SIGNER = "signer";
@@ -114,7 +114,8 @@ export const getAccountRoles = (account: IdlInstructionAccount): string[] => {
 };
 
 export const ixAction = (instruction: IdlInstruction): AbiAction => {
-  if (instruction.name === DEPLOYMENT_INSTRUCTION) return AbiAction.Deploy;
+  if (instruction.name === SOLANA_DEPLOYMENT_INSTRUCTION)
+    return AbiAction.Deploy;
   let isWriteInstruction = false;
   for (const account of instruction.accounts)
     for (const singleAccount of "accounts" in account
@@ -128,11 +129,11 @@ export const ixAction = (instruction: IdlInstruction): AbiAction => {
   return AbiAction.Read;
 };
 
-export const getFullInstructions = (idl: Idl): IdlInstruction[] => {
+export const getFullSolanaInstructions = (idl: Idl): IdlInstruction[] => {
   return [
     ...idl.instructions,
     {
-      name: DEPLOYMENT_INSTRUCTION,
+      name: SOLANA_DEPLOYMENT_INSTRUCTION,
       discriminator: [],
       accounts: [],
       args: [],

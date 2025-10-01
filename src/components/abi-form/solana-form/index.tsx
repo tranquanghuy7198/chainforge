@@ -12,7 +12,7 @@ import CollapseForm from "@components/abi-form/collapse-form";
 import "@components/abi-form/solana-form/solana-form.scss";
 import { ThunderboltFilled } from "@ant-design/icons";
 import {
-  getFullInstructions,
+  getFullSolanaInstructions,
   ixAction,
 } from "@components/abi-form/solana-form/utils";
 import SolanaAdvancedInstructionForm from "@components/abi-form/solana-form/advanced-instruction-form";
@@ -41,7 +41,7 @@ const SolanaForm: React.FC<{
   return (
     <>
       <CollapseForm
-        items={getFullInstructions(contractTemplate.abi as Idl)
+        items={getFullSolanaInstructions(contractTemplate.abi as Idl)
           .filter((instruction) => ixAction(instruction) === action)
           .map((instruction) => ({
             key: instruction.name,
