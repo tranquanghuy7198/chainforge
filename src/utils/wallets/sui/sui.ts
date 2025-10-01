@@ -14,7 +14,7 @@ import {
 } from "@mysten/wallet-standard";
 import { Transaction } from "@mysten/sui/transactions";
 import { parseParam } from "@utils/wallets/sui/utils";
-import { SuiMoveNormalizedModule } from "@mysten/sui/client";
+import { SuiClient, SuiMoveNormalizedModule } from "@mysten/sui/client";
 
 const SLUSH_EXTENSION_ID = "com.mystenlabs.suiwallet";
 
@@ -80,6 +80,41 @@ export class Slush extends Wallet {
       account: this.account!,
     });
     return signature;
+  }
+
+  public async deploy(
+    blockchain: Blockchain,
+    abi: any,
+    bytecode: string,
+    args: any,
+    extra: any
+  ): Promise<TxResponse> {
+    // Connect first
+    await this.connect(blockchain);
+
+    // Prepare a transaction
+    const tx = new Transaction();
+    const cap = tx.publish(JSON.parse(bytecode));
+    tx.transferObjects([cap], tx.pure.address(this.address!));
+
+    // Execute this transaction and analyze the response
+    const { digest } = await this.provider!.features[
+      SuiSignAndExecuteTransaction
+    ].signAndExecuteTransaction({
+      transaction: tx,
+      account: this.account!,
+      chain: blockchain.chainId as unknown as IdentifierString,
+    });
+
+    // Fetch the info of the created objects
+    const client = new SuiClient({ url: blockchain.rpcUrl });
+    const publishTx = await client.waitForTransaction({
+      digest: digest,
+      options: { showObjectChanges: true, showEffects: true, showEvents: true },
+    });
+    console.log("CREATED OBJS", publishTx.effects?.created);
+
+    return { txHash: digest };
   }
 
   public async writeContract(

@@ -54,22 +54,17 @@ const SuiForm: React.FC<{
   );
   const [loading, setLoading] = useState<boolean>(false);
 
-  // const deploy = async (
-  //   wallet: Wallet,
-  //   blockchain: Blockchain,
-  //   parsedParams: any[],
-  //   payableAmount?: string
-  // ) => {
-  //   const txResponse = await wallet.deploy(
-  //     blockchain,
-  //     contractTemplate.abi,
-  //     contractTemplate.bytecode,
-  //     parsedParams,
-  //     { payment: payableAmount } as EthereumExtra
-  //   );
-  //   setTxResponses({ ...txResponses, constructor: txResponse });
-  //   await saveDeployedContract(blockchain, txResponse.contractAddress!);
-  // };
+  const deploy = async (wallet: Wallet, blockchain: Blockchain) => {
+    const txResponse = await wallet.deploy(
+      blockchain,
+      contractTemplate.abi,
+      contractTemplate.bytecode,
+      null,
+      null
+    );
+    setTxResponses({ ...txResponses, constructor: txResponse });
+    // await saveDeployedContract(blockchain, txResponse.contractAddress!);
+  };
 
   // const read = async (
   //   wallet: Wallet,
@@ -159,18 +154,17 @@ const SuiForm: React.FC<{
 
     // Execute
     try {
-      // if (action === AbiAction.Deploy)
-      //   await deploy(wallet, blockchain, parsedParams, payableAmount);
+      if (action === AbiAction.Deploy) await deploy(wallet, blockchain);
       // else if (action === AbiAction.Read)
       //   await read(wallet, blockchain, funcSignature(func), parsedParams);
-      // else if (action === AbiAction.Write)
-      await write(
-        wallet,
-        blockchain,
-        funcName,
-        params[TYPE_PARAM] ?? [],
-        params[PARAM] ?? []
-      );
+      else if (action === AbiAction.Write)
+        await write(
+          wallet,
+          blockchain,
+          funcName,
+          params[TYPE_PARAM] ?? [],
+          params[PARAM] ?? []
+        );
     } catch (e) {
       notification.error({
         message: "Execution Failed",
