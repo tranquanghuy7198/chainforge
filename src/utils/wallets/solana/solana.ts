@@ -107,7 +107,13 @@ class Solana extends Wallet {
     const signedTxs = await this.provider.signAllTransactions(txs);
     const txSignature = await executeDeploymentTxs(connection, signedTxs);
     return {
-      contractAddress: programId.toBase58(),
+      contractAddresses: [
+        {
+          blockchainId: blockchain.id,
+          address: programId.toBase58(),
+          publicity: false,
+        },
+      ],
       txHash: txSignature,
     };
   }

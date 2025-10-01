@@ -72,10 +72,16 @@ export class MetaMask extends Wallet {
     );
     await contract.waitForDeployment();
     return {
-      contractAddress:
-        typeof contract.target === "string"
-          ? contract.target
-          : await contract.target.getAddress(),
+      contractAddresses: [
+        {
+          blockchainId: blockchain.id,
+          address:
+            typeof contract.target === "string"
+              ? contract.target
+              : await contract.target.getAddress(),
+          publicity: false,
+        },
+      ],
       txHash: contract.deploymentTransaction()?.hash,
     };
   }

@@ -65,7 +65,7 @@ export type DeployedContract = {
 };
 
 export type TxResponse = {
-  contractAddress?: string; // Deploy
+  contractAddresses?: ContractAddress[]; // Deploy
   txHash?: string; // Deploy + Write
   data?: string; // Read
 };
