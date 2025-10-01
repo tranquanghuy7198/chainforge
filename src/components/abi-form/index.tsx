@@ -16,7 +16,7 @@ import SolanaForm from "@components/abi-form/solana-form";
 import { EditOutlined, EyeOutlined, SendOutlined } from "@ant-design/icons";
 import { useFetchBlockchains } from "@hooks/blockchain";
 import { useAuth } from "@hooks/auth";
-import { addContractAddress } from "@api/contracts";
+import { addContractAddresses } from "@api/contracts";
 import { useFetchMyContracts } from "@hooks/contract";
 import ShareModal from "@components/share-modal";
 import { buildShareableUrl } from "@utils/share";
@@ -38,20 +38,6 @@ const AbiForm: React.FC<{
   const [notification, contextHolder] = useNotification();
   const [sharing, setSharing] = useState<boolean>(false);
 
-  const saveDeployedContract = async (
-    blockchain: Blockchain,
-    address: string
-  ) => {
-    await callAuthenticatedApi(
-      addContractAddress,
-      contractTemplate.id,
-      blockchain.id,
-      address,
-      false // Default as private after deploying
-    );
-    await fetchContracts(true);
-  };
-
   useEffect(() => {
     const selectedChain = blockchains.find(
       (chain) => chain.id === contractAddress?.blockchainId
@@ -65,13 +51,10 @@ const AbiForm: React.FC<{
       if (!blockchain || !contractAddress)
         throw new Error("Blockchain or contract address not found");
       if (!contractAddress.publicity) {
-        await callAuthenticatedApi(
-          addContractAddress,
-          contractTemplate.id,
-          blockchain.id,
-          contractAddress.address,
-          true // Must publish before sharing so others can access it
-        );
+        // Must publish before sharing so others can access it
+        await callAuthenticatedApi(addContractAddresses, contractTemplate.id, [
+          { ...contractAddress, publicity: true },
+        ]);
         await fetchContracts(true);
       }
       setShare(true);
@@ -136,7 +119,6 @@ const AbiForm: React.FC<{
           contractAddress={contractAddress}
           wallet={wallet}
           blockchain={blockchain}
-          saveDeployedContract={saveDeployedContract}
         />
       ) : contractTemplate.networkClusters.includes(NetworkCluster.Solana) ? (
         <SolanaForm
@@ -145,7 +127,6 @@ const AbiForm: React.FC<{
           contractAddress={contractAddress}
           wallet={wallet}
           blockchain={blockchain}
-          saveDeployedContract={saveDeployedContract}
         />
       ) : contractTemplate.networkClusters.includes(NetworkCluster.Cosmos) ? (
         <>Available soon</>
@@ -162,7 +143,6 @@ const AbiForm: React.FC<{
           contractAddress={contractAddress}
           wallet={wallet}
           blockchain={blockchain}
-          saveDeployedContract={saveDeployedContract}
         />
       )}
       <ShareModal
