@@ -21,21 +21,10 @@ import SolanaBasicInstructionForm from "@components/abi-form/solana-form/basic-i
 const SolanaForm: React.FC<{
   action: AbiAction;
   contractTemplate: ContractTemplate;
-  saveDeployedContract: (
-    blockchain: Blockchain,
-    address: string
-  ) => Promise<void>;
   contractAddress?: ContractAddress;
   wallet?: Wallet;
   blockchain?: Blockchain;
-}> = ({
-  action,
-  contractTemplate,
-  saveDeployedContract,
-  contractAddress,
-  wallet,
-  blockchain,
-}) => {
+}> = ({ action, contractTemplate, contractAddress, wallet, blockchain }) => {
   const [advancedIx, setAdvancedIx] = useState<IdlInstruction>();
 
   return (
@@ -80,7 +69,6 @@ const SolanaForm: React.FC<{
                 wallet={wallet}
                 blockchain={blockchain}
                 instruction={instruction}
-                saveDeployedContract={saveDeployedContract}
               />
             ),
           }))}

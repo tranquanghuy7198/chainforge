@@ -32,6 +32,9 @@ import camelcase from "camelcase";
 import { AccountMeta, PublicKey } from "@solana/web3.js";
 import { SolanaExtra } from "@utils/wallets/solana/utils";
 import ContractCallError from "@components/abi-form/contract-call-error";
+import { useAuth } from "@hooks/auth";
+import { addContractAddresses } from "@api/contracts";
+import { useFetchMyContracts } from "@hooks/contract";
 
 const SolanaBasicInstructionForm: React.FC<{
   action: AbiAction;
@@ -40,10 +43,6 @@ const SolanaBasicInstructionForm: React.FC<{
   wallet?: Wallet;
   blockchain?: Blockchain;
   instruction: IdlInstruction;
-  saveDeployedContract: (
-    blockchain: Blockchain,
-    address: string
-  ) => Promise<void>;
 }> = ({
   action,
   contractTemplate,
@@ -51,17 +50,19 @@ const SolanaBasicInstructionForm: React.FC<{
   wallet,
   blockchain,
   instruction,
-  saveDeployedContract,
 }) => {
   const [notification, contextHolder] = useNotification();
   const [ixRawData, setIxRawData] = useState<IxRawData>({});
   const [loading, setLoading] = useState<boolean>(false);
   const [txResp, setTxResp] = useState<TxResponse>();
+  const { callAuthenticatedApi } = useAuth();
+  const { fetchContracts } = useFetchMyContracts();
 
   const deploy = async (
     wallet: Wallet,
     blockchain: Blockchain
   ): Promise<TxResponse> => {
+    // Deploy
     const response = await wallet.deploy(
       blockchain,
       contractTemplate.abi,
@@ -69,7 +70,15 @@ const SolanaBasicInstructionForm: React.FC<{
       null,
       { programKeypair: contractTemplate.programKeypair } as SolanaExtra
     );
-    await saveDeployedContract(blockchain, response.contractAddress!);
+
+    // Save deployed Solana program
+    await callAuthenticatedApi(
+      addContractAddresses,
+      contractTemplate.id,
+      response.contractAddresses || []
+    );
+    await fetchContracts(true);
+
     return response;
   };
 
