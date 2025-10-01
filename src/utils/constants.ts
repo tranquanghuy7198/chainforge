@@ -54,7 +54,8 @@ export type ContractTemplate = {
 export type ContractAddress = {
   blockchainId: string;
   address: string;
-  module?: string;
+  module?: string; // Sui & Aptos
+  objectId?: string; // Sui
   publicity: boolean;
 };
 
