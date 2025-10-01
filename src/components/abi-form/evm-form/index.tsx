@@ -28,39 +28,34 @@ import {
   paramKey,
 } from "@components/abi-form/evm-form/utils";
 import ContractCallError from "@components/abi-form/contract-call-error";
+import { useAuth } from "@hooks/auth";
+import { useFetchMyContracts } from "@hooks/contract";
+import { addContractAddresses } from "@api/contracts";
 
 const PAYABLE_AMOUNT = "payable";
 
 const EvmForm: React.FC<{
   action: AbiAction;
   contractTemplate: ContractTemplate;
-  saveDeployedContract: (
-    blockchain: Blockchain,
-    address: string
-  ) => Promise<void>;
   contractAddress?: ContractAddress;
   wallet?: Wallet;
   blockchain?: Blockchain;
-}> = ({
-  action,
-  contractTemplate,
-  saveDeployedContract,
-  contractAddress,
-  wallet,
-  blockchain,
-}) => {
+}> = ({ action, contractTemplate, contractAddress, wallet, blockchain }) => {
   const [notification, contextHolder] = useNotification();
   const [txResponses, setTxResponses] = useState<Record<string, TxResponse>>(
     {}
   );
   const [loading, setLoading] = useState<boolean>(false);
+  const { callAuthenticatedApi } = useAuth();
+  const { fetchContracts } = useFetchMyContracts();
 
   const deploy = async (
     wallet: Wallet,
     blockchain: Blockchain,
     parsedParams: any[],
     payableAmount?: string
-  ) => {
+  ): Promise<TxResponse> => {
+    // Deploy
     const txResponse = await wallet.deploy(
       blockchain,
       contractTemplate.abi,
@@ -68,8 +63,16 @@ const EvmForm: React.FC<{
       parsedParams,
       { payment: payableAmount } as EthereumExtra
     );
-    setTxResponses({ ...txResponses, constructor: txResponse });
-    await saveDeployedContract(blockchain, txResponse.contractAddress!);
+
+    // Save deployed Etherem contract
+    await callAuthenticatedApi(
+      addContractAddresses,
+      contractTemplate.id,
+      txResponse.contractAddresses || []
+    );
+    await fetchContracts(true);
+
+    return txResponse;
   };
 
   const read = async (
@@ -77,7 +80,7 @@ const EvmForm: React.FC<{
     blockchain: Blockchain,
     funcName: string,
     parsedParams: any[]
-  ) => {
+  ): Promise<TxResponse | undefined> => {
     if (!contractAddress) {
       notification.error({
         message: "No contract selected",
@@ -86,14 +89,13 @@ const EvmForm: React.FC<{
       return;
     }
 
-    const response = await wallet.readContract(
+    return await wallet.readContract(
       blockchain,
       contractAddress.address,
       contractTemplate.abi,
       funcName,
       parsedParams
     );
-    setTxResponses({ ...txResponses, [funcName]: response });
   };
 
   const write = async (
@@ -102,7 +104,7 @@ const EvmForm: React.FC<{
     funcName: string,
     parsedParams: any[],
     payableAmount?: string
-  ) => {
+  ): Promise<TxResponse | undefined> => {
     if (!contractAddress) {
       notification.error({
         message: "No contract selected",
@@ -111,7 +113,7 @@ const EvmForm: React.FC<{
       return;
     }
 
-    const response = await wallet.writeContract(
+    return await wallet.writeContract(
       blockchain,
       contractAddress.address,
       contractTemplate.abi,
@@ -119,7 +121,6 @@ const EvmForm: React.FC<{
       parsedParams,
       { payment: payableAmount } as EthereumExtra
     );
-    setTxResponses({ ...txResponses, [funcName]: response });
   };
 
   const execute = async (
@@ -158,18 +159,31 @@ const EvmForm: React.FC<{
 
     // Execute
     try {
+      let response: TxResponse | undefined;
       if (action === AbiAction.Deploy)
-        await deploy(wallet, blockchain, parsedParams, payableAmount);
+        response = await deploy(
+          wallet,
+          blockchain,
+          parsedParams,
+          payableAmount
+        );
       else if (action === AbiAction.Read)
-        await read(wallet, blockchain, funcSignature(func), parsedParams);
+        response = await read(
+          wallet,
+          blockchain,
+          funcSignature(func),
+          parsedParams
+        );
       else if (action === AbiAction.Write)
-        await write(
+        response = await write(
           wallet,
           blockchain,
           funcSignature(func),
           parsedParams,
           payableAmount
         );
+      if (response)
+        setTxResponses({ ...txResponses, [funcSignature(func)]: response });
     } catch (e) {
       notification.error({
         message: "Execution Failed",
