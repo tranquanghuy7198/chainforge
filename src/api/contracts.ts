@@ -146,7 +146,7 @@ export const addContractAddresses = async (
   await makeRequest(
     `/api/contracts/templates/${templateId}/addresses`,
     "PATCH",
-    { addresses },
+    { addresses: addresses.map((addr) => ({ ...addr, templateId })) },
     accessToken
   );
 };

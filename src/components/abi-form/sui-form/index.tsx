@@ -29,32 +29,30 @@ import {
   typeParamName,
 } from "@components/abi-form/sui-form/utils";
 import ContractCallError from "@components/abi-form/contract-call-error";
+import { useAuth } from "@hooks/auth";
+import { useFetchMyContracts } from "@hooks/contract";
+import { addContractAddresses } from "@api/contracts";
 
 const SuiForm: React.FC<{
   action: AbiAction;
   contractTemplate: ContractTemplate;
-  saveDeployedContract: (
-    blockchain: Blockchain,
-    address: string
-  ) => Promise<void>;
   contractAddress?: ContractAddress;
   wallet?: Wallet;
   blockchain?: Blockchain;
-}> = ({
-  action,
-  contractTemplate,
-  saveDeployedContract,
-  contractAddress,
-  wallet,
-  blockchain,
-}) => {
+}> = ({ action, contractTemplate, contractAddress, wallet, blockchain }) => {
   const [notification, contextHolder] = useNotification();
   const [txResponses, setTxResponses] = useState<Record<string, TxResponse>>(
     {}
   );
   const [loading, setLoading] = useState<boolean>(false);
+  const { callAuthenticatedApi } = useAuth();
+  const { fetchContracts } = useFetchMyContracts();
 
-  const deploy = async (wallet: Wallet, blockchain: Blockchain) => {
+  const deploy = async (
+    wallet: Wallet,
+    blockchain: Blockchain
+  ): Promise<TxResponse> => {
+    // Deploy
     const txResponse = await wallet.deploy(
       blockchain,
       contractTemplate.abi,
@@ -62,8 +60,16 @@ const SuiForm: React.FC<{
       null,
       null
     );
-    setTxResponses({ ...txResponses, constructor: txResponse });
-    // await saveDeployedContract(blockchain, txResponse.contractAddress!);
+
+    // Save deployed Sui package modules
+    await callAuthenticatedApi(
+      addContractAddresses,
+      contractTemplate.id,
+      txResponse.contractAddresses ?? []
+    );
+    await fetchContracts(true);
+
+    return txResponse;
   };
 
   // const read = async (
@@ -96,7 +102,7 @@ const SuiForm: React.FC<{
     funcName: string,
     rawTypeParams: string[],
     rawParams: string[]
-  ) => {
+  ): Promise<TxResponse | undefined> => {
     if (!contractAddress) {
       notification.error({
         message: "No contract selected",
@@ -105,7 +111,7 @@ const SuiForm: React.FC<{
       return;
     }
 
-    const response = await wallet.writeContract(
+    return await wallet.writeContract(
       blockchain,
       `${contractAddress.address}::${contractAddress.module}`,
       contractTemplate.abi,
@@ -113,7 +119,6 @@ const SuiForm: React.FC<{
       [rawTypeParams, rawParams],
       null
     );
-    setTxResponses({ ...txResponses, [funcName]: response });
   };
 
   const execute = async (funcName: string, params: TxRawData) => {
@@ -154,17 +159,21 @@ const SuiForm: React.FC<{
 
     // Execute
     try {
-      if (action === AbiAction.Deploy) await deploy(wallet, blockchain);
+      let txResponse: TxResponse | undefined;
+      if (action === AbiAction.Deploy)
+        txResponse = await deploy(wallet, blockchain);
       // else if (action === AbiAction.Read)
       //   await read(wallet, blockchain, funcSignature(func), parsedParams);
       else if (action === AbiAction.Write)
-        await write(
+        txResponse = await write(
           wallet,
           blockchain,
           funcName,
           params[TYPE_PARAM] ?? [],
           params[PARAM] ?? []
         );
+      if (txResponse)
+        setTxResponses({ ...txResponses, [funcName]: txResponse });
     } catch (e) {
       notification.error({
         message: "Execution Failed",

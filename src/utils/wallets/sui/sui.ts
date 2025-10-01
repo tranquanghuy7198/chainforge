@@ -84,10 +84,10 @@ export class Slush extends Wallet {
 
   public async deploy(
     blockchain: Blockchain,
-    abi: any,
+    _abi: any, // we don't need Sui ABI when deploying
     bytecode: string,
-    args: any,
-    extra: any
+    _args: any, // we don't need args when deploying
+    _extra: any // we don't need extra data when deploying
   ): Promise<TxResponse> {
     // Connect first
     await this.connect(blockchain);
@@ -108,13 +108,37 @@ export class Slush extends Wallet {
 
     // Fetch the info of the created objects
     const client = new SuiClient({ url: blockchain.rpcUrl });
-    const publishTx = await client.waitForTransaction({
+    const resp = await client.waitForTransaction({
       digest: digest,
       options: { showObjectChanges: true, showEffects: true, showEvents: true },
     });
-    console.log("CREATED OBJS", publishTx.effects?.created);
+    const objIds = resp.effects?.created?.map((obj) => obj.reference.objectId);
+    const createdInfo = await client.multiGetObjects({
+      ids: objIds ?? [],
+      options: { showContent: true, showType: true, showOwner: true },
+    });
 
-    return { txHash: digest };
+    return {
+      txHash: digest,
+      contractAddresses: createdInfo
+        .filter(
+          (obj) =>
+            obj.data?.type &&
+            obj.data.owner &&
+            typeof obj.data.owner === "object" &&
+            "Shared" in obj.data.owner
+        )
+        .map((obj) => {
+          const [packageAddress, packageModule] = obj.data!.type!.split("::");
+          return {
+            blockchainId: blockchain.id,
+            address: packageAddress,
+            module: packageModule,
+            objectId: obj.data?.objectId,
+            publicity: false,
+          };
+        }),
+    };
   }
 
   public async writeContract(
