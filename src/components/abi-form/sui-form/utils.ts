@@ -2,10 +2,12 @@ import { shorten } from "@utils/utils";
 import {
   SuiMoveAbilitySet,
   SuiMoveNormalizedFunction,
+  SuiMoveNormalizedModule,
   SuiMoveNormalizedType,
 } from "@mysten/sui/client";
 import { AbiAction } from "@utils/constants";
 
+export const SUI_DEPLOYMENT_TRANSACTION = "deploy";
 export const TYPE_PARAM = "typeParam";
 export const PARAM = "param";
 export const TX_CONTEXT = "0x2::tx_context::TxContext";
@@ -16,10 +18,12 @@ export type TxRawData = {
 };
 
 export const funcAction = (
-  func: SuiMoveNormalizedFunction
+  func: [string, SuiMoveNormalizedFunction]
 ): AbiAction | null => {
-  if (!func.isEntry) return null;
-  if (func.visibility !== "Public") return null;
+  const [funcName, funcData] = func;
+  if (!funcData.isEntry) return null;
+  if (funcData.visibility !== "Public") return null;
+  if (funcName === SUI_DEPLOYMENT_TRANSACTION) return AbiAction.Deploy;
   return AbiAction.Write; // TODO: Distinguish read and write
 };
 
@@ -64,4 +68,19 @@ export const paramName = (
     ].join("::")}${typeArgsName ? `<${typeArgsName}>` : ""}`;
   }
   return prefix;
+};
+
+export const getFullSuiTransactions = (
+  abi: SuiMoveNormalizedModule
+): [string, SuiMoveNormalizedFunction][] => {
+  return Object.entries({
+    ...(abi.exposedFunctions ?? {}),
+    [SUI_DEPLOYMENT_TRANSACTION]: {
+      isEntry: true,
+      parameters: [],
+      return: [],
+      typeParameters: [],
+      visibility: "Public",
+    },
+  });
 };

@@ -8,7 +8,6 @@ import {
 import { Wallet } from "@utils/wallets/wallet";
 import useNotification from "antd/es/notification/useNotification";
 import { useState } from "react";
-import { SuiMoveNormalizedModule } from "@mysten/sui/client";
 import { Button, Form, Input } from "antd";
 import CollapseForm from "@components/abi-form/collapse-form";
 import TransactionResult from "@components/abi-form/tx-response";
@@ -21,6 +20,7 @@ import {
 import { capitalize } from "@utils/utils";
 import {
   funcAction,
+  getFullSuiTransactions,
   PARAM,
   paramName,
   TX_CONTEXT,
@@ -180,10 +180,8 @@ const SuiForm: React.FC<{
     <>
       {contextHolder}
       <CollapseForm
-        items={Object.entries(
-          (contractTemplate.abi as SuiMoveNormalizedModule).exposedFunctions
-        )
-          .filter(([_, funcData]) => funcAction(funcData) === action)
+        items={getFullSuiTransactions(contractTemplate.abi)
+          .filter((func) => funcAction(func) === action)
           .map(([funcName, funcData]) => ({
             key: funcName,
             label: <div className="function-name">{funcName}</div>,
