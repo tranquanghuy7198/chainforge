@@ -7,7 +7,7 @@ import {
   SuiMoveNormalizedModules,
   SuiMoveNormalizedType,
 } from "@mysten/sui/client";
-import { AbiAction, Blockchain } from "@utils/constants";
+import { AbiAction, Blockchain, ContractAddress } from "@utils/constants";
 
 export const SUI_DEPLOYMENT_TRANSACTION = "deploy";
 export const TYPE_PARAM = "typeParam";
@@ -73,10 +73,12 @@ export const paramName = (
 };
 
 export const getFullSuiTransactions = (
-  abi: SuiMoveNormalizedModule
+  packageAbi: SuiMoveNormalizedModules, // ABI is {} before we deploy anything
+  pkg?: ContractAddress // not available when we deploy a new pkg
 ): [string, SuiMoveNormalizedFunction][] => {
+  const moduleAbi = pkg?.module ? packageAbi[pkg.module] : undefined;
   return Object.entries({
-    ...(abi.exposedFunctions ?? {}),
+    ...(moduleAbi?.exposedFunctions ?? {}),
     [SUI_DEPLOYMENT_TRANSACTION]: {
       isEntry: true,
       parameters: [],
