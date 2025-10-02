@@ -74,7 +74,7 @@ class Solana extends Wallet {
     const amount = 2 * LAMPORTS_PER_SOL;
     const connection = new Connection(blockchain.rpcUrl, "confirmed");
     await connection.requestAirdrop(new PublicKey(this.address), amount);
-    return amount;
+    return amount / LAMPORTS_PER_SOL;
   }
 
   public async deploy(
