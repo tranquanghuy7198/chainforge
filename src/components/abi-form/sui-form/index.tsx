@@ -148,20 +148,6 @@ const SuiForm: React.FC<{
       return;
     }
 
-    // Parse function params
-    // const payableAmount = params[PAYABLE_AMOUNT];
-    // const parsedParams = params[PARAM]?.map((param, paramIdx) => {
-    //   const parsedParam = param.startsWith("0x")?param:JSON.parse(param)
-    //   if ()
-    //     tx
-    // })
-    // const parsedParams = func.inputs.map((param, paramIdx) => {
-    //   const rawParam = params[paramKey(param, paramIdx)];
-    //   if (param.type.includes("tuple") || param.type.includes("[]"))
-    //     return JSON.parse(rawParam);
-    //   return rawParam;
-    // });
-
     // Pre-tx UI handling
     setLoading(true);
     const { [funcName]: _, ...newTxResponses } = txResponses;
