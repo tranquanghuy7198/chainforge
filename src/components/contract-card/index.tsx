@@ -78,7 +78,7 @@ const ContractCard: React.FC<{
               );
               return (
                 <Space
-                  key={`${address.blockchainId}-${address.address}`}
+                  key={`${address.blockchainId}-${address.address}-${address.module}`}
                   className="contract-address"
                   onClick={() => setContractAddress(address)}
                 >
@@ -94,7 +94,8 @@ const ContractCard: React.FC<{
                     )}
                   </Tooltip>
                   <a>
-                    {shorten(address.address)} <ExportOutlined />
+                    {address.module || shorten(address.address)}{" "}
+                    <ExportOutlined />
                   </a>
                 </Space>
               );
@@ -108,6 +109,7 @@ const ContractCard: React.FC<{
           <AbiTitle
             name={contract.template.name}
             address={contractAddress?.address ?? ""}
+            module={contractAddress?.module}
             blockchain={blockchains.find(
               (chain) => chain.id === contractAddress?.blockchainId
             )}

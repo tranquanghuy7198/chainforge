@@ -8,8 +8,9 @@ import "./abi-form.scss";
 const AbiTitle: React.FC<{
   name: string;
   address: string;
+  module?: string;
   blockchain?: Blockchain;
-}> = ({ name, address, blockchain }) => {
+}> = ({ name, address, module, blockchain }) => {
   return (
     <Space>
       {name}
@@ -23,7 +24,7 @@ const AbiTitle: React.FC<{
         target="_blank"
         rel="noopener noreferrer"
       >
-        {shorten(address)} <ExportOutlined />
+        {module || shorten(address)} <ExportOutlined />
       </a>
       <Typography.Text copyable={{ text: address }} />
     </Space>
