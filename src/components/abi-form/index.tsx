@@ -27,6 +27,7 @@ import ShareModal from "@components/share-modal";
 import { buildShareableUrl } from "@utils/share";
 import useNotification from "antd/es/notification/useNotification";
 import { POPULAR_CONTRACTS } from "@utils/routes";
+import { shorten } from "@utils/utils";
 
 const AbiForm: React.FC<{
   defaultAction: AbiAction;
@@ -59,7 +60,9 @@ const AbiForm: React.FC<{
       const amount = await wallet.faucet(blockchain);
       notification.success({
         message: "Successful faucet request",
-        description: `${amount} ${blockchain.nativeToken} has been sent to your wallet address ${wallet.address}.`,
+        description: `${amount} ${
+          blockchain.nativeToken
+        } has been sent to your wallet address ${shorten(wallet.address!)}.`,
       });
     } catch (error) {
       notification.error({

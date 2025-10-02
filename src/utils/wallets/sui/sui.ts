@@ -15,6 +15,8 @@ import {
 import { Transaction } from "@mysten/sui/transactions";
 import { parseParam } from "@utils/wallets/sui/utils";
 import { SuiClient, SuiMoveNormalizedModules } from "@mysten/sui/client";
+import { getFaucetHost, requestSuiFromFaucetV2 } from "@mysten/sui/faucet";
+import { MIST_PER_SUI } from "@mysten/sui/utils";
 
 const SLUSH_EXTENSION_ID = "com.mystenlabs.suiwallet";
 
@@ -80,6 +82,22 @@ export class Slush extends Wallet {
       account: this.account!,
     });
     return signature;
+  }
+
+  public async faucet(blockchain: Blockchain): Promise<number> {
+    await this.connect(blockchain);
+    if (!this.address)
+      throw new Error(`Cannot connect to ${this.ui.name} wallet`);
+    const host = blockchain.chainId.replace("sui:", "") as "devnet" | "testnet";
+    const resp = await requestSuiFromFaucetV2({
+      host: getFaucetHost(host),
+      recipient: this.address,
+    });
+    if (typeof resp.status === "object")
+      throw new Error(resp.status.Failure.internal);
+    return resp.coins_sent
+      ? Number(BigInt(resp.coins_sent[0].amount) / MIST_PER_SUI)
+      : 0;
   }
 
   public async deploy(
