@@ -3,7 +3,6 @@ import {
   SuiClient,
   SuiMoveAbilitySet,
   SuiMoveNormalizedFunction,
-  SuiMoveNormalizedModule,
   SuiMoveNormalizedModules,
   SuiMoveNormalizedType,
 } from "@mysten/sui/client";

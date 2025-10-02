@@ -47,6 +47,11 @@ export class Wallet {
     throw new Error("Method not implemented.");
   }
 
+  public async faucet(blockchain: Blockchain): Promise<number> {
+    console.log(blockchain);
+    throw new Error("Method not implemented.");
+  }
+
   public async deploy(
     blockchain: Blockchain,
     abi: any,

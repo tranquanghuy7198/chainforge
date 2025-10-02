@@ -11,9 +11,14 @@ import EvmForm from "@components/abi-form/evm-form";
 import SuiForm from "@components/abi-form/sui-form";
 import AbiWalletForm from "@components/abi-form/abi-wallet-form";
 import { Wallet } from "@utils/wallets/wallet";
-import { Button, Flex, Segmented } from "antd";
+import { Button, Flex, Segmented, Space } from "antd";
 import SolanaForm from "@components/abi-form/solana-form";
-import { EditOutlined, EyeOutlined, SendOutlined } from "@ant-design/icons";
+import {
+  EditOutlined,
+  EyeOutlined,
+  FireOutlined,
+  SendOutlined,
+} from "@ant-design/icons";
 import { useFetchBlockchains } from "@hooks/blockchain";
 import { useAuth } from "@hooks/auth";
 import { addContractAddresses } from "@api/contracts";
@@ -37,6 +42,7 @@ const AbiForm: React.FC<{
   const [share, setShare] = useState<boolean>(false);
   const [notification, contextHolder] = useNotification();
   const [sharing, setSharing] = useState<boolean>(false);
+  const [faucetRequesting, setFaucetRequesting] = useState<boolean>(false);
 
   useEffect(() => {
     const selectedChain = blockchains.find(
@@ -44,6 +50,22 @@ const AbiForm: React.FC<{
     );
     if (selectedChain) setBlockchain(selectedChain);
   }, [contractAddress, blockchains]);
+
+  const requestFaucet = async () => {
+    try {
+      setFaucetRequesting(true);
+      if (!blockchain || !wallet)
+        throw new Error("Blockchain or wallet not found");
+      await wallet.faucet(blockchain);
+    } catch (error) {
+      notification.error({
+        message: "Cannot request faucet",
+        description: error instanceof Error ? error.message : String(error),
+      });
+    } finally {
+      setFaucetRequesting(false);
+    }
+  };
 
   const shareContract = async () => {
     try {
@@ -99,17 +121,29 @@ const AbiForm: React.FC<{
             ]}
             onChange={(value) => setAction(value)}
           />
-          <Button
-            type="link"
-            variant="filled"
-            color="primary"
-            icon={<SendOutlined />}
-            iconPosition="end"
-            loading={sharing}
-            onClick={shareContract}
-          >
-            Share
-          </Button>
+          <Space>
+            <Button
+              type="link"
+              variant="filled"
+              color="primary"
+              icon={<FireOutlined />}
+              loading={faucetRequesting}
+              onClick={requestFaucet}
+            >
+              Faucet
+            </Button>
+            <Button
+              type="link"
+              variant="filled"
+              color="primary"
+              icon={<SendOutlined />}
+              iconPosition="end"
+              loading={sharing}
+              onClick={shareContract}
+            >
+              Share
+            </Button>
+          </Space>
         </Flex>
       )}
       {contractTemplate.networkClusters.includes(NetworkCluster.Sui) ? (
