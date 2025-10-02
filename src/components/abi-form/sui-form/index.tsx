@@ -199,7 +199,7 @@ const SuiForm: React.FC<{
     <>
       {contextHolder}
       <CollapseForm
-        items={getFullSuiTransactions(contractTemplate.abi)
+        items={getFullSuiTransactions(contractTemplate.abi, contractAddress)
           .filter((func) => funcAction(func) === action)
           .map(([funcName, funcData]) => ({
             key: funcName,
