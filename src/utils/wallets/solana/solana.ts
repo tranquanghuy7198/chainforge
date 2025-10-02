@@ -9,7 +9,13 @@ import {
   WalletReadyState,
 } from "@solana/wallet-adapter-base";
 import { AnchorProvider, Idl, Program, utils } from "@coral-xyz/anchor";
-import { Connection, Keypair, PublicKey, Transaction } from "@solana/web3.js";
+import {
+  Connection,
+  Keypair,
+  LAMPORTS_PER_SOL,
+  PublicKey,
+  Transaction,
+} from "@solana/web3.js";
 import SuperJSON from "superjson";
 import { SolanaExtra } from "@utils/wallets/solana/utils";
 import {
@@ -59,6 +65,16 @@ class Solana extends Wallet {
       Buffer.from(message, "utf-8")
     );
     return utils.bytes.bs58.encode(signature);
+  }
+
+  public async faucet(blockchain: Blockchain): Promise<number> {
+    await this.connect(blockchain);
+    if (!this.address)
+      throw new Error(`Cannot connect to ${this.ui.name} wallet`);
+    const amount = 2 * LAMPORTS_PER_SOL;
+    const connection = new Connection(blockchain.rpcUrl, "confirmed");
+    await connection.requestAirdrop(new PublicKey(this.address), amount);
+    return amount;
   }
 
   public async deploy(

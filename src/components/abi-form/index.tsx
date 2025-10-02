@@ -56,7 +56,11 @@ const AbiForm: React.FC<{
       setFaucetRequesting(true);
       if (!blockchain || !wallet)
         throw new Error("Blockchain or wallet not found");
-      await wallet.faucet(blockchain);
+      const amount = await wallet.faucet(blockchain);
+      notification.success({
+        message: "Successful faucet request",
+        description: `${amount} ${blockchain.nativeToken} has been sent to your wallet address ${wallet.address}.`,
+      });
     } catch (error) {
       notification.error({
         message: "Cannot request faucet",
