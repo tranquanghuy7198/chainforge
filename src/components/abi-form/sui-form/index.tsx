@@ -19,6 +19,7 @@ import {
 } from "@ant-design/icons";
 import { capitalize } from "@utils/utils";
 import {
+  fetchSuiAbi,
   funcAction,
   getFullSuiTransactions,
   PARAM,
@@ -30,8 +31,8 @@ import {
 } from "@components/abi-form/sui-form/utils";
 import ContractCallError from "@components/abi-form/contract-call-error";
 import { useAuth } from "@hooks/auth";
-import { useFetchMyContracts } from "@hooks/contract";
-import { addContractAddresses } from "@api/contracts";
+import { useFetchMyContracts, useFetchMyTemplates } from "@hooks/contract";
+import { addContractAddresses, updateTemplate } from "@api/contracts";
 
 const SuiForm: React.FC<{
   action: AbiAction;
@@ -47,6 +48,7 @@ const SuiForm: React.FC<{
   const [loading, setLoading] = useState<boolean>(false);
   const { callAuthenticatedApi } = useAuth();
   const { fetchContracts } = useFetchMyContracts();
+  const { fetchTemplates } = useFetchMyTemplates();
 
   const deploy = async (
     wallet: Wallet,
@@ -60,6 +62,14 @@ const SuiForm: React.FC<{
       null,
       null
     );
+
+    // Fetch and save Sui ABI
+    const abi = await fetchSuiAbi(
+      blockchain,
+      txResponse.contractAddresses![0].address
+    );
+    await callAuthenticatedApi(updateTemplate, { ...contractTemplate, abi });
+    await fetchTemplates(true);
 
     // Save deployed Sui package modules
     await callAuthenticatedApi(

@@ -1,11 +1,13 @@
 import { shorten } from "@utils/utils";
 import {
+  SuiClient,
   SuiMoveAbilitySet,
   SuiMoveNormalizedFunction,
   SuiMoveNormalizedModule,
+  SuiMoveNormalizedModules,
   SuiMoveNormalizedType,
 } from "@mysten/sui/client";
-import { AbiAction } from "@utils/constants";
+import { AbiAction, Blockchain } from "@utils/constants";
 
 export const SUI_DEPLOYMENT_TRANSACTION = "deploy";
 export const TYPE_PARAM = "typeParam";
@@ -83,4 +85,12 @@ export const getFullSuiTransactions = (
       visibility: "Public",
     },
   });
+};
+
+export const fetchSuiAbi = async (
+  blockchain: Blockchain,
+  pkg: string
+): Promise<SuiMoveNormalizedModules> => {
+  const client = new SuiClient({ url: blockchain.rpcUrl });
+  return await client.getNormalizedMoveModulesByPackage({ package: pkg });
 };
