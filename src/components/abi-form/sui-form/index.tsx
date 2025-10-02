@@ -55,6 +55,7 @@ const SuiForm: React.FC<{
   );
 
   useEffect(() => {
+    // Each package has its own ABI, so we must fetch again before further interaction
     if (blockchain && contractAddress)
       fetchSuiAbi(blockchain, contractAddress.address).then(setPackageAbi);
   }, [blockchain, contractAddress]);
