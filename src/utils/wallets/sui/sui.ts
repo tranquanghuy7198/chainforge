@@ -14,7 +14,7 @@ import {
 } from "@mysten/wallet-standard";
 import { Transaction } from "@mysten/sui/transactions";
 import { parseParam } from "@utils/wallets/sui/utils";
-import { SuiClient, SuiMoveNormalizedModule } from "@mysten/sui/client";
+import { SuiClient, SuiMoveNormalizedModules } from "@mysten/sui/client";
 
 const SLUSH_EXTENSION_ID = "com.mystenlabs.suiwallet";
 
@@ -154,7 +154,9 @@ export class Slush extends Wallet {
 
     // Parse arguments and build transaction
     const [typeParams, params] = args;
-    const funcAbi = (abi as SuiMoveNormalizedModule).exposedFunctions[method];
+    const [_, pkgModule] = contractAddress.split("::");
+    const funcAbi = (abi as SuiMoveNormalizedModules)[pkgModule]
+      .exposedFunctions[method];
     const tx = new Transaction();
     tx.moveCall({
       target: `${contractAddress}::${method}`,
