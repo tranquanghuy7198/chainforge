@@ -1,12 +1,12 @@
 import { SuiMoveNormalizedType } from "@mysten/sui/client";
 import { PureTypeName } from "@mysten/sui/bcs";
-import { Transaction } from "@mysten/sui/transactions";
+import { Argument, Transaction } from "@mysten/sui/transactions";
 
 export const parseParam = (
   tx: Transaction,
   rawParam: string,
   type: SuiMoveNormalizedType
-): any => {
+): Argument => {
   if (typeof type === "object" && "Reference" in type)
     return parseParam(tx, rawParam, type.Reference);
   if (typeof type === "object" && "MutableReference" in type)
@@ -50,7 +50,7 @@ const parseVector = (
   tx: Transaction,
   rawParam: string,
   elementType: SuiMoveNormalizedType
-): any => {
+): Argument => {
   if (typeof elementType === "string") {
     if (elementType === "U8") {
       try {
