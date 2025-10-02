@@ -129,16 +129,18 @@ const AbiForm: React.FC<{
             onChange={(value) => setAction(value)}
           />
           <Space>
-            <Button
-              type="link"
-              variant="filled"
-              color="primary"
-              icon={<FireOutlined />}
-              loading={faucetRequesting}
-              onClick={requestFaucet}
-            >
-              Faucet
-            </Button>
+            {blockchain?.faucet && (
+              <Button
+                type="link"
+                variant="filled"
+                color="primary"
+                icon={<FireOutlined />}
+                loading={faucetRequesting}
+                onClick={requestFaucet}
+              >
+                Faucet
+              </Button>
+            )}
             <Button
               type="link"
               variant="filled"

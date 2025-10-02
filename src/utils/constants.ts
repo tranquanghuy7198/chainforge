@@ -38,6 +38,7 @@ export type Blockchain = {
   networkCluster: NetworkCluster;
   logo: string;
   isTestnet: boolean;
+  faucet: boolean;
 };
 
 export type ContractTemplate = {
