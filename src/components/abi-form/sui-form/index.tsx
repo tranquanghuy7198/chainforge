@@ -7,7 +7,7 @@ import {
 } from "@utils/constants";
 import { Wallet } from "@utils/wallets/wallet";
 import useNotification from "antd/es/notification/useNotification";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button, Form, Input } from "antd";
 import CollapseForm from "@components/abi-form/collapse-form";
 import TransactionResult from "@components/abi-form/tx-response";
@@ -33,6 +33,7 @@ import ContractCallError from "@components/abi-form/contract-call-error";
 import { useAuth } from "@hooks/auth";
 import { useFetchMyContracts, useFetchMyTemplates } from "@hooks/contract";
 import { addContractAddresses, updateTemplate } from "@api/contracts";
+import { SuiMoveNormalizedModules } from "@mysten/sui/client";
 
 const SuiForm: React.FC<{
   action: AbiAction;
@@ -49,6 +50,14 @@ const SuiForm: React.FC<{
   const { callAuthenticatedApi } = useAuth();
   const { fetchContracts } = useFetchMyContracts();
   const { fetchTemplates } = useFetchMyTemplates();
+  const [packageAbi, setPackageAbi] = useState<SuiMoveNormalizedModules>(
+    contractTemplate.abi
+  );
+
+  useEffect(() => {
+    if (blockchain && contractAddress)
+      fetchSuiAbi(blockchain, contractAddress.address).then(setPackageAbi);
+  }, [blockchain, contractAddress]);
 
   const deploy = async (
     wallet: Wallet,
@@ -57,7 +66,7 @@ const SuiForm: React.FC<{
     // Deploy
     const txResponse = await wallet.deploy(
       blockchain,
-      contractTemplate.abi,
+      null,
       contractTemplate.bytecode,
       null,
       null
@@ -70,6 +79,7 @@ const SuiForm: React.FC<{
     );
     await callAuthenticatedApi(updateTemplate, { ...contractTemplate, abi });
     await fetchTemplates(true);
+    setPackageAbi(abi);
 
     // Save deployed Sui package modules
     await callAuthenticatedApi(
@@ -124,7 +134,7 @@ const SuiForm: React.FC<{
     return await wallet.writeContract(
       blockchain,
       `${contractAddress.address}::${contractAddress.module}`,
-      contractTemplate.abi,
+      packageAbi,
       funcName,
       [rawTypeParams, rawParams],
       null
@@ -185,7 +195,7 @@ const SuiForm: React.FC<{
     <>
       {contextHolder}
       <CollapseForm
-        items={getFullSuiTransactions(contractTemplate.abi, contractAddress)
+        items={getFullSuiTransactions(packageAbi, contractAddress)
           .filter((func) => funcAction(func) === action)
           .map(([funcName, funcData]) => ({
             key: funcName,
