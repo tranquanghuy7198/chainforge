@@ -121,7 +121,7 @@ const compareSuiAddress = (addr1: string, addr2: string): boolean => {
   return normalizeSuiAddress(addr1, true) === normalizeSuiAddress(addr2, true);
 };
 
-const isSuiCoin = (structType: {
+export const isSuiCoin = (structType: {
   address: string;
   module: string;
   name: string;

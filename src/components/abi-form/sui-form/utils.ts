@@ -7,6 +7,7 @@ import {
   SuiMoveNormalizedType,
 } from "@mysten/sui/client";
 import { AbiAction, Blockchain, ContractAddress } from "@utils/constants";
+import { isSuiCoin } from "@utils/wallets/sui/utils";
 
 export const SUI_DEPLOYMENT_TRANSACTION = "deploy";
 export const TYPE_PARAM = "typeParam";
@@ -94,4 +95,17 @@ export const fetchSuiAbi = async (
 ): Promise<SuiMoveNormalizedModules> => {
   const client = new SuiClient({ url: blockchain.rpcUrl });
   return await client.getNormalizedMoveModulesByPackage({ package: pkg });
+};
+
+export const containsSuiCoin = (type: SuiMoveNormalizedType): boolean => {
+  if (typeof type === "string") return false;
+  if ("Reference" in type) return containsSuiCoin(type.Reference);
+  if ("MutableReference" in type) return containsSuiCoin(type.MutableReference);
+  if ("Vector" in type) return containsSuiCoin(type.Vector);
+  if ("Struct" in type)
+    return (
+      isSuiCoin(type.Struct) ||
+      type.Struct.typeArguments.some((typeArg) => containsSuiCoin(typeArg))
+    );
+  return false;
 };

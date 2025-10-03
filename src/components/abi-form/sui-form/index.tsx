@@ -19,6 +19,7 @@ import {
 } from "@ant-design/icons";
 import { capitalize } from "@utils/utils";
 import {
+  containsSuiCoin,
   fetchSuiAbi,
   funcAction,
   getFullSuiTransactions,
@@ -232,6 +233,11 @@ const SuiForm: React.FC<{
                         key={index}
                         name={[PARAM, index]}
                         label={`Arg${index}`}
+                        tooltip={
+                          containsSuiCoin(param)
+                            ? "For Coin<SUI>, provide an amount to use"
+                            : undefined
+                        }
                         required
                       >
                         <Input
