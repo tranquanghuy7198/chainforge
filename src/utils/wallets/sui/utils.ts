@@ -14,7 +14,10 @@ export const parseParam = (
     return parseParam(tx, rawParam, type.MutableReference);
   if (typeof type === "object" && "Vector" in type)
     return parseVector(tx, rawParam, type.Vector);
-  if (typeof type === "object" && "Struct" in type) return tx.object(rawParam);
+  if (typeof type === "object" && "Struct" in type) {
+    if (isSuiCoin(type.Struct)) return tx.splitCoins(tx.gas, [rawParam])[0];
+    return tx.object(rawParam);
+  }
   if (typeof type === "object" && "TypeParameter" in type)
     throw new Error(
       `TypeParameter ${type.TypeParameter} requires type argument context. ` +
@@ -74,7 +77,7 @@ const parseVector = (
       );
     throw new Error(`Unsupported vector element type: ${elementType}`);
   } else if ("Struct" in elementType) {
-    if (isCoinSUI(elementType.Struct))
+    if (isSuiCoin(elementType.Struct))
       return tx.splitCoins(tx.gas, JSON.parse(rawParam) as any[]);
     return tx.makeMoveVec({
       type: buildStructTypeString(elementType.Struct),
@@ -118,7 +121,7 @@ const compareSuiAddress = (addr1: string, addr2: string): boolean => {
   return normalizeSuiAddress(addr1, true) === normalizeSuiAddress(addr2, true);
 };
 
-const isCoinSUI = (structType: {
+const isSuiCoin = (structType: {
   address: string;
   module: string;
   name: string;
