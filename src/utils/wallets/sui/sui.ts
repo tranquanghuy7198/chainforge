@@ -1,5 +1,10 @@
 import { Wallet } from "@utils/wallets/wallet";
-import { Blockchain, NetworkCluster, TxResponse } from "@utils/constants";
+import {
+  Blockchain,
+  ContractAddress,
+  NetworkCluster,
+  TxResponse,
+} from "@utils/constants";
 import SuiIcon from "@assets/wallets/sui.svg";
 import { SLUSH_WALLET_NAME, SlushWallet } from "@mysten/slush-wallet";
 import {
@@ -136,27 +141,26 @@ export class Slush extends Wallet {
       options: { showContent: true, showType: true, showOwner: true },
     });
 
-    return {
-      txHash: digest,
-      contractAddresses: createdInfo
-        .filter(
-          (obj) =>
-            obj.data?.type &&
-            obj.data.owner &&
-            typeof obj.data.owner === "object" &&
-            "Shared" in obj.data.owner
-        )
-        .map((obj) => {
-          const [packageAddress, packageModule] = obj.data!.type!.split("::");
-          return {
+    // Gather module data from created objects
+    const modules: Record<string, ContractAddress> = {};
+    for (const obj of createdInfo)
+      if (obj.data?.content?.dataType === "package")
+        for (const moduleName of Object.keys(obj.data.content.disassembled))
+          modules[moduleName] = {
             blockchainId: blockchain.id,
-            address: packageAddress,
-            module: packageModule,
-            objectId: obj.data?.objectId,
+            address: obj.data.objectId,
+            module: moduleName,
             publicity: false,
           };
-        }),
-    };
+    for (const obj of createdInfo)
+      if (
+        obj.data?.content?.dataType === "moveObject" &&
+        !obj.data.content.hasPublicTransfer
+      )
+        modules[obj.data.content.type.split("::")[1]].objectId =
+          obj.data.objectId;
+
+    return { txHash: digest, contractAddresses: Object.values(modules) };
   }
 
   public async writeContract(
