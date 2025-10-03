@@ -6,6 +6,7 @@ import {
 import { Wallet } from "@utils/wallets/wallet";
 import { Blockchain, NetworkCluster } from "@utils/constants";
 import { WalletIcon } from "@wallet-standard/core";
+import { Aptos, AptosConfig } from "@aptos-labs/ts-sdk";
 
 const APTOS_NETWORKS: Record<Network, number> = {
   mainnet: 1,
@@ -83,6 +84,22 @@ export class AptosWallet extends Wallet {
     if (result.status === "Rejected")
       throw new Error("User rejected signature");
     return result.args.signature.toString();
+  }
+
+  public async faucet(blockchain: Blockchain): Promise<number> {
+    await this.connect(blockchain);
+    if (!this.address)
+      throw new Error(`Cannot connect to ${this.ui.name} wallet`);
+    const amount = 10 ** blockchain.nativeDecimal;
+    const client = new Aptos(
+      new AptosConfig({ network: blockchain.chainId as Network })
+    );
+    await client.fundAccount({
+      accountAddress: this.address,
+      amount: amount,
+      options: { waitForIndexer: false },
+    });
+    return amount / 10 ** blockchain.nativeDecimal;
   }
 }
 
