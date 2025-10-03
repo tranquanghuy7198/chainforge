@@ -1,6 +1,7 @@
 import { SuiMoveNormalizedType } from "@mysten/sui/client";
 import { PureTypeName } from "@mysten/sui/bcs";
 import { Argument, Transaction } from "@mysten/sui/transactions";
+import { normalizeSuiAddress } from "@mysten/sui/utils";
 
 export const parseParam = (
   tx: Transaction,
@@ -72,13 +73,16 @@ const parseVector = (
         (JSON.parse(rawParam) as Array<any>).map((value) => String(value))
       );
     throw new Error(`Unsupported vector element type: ${elementType}`);
-  } else if ("Struct" in elementType)
+  } else if ("Struct" in elementType) {
+    if (isCoinSUI(elementType.Struct))
+      return tx.splitCoins(tx.gas, JSON.parse(rawParam) as any[]);
     return tx.makeMoveVec({
       type: buildStructTypeString(elementType.Struct),
-      elements: (JSON.parse(rawParam) as Array<any>).map((objectId) =>
-        tx.object(String(objectId))
+      elements: (JSON.parse(rawParam) as string[]).map((objectId) =>
+        tx.object(objectId)
       ),
     });
+  }
   throw new Error(
     `Unsupported vector element type: ${JSON.stringify(elementType)}`
   );
@@ -107,4 +111,28 @@ const buildStructTypeString = (structType: {
   }
 
   return typeString;
+};
+
+// Sui addresses can have 0x-prefix or not, can be full-length or 0-padded
+const compareSuiAddress = (addr1: string, addr2: string): boolean => {
+  return normalizeSuiAddress(addr1, true) === normalizeSuiAddress(addr2, true);
+};
+
+const isCoinSUI = (structType: {
+  address: string;
+  module: string;
+  name: string;
+  typeArguments: SuiMoveNormalizedType[];
+}): boolean => {
+  return (
+    compareSuiAddress(structType.address, "0x2") &&
+    structType.module === "coin" &&
+    structType.name === "Coin" &&
+    structType.typeArguments.length === 1 &&
+    typeof structType.typeArguments[0] === "object" &&
+    "Struct" in structType.typeArguments[0] &&
+    compareSuiAddress(structType.typeArguments[0].Struct.address, "0x2") &&
+    structType.typeArguments[0].Struct.module === "sui" &&
+    structType.typeArguments[0].Struct.name === "SUI"
+  );
 };
