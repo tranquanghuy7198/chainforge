@@ -33,9 +33,20 @@ export class KeplrWallet extends Wallet {
         );
     }
 
+    // Connect
     const chainId = blockchain?.chainId || DEFAULT_COSMOS_CHAIN;
     await this.provider.enable(chainId);
     const walletKey = await this.provider.getKey(chainId);
     this.address = walletKey.bech32Address;
+  }
+
+  public async signMessage(message: string): Promise<string> {
+    await this.connect();
+    const { signature } = await this.provider!.signArbitrary(
+      DEFAULT_COSMOS_CHAIN,
+      this.address!,
+      message
+    );
+    return signature;
   }
 }
