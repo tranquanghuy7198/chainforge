@@ -9,10 +9,11 @@ import {
 } from "@utils/constants";
 import EvmForm from "@components/abi-form/evm-form";
 import SuiForm from "@components/abi-form/sui-form";
+import SolanaForm from "@components/abi-form/solana-form";
+import CosmosForm from "@components/abi-form/cosmos-form";
 import AbiWalletForm from "@components/abi-form/abi-wallet-form";
 import { Wallet } from "@utils/wallets/wallet";
 import { Button, Flex, Segmented, Space } from "antd";
-import SolanaForm from "@components/abi-form/solana-form";
 import {
   EditOutlined,
   EyeOutlined,
@@ -172,7 +173,13 @@ const AbiForm: React.FC<{
           blockchain={blockchain}
         />
       ) : contractTemplate.networkClusters.includes(NetworkCluster.Cosmos) ? (
-        <>Available soon</>
+        <CosmosForm
+          action={action}
+          contractTemplate={contractTemplate}
+          contractAddress={contractAddress}
+          wallet={wallet}
+          blockchain={blockchain}
+        />
       ) : contractTemplate.networkClusters.includes(
           NetworkCluster.FlowChain
         ) ? (

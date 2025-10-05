@@ -1,4 +1,4 @@
-import { Blockchain, NetworkCluster } from "@/utils/constants";
+import { Blockchain, NetworkCluster } from "@utils/constants";
 import { Keplr } from "@keplr-wallet/provider-extension";
 import { Wallet } from "@utils/wallets/wallet";
 
