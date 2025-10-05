@@ -11,7 +11,9 @@ import {
 import { Wallet } from "@utils/wallets/wallet";
 import { IdlInstruction } from "@utils/types/solana";
 import {
+  CheckOutlined,
   CloudUploadOutlined,
+  CopyOutlined,
   EditOutlined,
   EyeOutlined,
 } from "@ant-design/icons";
@@ -29,6 +31,7 @@ import ContractCallError from "@components/abi-form/contract-call-error";
 import { useAuth } from "@hooks/auth";
 import { addContractAddresses } from "@api/contracts";
 import { useFetchMyContracts } from "@hooks/contract";
+import "@/components/abi-form/abi-form.scss";
 
 const SolanaBasicInstructionForm: React.FC<{
   action: AbiAction;
@@ -48,6 +51,7 @@ const SolanaBasicInstructionForm: React.FC<{
   const [notification, contextHolder] = useNotification();
   const [ixRawData, setIxRawData] = useState<IxRawData>({});
   const [loading, setLoading] = useState<boolean>(false);
+  const [copying, setCopying] = useState<boolean>(false);
   const [txResp, setTxResp] = useState<TxResponse>();
   const { callAuthenticatedApi } = useAuth();
   const { fetchContracts } = useFetchMyContracts();
@@ -203,20 +207,33 @@ const SolanaBasicInstructionForm: React.FC<{
       });
       return;
     }
-    const [args, accounts, extraAccounts] = parseArguments(
-      contractTemplate.abi,
-      instruction,
-      ixRawData
-    );
-    const bytecode = await wallet.getTxBytecode(
-      blockchain,
-      contractAddress.address,
-      contractTemplate.abi,
-      camelcase(instruction.name),
-      [args, accounts],
-      { remainingAccounts: extraAccounts, instructions: [null] } as SolanaExtra
-    );
-    navigator.clipboard.writeText(bytecode);
+    try {
+      setCopying(true);
+      const [args, accounts, extraAccounts] = parseArguments(
+        contractTemplate.abi,
+        instruction,
+        ixRawData
+      );
+      const bytecode = await wallet.getTxBytecode(
+        blockchain,
+        contractAddress.address,
+        contractTemplate.abi,
+        camelcase(instruction.name),
+        [args, accounts],
+        {
+          remainingAccounts: extraAccounts,
+          instructions: [null],
+        } as SolanaExtra
+      );
+      navigator.clipboard.writeText(bytecode);
+    } catch (error) {
+      notification.error({
+        message: "Copy Failed",
+        description: <ContractCallError error={error} />,
+      });
+    } finally {
+      setTimeout(() => setCopying(false), 3000);
+    }
   };
 
   return (
@@ -252,7 +269,16 @@ const SolanaBasicInstructionForm: React.FC<{
             {capitalize(action.toString())}
           </Button>
           {action === AbiAction.Write && (
-            <Button onClick={copyTxBytecode}>Copy bytecode</Button>
+            <Button
+              icon={<CopyOutlined />}
+              iconPosition="end"
+              loading={
+                copying && { icon: <CheckOutlined className="copy-done" /> }
+              }
+              onClick={copyTxBytecode}
+            >
+              Copy bytecode
+            </Button>
           )}
         </Space>
         {txResp && (
