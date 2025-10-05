@@ -210,6 +210,42 @@ class Solana extends Wallet {
     });
     return { txHash: signature };
   }
+
+  public async getTxBytecode(
+    blockchain: Blockchain,
+    contractAddress: string,
+    abi: any,
+    method: string,
+    args: any,
+    extra: any
+  ): Promise<string> {
+    // Prepare connection
+    await this.connect(blockchain);
+    const connection = new Connection(blockchain.rpcUrl, "confirmed");
+    const { blockhash } = await connection.getLatestBlockhash();
+
+    // Prepare with program instruction
+    const program = new Program(
+      { ...abi, address: contractAddress } as Idl,
+      this.provider as any
+    );
+    const [params, accounts] = args;
+    const programInstruction = await program.methods[method](...params)
+      .accounts(accounts)
+      .remainingAccounts(extra.remainingAccounts || [])
+      .instruction();
+
+    // Prepare transaction
+    const tx = new Transaction();
+    for (const ix of extra.instructions)
+      if (ix) tx.add(ix);
+      else tx.add(programInstruction);
+    tx.recentBlockhash = blockhash;
+    tx.feePayer = new PublicKey(this.address!);
+
+    // Return bytecode
+    return utils.bytes.bs58.encode(tx.serializeMessage());
+  }
 }
 
 export class Phantom extends Solana {

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import SolanaInstructionForm from "@components/abi-form/solana-form/instruction-form";
-import { Button, Flex } from "antd";
+import { Button, Flex, Space } from "antd";
 import {
   AbiAction,
   Blockchain,
@@ -130,6 +130,32 @@ const SolanaBasicInstructionForm: React.FC<{
     );
   };
 
+  const parseArguments = (): [
+    any[],
+    Record<string, PublicKey>,
+    AccountMeta[]
+  ] => {
+    const argParser = new SolanaIdlParser(contractTemplate.abi as Idl);
+    const args = instruction.args.map((arg) =>
+      argParser.parseValue((ixRawData[ARG_PARAM] || {})[arg.name], arg.type)
+    );
+    const accounts = Object.fromEntries(
+      Object.entries(ixRawData[ACCOUNT_PARAM] || {}).map(([key, value]) => [
+        camelcase(key),
+        new PublicKey(value),
+      ])
+    );
+    const extraAccounts = (ixRawData[EXTRA_ACCOUNT_PARAM] || []).map(
+      (extraAccount) =>
+        ({
+          pubkey: new PublicKey(extraAccount[EXTRA_ACCOUNT]!),
+          isSigner: extraAccount[EXTRA_SIGNER] ?? false,
+          isWritable: extraAccount[EXTRA_WRITABLE] ?? false,
+        } as AccountMeta)
+    );
+    return [args, accounts, extraAccounts];
+  };
+
   const execute = async () => {
     // Check for necessary information
     if (!wallet) {
@@ -154,24 +180,7 @@ const SolanaBasicInstructionForm: React.FC<{
     // Execute
     try {
       // Prepare args and accounts
-      const argParser = new SolanaIdlParser(contractTemplate.abi as Idl);
-      const args = instruction.args.map((arg) =>
-        argParser.parseValue((ixRawData[ARG_PARAM] || {})[arg.name], arg.type)
-      );
-      const accounts = Object.fromEntries(
-        Object.entries(ixRawData[ACCOUNT_PARAM] || {}).map(([key, value]) => [
-          camelcase(key),
-          new PublicKey(value),
-        ])
-      );
-      const extraAccounts = (ixRawData[EXTRA_ACCOUNT_PARAM] || []).map(
-        (extraAccount) =>
-          ({
-            pubkey: new PublicKey(extraAccount[EXTRA_ACCOUNT]!),
-            isSigner: extraAccount[EXTRA_SIGNER] ?? false,
-            isWritable: extraAccount[EXTRA_WRITABLE] ?? false,
-          } as AccountMeta)
-      );
+      const [args, accounts, extraAccounts] = parseArguments();
 
       // Execute in wallet
       let response: TxResponse | undefined;
@@ -200,6 +209,40 @@ const SolanaBasicInstructionForm: React.FC<{
     setLoading(false);
   };
 
+  const copyTxBytecode = async () => {
+    if (!wallet) {
+      notification.error({
+        message: "No wallet selected",
+        description: "You must select a wallet first",
+      });
+      return;
+    }
+    if (!blockchain) {
+      notification.error({
+        message: "No blockchain selected",
+        description: "You must select a blockchain first",
+      });
+      return;
+    }
+    if (!contractAddress) {
+      notification.error({
+        message: "No contract selected",
+        description: "You must select a contract first",
+      });
+      return;
+    }
+    const [args, accounts, extraAccounts] = parseArguments();
+    const bytecode = await wallet.getTxBytecode(
+      blockchain,
+      contractAddress.address,
+      contractTemplate.abi,
+      camelcase(instruction.name),
+      [args, accounts],
+      { remainingAccounts: extraAccounts, instructions: [null] } as SolanaExtra
+    );
+    console.log(bytecode);
+  };
+
   return (
     <>
       {contextHolder}
@@ -215,22 +258,27 @@ const SolanaBasicInstructionForm: React.FC<{
         onIxDataChange={(data) => setIxRawData(data)}
       />
       <Flex vertical align="start" gap="middle">
-        <Button
-          type="primary"
-          loading={loading}
-          onClick={() => execute()}
-          icon={
-            action === AbiAction.Deploy ? (
-              <CloudUploadOutlined />
-            ) : action === AbiAction.Read ? (
-              <EyeOutlined />
-            ) : (
-              <EditOutlined />
-            )
-          }
-        >
-          {capitalize(action.toString())}
-        </Button>
+        <Space>
+          <Button
+            type="primary"
+            loading={loading}
+            onClick={() => execute()}
+            icon={
+              action === AbiAction.Deploy ? (
+                <CloudUploadOutlined />
+              ) : action === AbiAction.Read ? (
+                <EyeOutlined />
+              ) : (
+                <EditOutlined />
+              )
+            }
+          >
+            {capitalize(action.toString())}
+          </Button>
+          {action === AbiAction.Write && (
+            <Button onClick={copyTxBytecode}>Copy bytecode</Button>
+          )}
+        </Space>
         {txResp && (
           <TransactionResult
             blockchain={blockchain}

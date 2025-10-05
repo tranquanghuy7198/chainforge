@@ -86,6 +86,18 @@ export class Wallet {
     throw new Error("Method not implemented.");
   }
 
+  public async getTxBytecode(
+    blockchain: Blockchain,
+    contractAddress: string,
+    abi: any,
+    method: string,
+    args: any,
+    extra: any
+  ): Promise<string> {
+    console.log(blockchain, contractAddress, abi, method, args, extra);
+    throw new Error("Method not implemented.");
+  }
+
   public clone(): Wallet {
     let newWallet = new Wallet({
       ui: this.ui,
