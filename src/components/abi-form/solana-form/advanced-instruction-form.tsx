@@ -234,6 +234,7 @@ const SolanaAdvancedInstructionForm: React.FC<{
                 blockchain={blockchain}
                 wallet={wallet}
                 txResponse={txResp}
+                suggestLinking={false}
               />
             )}
           </Flex>

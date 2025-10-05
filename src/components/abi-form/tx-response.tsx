@@ -13,13 +13,20 @@ const TransactionResult: React.FC<{
   blockchain?: Blockchain;
   wallet?: Wallet;
   txResponse: TxResponse;
-}> = ({ blockchain, wallet, txResponse }) => {
+  suggestLinking?: boolean;
+}> = ({ blockchain, wallet, txResponse, suggestLinking = true }) => {
   const [notification, contextHolder] = useNotification();
   const { callAuthenticatedApi } = useAuth();
   const [linked, setLinked] = useState<boolean>(true);
   const [loading, setLoading] = useState<boolean>(false);
 
   useEffect(() => {
+    // If we don't want to show suggestion, do not bother users
+    if (!suggestLinking) {
+      setLinked(true);
+      return;
+    }
+
     // If we cannot detect wallet, do not bother users
     if (!wallet || !wallet.address) {
       setLinked(true);
@@ -35,7 +42,7 @@ const TransactionResult: React.FC<{
       if (linkStatus !== null) setLinked(linkStatus);
       else setLinked(true); // If we cannot detect linking status, do not bother users
     });
-  }, [txResponse]);
+  }, [txResponse, suggestLinking]);
 
   const link = async () => {
     try {
