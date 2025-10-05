@@ -9,7 +9,7 @@ import {
   TxResponse,
 } from "@utils/constants";
 import { Wallet } from "@utils/wallets/wallet";
-import { Idl, IdlInstruction } from "@utils/types/solana";
+import { IdlInstruction } from "@utils/types/solana";
 import {
   CloudUploadOutlined,
   EditOutlined,
@@ -18,14 +18,8 @@ import {
 import { capitalize } from "@utils/utils";
 import TransactionResult from "@components/abi-form/tx-response";
 import {
-  ACCOUNT_PARAM,
-  ARG_PARAM,
-  EXTRA_ACCOUNT,
-  EXTRA_ACCOUNT_PARAM,
-  EXTRA_SIGNER,
-  EXTRA_WRITABLE,
   IxRawData,
-  SolanaIdlParser,
+  parseArguments,
 } from "@components/abi-form/solana-form/utils";
 import useNotification from "antd/es/notification/useNotification";
 import camelcase from "camelcase";
@@ -130,32 +124,6 @@ const SolanaBasicInstructionForm: React.FC<{
     );
   };
 
-  const parseArguments = (): [
-    any[],
-    Record<string, PublicKey>,
-    AccountMeta[]
-  ] => {
-    const argParser = new SolanaIdlParser(contractTemplate.abi as Idl);
-    const args = instruction.args.map((arg) =>
-      argParser.parseValue((ixRawData[ARG_PARAM] || {})[arg.name], arg.type)
-    );
-    const accounts = Object.fromEntries(
-      Object.entries(ixRawData[ACCOUNT_PARAM] || {}).map(([key, value]) => [
-        camelcase(key),
-        new PublicKey(value),
-      ])
-    );
-    const extraAccounts = (ixRawData[EXTRA_ACCOUNT_PARAM] || []).map(
-      (extraAccount) =>
-        ({
-          pubkey: new PublicKey(extraAccount[EXTRA_ACCOUNT]!),
-          isSigner: extraAccount[EXTRA_SIGNER] ?? false,
-          isWritable: extraAccount[EXTRA_WRITABLE] ?? false,
-        } as AccountMeta)
-    );
-    return [args, accounts, extraAccounts];
-  };
-
   const execute = async () => {
     // Check for necessary information
     if (!wallet) {
@@ -180,7 +148,11 @@ const SolanaBasicInstructionForm: React.FC<{
     // Execute
     try {
       // Prepare args and accounts
-      const [args, accounts, extraAccounts] = parseArguments();
+      const [args, accounts, extraAccounts] = parseArguments(
+        contractTemplate.abi,
+        instruction,
+        ixRawData
+      );
 
       // Execute in wallet
       let response: TxResponse | undefined;
@@ -231,7 +203,11 @@ const SolanaBasicInstructionForm: React.FC<{
       });
       return;
     }
-    const [args, accounts, extraAccounts] = parseArguments();
+    const [args, accounts, extraAccounts] = parseArguments(
+      contractTemplate.abi,
+      instruction,
+      ixRawData
+    );
     const bytecode = await wallet.getTxBytecode(
       blockchain,
       contractAddress.address,
@@ -240,7 +216,7 @@ const SolanaBasicInstructionForm: React.FC<{
       [args, accounts],
       { remainingAccounts: extraAccounts, instructions: [null] } as SolanaExtra
     );
-    console.log(bytecode);
+    navigator.clipboard.writeText(bytecode);
   };
 
   return (

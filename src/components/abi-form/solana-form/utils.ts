@@ -1,4 +1,4 @@
-import { Connection, PublicKey } from "@solana/web3.js";
+import { AccountMeta, Connection, PublicKey } from "@solana/web3.js";
 import {
   Idl,
   IdlEnumVariant,
@@ -364,4 +364,30 @@ export const stringifyArgType = (argType: IdlType): string => {
   return Object.entries(argType)
     .map(([key, value]) => `${key}<${stringifyArgType(value)}>`)
     .join("|");
+};
+
+export const parseArguments = (
+  idl: Idl,
+  instruction: IdlInstruction,
+  ixRawData: IxRawData
+): [any[], Record<string, PublicKey>, AccountMeta[]] => {
+  const argParser = new SolanaIdlParser(idl);
+  const args = instruction.args.map((arg) =>
+    argParser.parseValue((ixRawData[ARG_PARAM] || {})[arg.name], arg.type)
+  );
+  const accounts = Object.fromEntries(
+    Object.entries(ixRawData[ACCOUNT_PARAM] || {}).map(([key, value]) => [
+      camelcase(key),
+      new PublicKey(value),
+    ])
+  );
+  const extraAccounts = (ixRawData[EXTRA_ACCOUNT_PARAM] || []).map(
+    (extraAccount) =>
+      ({
+        pubkey: new PublicKey(extraAccount[EXTRA_ACCOUNT]!),
+        isSigner: extraAccount[EXTRA_SIGNER] ?? false,
+        isWritable: extraAccount[EXTRA_WRITABLE] ?? false,
+      } as AccountMeta)
+  );
+  return [args, accounts, extraAccounts];
 };
