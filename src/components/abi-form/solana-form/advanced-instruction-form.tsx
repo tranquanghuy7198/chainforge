@@ -9,17 +9,11 @@ import {
   TxResponse,
 } from "@utils/constants";
 import { Wallet } from "@utils/wallets/wallet";
-import { Idl, IdlInstruction } from "@utils/types/solana";
+import { IdlInstruction } from "@utils/types/solana";
 import useNotification from "antd/es/notification/useNotification";
 import {
-  ACCOUNT_PARAM,
-  ARG_PARAM,
-  EXTRA_ACCOUNT,
-  EXTRA_ACCOUNT_PARAM,
-  EXTRA_SIGNER,
-  EXTRA_WRITABLE,
   IxRawData,
-  SolanaIdlParser,
+  parseArguments,
 } from "@components/abi-form/solana-form/utils";
 import "@components/abi-form/solana-form/solana-form.scss";
 import AbiWalletForm from "@components/abi-form/abi-wallet-form";
@@ -181,25 +175,10 @@ const SolanaAdvancedInstructionForm: React.FC<{
           parsedIxs.push(null);
 
           // Prepare args and accounts
-          const argParser = new SolanaIdlParser(contractTemplate.abi as Idl);
-          args = instruction.args.map((arg) =>
-            argParser.parseValue(
-              (ix.rawData[ARG_PARAM] || {})[arg.name],
-              arg.type
-            )
-          );
-          accounts = Object.fromEntries(
-            Object.entries(ix.rawData[ACCOUNT_PARAM] || {}).map(
-              ([key, value]) => [camelcase(key), new PublicKey(value)]
-            )
-          );
-          extraAccounts = (ix.rawData[EXTRA_ACCOUNT_PARAM] || []).map(
-            (extraAccount) =>
-              ({
-                pubkey: new PublicKey(extraAccount[EXTRA_ACCOUNT]!),
-                isSigner: extraAccount[EXTRA_SIGNER] ?? false,
-                isWritable: extraAccount[EXTRA_WRITABLE] ?? false,
-              } as AccountMeta)
+          [args, accounts, extraAccounts] = parseArguments(
+            contractTemplate.abi,
+            instruction,
+            ix.rawData
           );
         }
 
