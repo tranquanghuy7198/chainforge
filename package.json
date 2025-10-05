@@ -17,6 +17,7 @@
     "@dnd-kit/modifiers": "^9.0.0",
     "@dnd-kit/sortable": "^10.0.0",
     "@dnd-kit/utilities": "^3.2.2",
+    "@keplr-wallet/provider-extension": "^0.12.279",
     "@monaco-editor/react": "^4.7.0",
     "@mysten/slush-wallet": "^0.2.0",
     "@mysten/sui": "^1.38.0",

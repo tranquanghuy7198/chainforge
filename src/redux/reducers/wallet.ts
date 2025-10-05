@@ -4,6 +4,7 @@ import { Wallet } from "@utils/wallets/wallet";
 import { Phantom, Solflare } from "@utils/wallets/solana/solana";
 import { Slush } from "@utils/wallets/sui/sui";
 import { Petra } from "@utils/wallets/aptos/aptos";
+import { KeplrWallet } from "@utils/wallets/cosmos/keplr";
 
 interface WalletState {
   wallets: Record<string, Wallet>;
@@ -17,6 +18,7 @@ const initialState: WalletState = {
       new Solflare(),
       new Slush(),
       new Petra(),
+      new KeplrWallet(),
     ].map((wallet) => [wallet.key, wallet])
   ),
 };
