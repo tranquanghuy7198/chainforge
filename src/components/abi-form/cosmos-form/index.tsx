@@ -24,6 +24,9 @@ import {
 import { capitalize } from "@utils/utils";
 import ContractCallError from "@components/abi-form/contract-call-error";
 import { CosmosExtra } from "@utils/wallets/cosmos/utils";
+import { useAuth } from "@hooks/auth";
+import { addContractAddresses } from "@api/contracts";
+import { useFetchMyContracts } from "@hooks/contract";
 
 const FUNDS = "use"; // Rust keyword
 
@@ -37,32 +40,37 @@ const CosmosForm: React.FC<{
   const [notification, contextHolder] = useNotification();
   const [txResps, setTxResponses] = useState<Record<string, TxResponse>>({});
   const [loading, setLoading] = useState<boolean>(false);
+  const { callAuthenticatedApi } = useAuth();
+  const { fetchContracts } = useFetchMyContracts();
 
-  // const deploy = async (
-  //   wallet: Wallet,
-  //   blockchain: Blockchain,
-  //   parsedParams: any[],
-  //   payableAmount?: string
-  // ): Promise<TxResponse> => {
-  //   // Deploy
-  //   const txResponse = await wallet.deploy(
-  //     blockchain,
-  //     contractTemplate.abi,
-  //     contractTemplate.bytecode,
-  //     parsedParams,
-  //     { payment: payableAmount } as EthereumExtra
-  //   );
+  const deploy = async (
+    wallet: Wallet,
+    blockchain: Blockchain,
+    parsedParams: any,
+    payableAmount?: string
+  ): Promise<TxResponse> => {
+    // Deploy
+    const txResponse = await wallet.deploy(
+      blockchain,
+      null,
+      contractTemplate.bytecode,
+      parsedParams,
+      {
+        payment: payableAmount,
+        contractName: contractTemplate.name,
+      } as CosmosExtra
+    );
 
-  //   // Save deployed Etherem contract
-  //   await callAuthenticatedApi(
-  //     addContractAddresses,
-  //     contractTemplate.id,
-  //     txResponse.contractAddresses || []
-  //   );
-  //   await fetchContracts(true);
+    // Save deployed Etherem contract
+    await callAuthenticatedApi(
+      addContractAddresses,
+      contractTemplate.id,
+      txResponse.contractAddresses || []
+    );
+    await fetchContracts(true);
 
-  //   return txResponse;
-  // };
+    return txResponse;
+  };
 
   const read = async (
     wallet: Wallet,
@@ -147,13 +155,13 @@ const CosmosForm: React.FC<{
     // Execute
     try {
       let response: TxResponse | undefined;
-      if (action === AbiAction.Deploy) return;
-      //   response = await deploy(
-      //     wallet,
-      //     blockchain,
-      //     parsedParams,
-      //     payableAmount
-      //   );
+      if (action === AbiAction.Deploy)
+        response = await deploy(
+          wallet,
+          blockchain,
+          parsedParams,
+          payableAmount
+        );
       else if (action === AbiAction.Read)
         response = await read(wallet, blockchain, funcName, parsedParams);
       else if (action === AbiAction.Write)
