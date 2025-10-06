@@ -91,6 +91,8 @@ export const getCowmWasmFuncs = (
   idl: CosmWasmIdl,
   action: AbiAction
 ): [string, CosmWasmJSONSchema][] => {
+  if (action === AbiAction.Deploy && idl.instantiate)
+    return [["instantiate", idl.instantiate]];
   const functionSet =
     action === AbiAction.Read
       ? idl.query?.oneOf || []
