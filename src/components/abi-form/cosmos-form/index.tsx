@@ -25,7 +25,7 @@ import { capitalize } from "@utils/utils";
 import ContractCallError from "@components/abi-form/contract-call-error";
 import { CosmosExtra } from "@utils/wallets/cosmos/utils";
 
-const FUNDS = "funds";
+const FUNDS = "use"; // Rust keyword
 
 const CosmosForm: React.FC<{
   action: AbiAction;
@@ -207,6 +207,12 @@ const CosmosForm: React.FC<{
                       />
                     </Form.Item>
                   ))}
+                  <Form.Item name={FUNDS} label="Funds">
+                    <Input
+                      placeholder={`${blockchain?.nativeDenom} amount to pay`}
+                      disabled={loading}
+                    />
+                  </Form.Item>
                   <Form.Item>
                     <Button
                       type="primary"
