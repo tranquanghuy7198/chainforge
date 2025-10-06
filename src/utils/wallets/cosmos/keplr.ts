@@ -4,8 +4,10 @@ import { Wallet } from "@utils/wallets/wallet";
 import { SigningCosmWasmClient } from "@cosmjs/cosmwasm-stargate";
 import SuperJSON from "superjson";
 import { CosmosExtra } from "@utils/wallets/cosmos/utils";
+import { GasPrice } from "@cosmjs/stargate";
 
 const DEFAULT_COSMOS_CHAIN = "cosmoshub-4";
+const DEFAULT_GAS_PRICE = 0.025;
 
 export class KeplrWallet extends Wallet {
   public key: string = "KEPLR";
@@ -64,7 +66,12 @@ export class KeplrWallet extends Wallet {
     await this.connect(blockchain);
     const client = await SigningCosmWasmClient.connectWithSigner(
       blockchain.rpcUrl,
-      this.provider!.getOfflineSigner(blockchain.chainId)
+      this.provider!.getOfflineSigner(blockchain.chainId),
+      {
+        gasPrice: GasPrice.fromString(
+          `${DEFAULT_GAS_PRICE}${blockchain.nativeDenom}`
+        ),
+      }
     );
 
     // Upload bytecode and instantiate
@@ -109,7 +116,12 @@ export class KeplrWallet extends Wallet {
     await this.connect(blockchain);
     const client = await SigningCosmWasmClient.connectWithSigner(
       blockchain.rpcUrl,
-      this.provider!.getOfflineSigner(blockchain.chainId)
+      this.provider!.getOfflineSigner(blockchain.chainId),
+      {
+        gasPrice: GasPrice.fromString(
+          `${DEFAULT_GAS_PRICE}${blockchain.nativeDenom}`
+        ),
+      }
     );
     const result = await client.queryContractSmart(contractAddress, {
       [method]: args,
