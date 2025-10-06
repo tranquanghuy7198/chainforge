@@ -53,6 +53,52 @@ export class KeplrWallet extends Wallet {
     return signature;
   }
 
+  public async deploy(
+    blockchain: Blockchain,
+    _abi: any, // We don't need ABI when deploying contracts
+    bytecode: string,
+    args: any,
+    extra: CosmosExtra
+  ): Promise<TxResponse> {
+    // Connect and prepare
+    await this.connect(blockchain);
+    const client = await SigningCosmWasmClient.connectWithSigner(
+      blockchain.rpcUrl,
+      this.provider!.getOfflineSigner(blockchain.chainId)
+    );
+
+    // Upload bytecode and instantiate
+    const { codeId } = await client.upload(
+      this.address!,
+      Buffer.from(bytecode, "base64"),
+      "auto"
+    );
+    const { contractAddress, transactionHash } = await client.instantiate(
+      this.address!,
+      codeId,
+      args,
+      extra.contractName || this.address!,
+      "auto",
+      {
+        admin: this.address,
+        funds: extra.payment
+          ? [{ denom: blockchain.nativeDenom, amount: extra.payment }]
+          : undefined,
+      }
+    );
+
+    return {
+      txHash: transactionHash,
+      contractAddresses: [
+        {
+          blockchainId: blockchain.id,
+          address: contractAddress,
+          publicity: false,
+        },
+      ],
+    };
+  }
+
   public async readContract(
     blockchain: Blockchain,
     contractAddress: string,

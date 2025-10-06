@@ -1,1 +1,1 @@
-export type CosmosExtra = { payment?: string };
+export type CosmosExtra = { payment?: string; contractName?: string };
