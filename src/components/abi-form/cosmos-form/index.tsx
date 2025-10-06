@@ -22,6 +22,10 @@ import {
   EyeOutlined,
 } from "@ant-design/icons";
 import { capitalize } from "@utils/utils";
+import ContractCallError from "@components/abi-form/contract-call-error";
+import { CosmosExtra } from "@utils/wallets/cosmos/utils";
+
+const FUNDS = "funds";
 
 const CosmosForm: React.FC<{
   action: AbiAction;
@@ -33,6 +37,144 @@ const CosmosForm: React.FC<{
   const [notification, contextHolder] = useNotification();
   const [txResps, setTxResponses] = useState<Record<string, TxResponse>>({});
   const [loading, setLoading] = useState<boolean>(false);
+
+  // const deploy = async (
+  //   wallet: Wallet,
+  //   blockchain: Blockchain,
+  //   parsedParams: any[],
+  //   payableAmount?: string
+  // ): Promise<TxResponse> => {
+  //   // Deploy
+  //   const txResponse = await wallet.deploy(
+  //     blockchain,
+  //     contractTemplate.abi,
+  //     contractTemplate.bytecode,
+  //     parsedParams,
+  //     { payment: payableAmount } as EthereumExtra
+  //   );
+
+  //   // Save deployed Etherem contract
+  //   await callAuthenticatedApi(
+  //     addContractAddresses,
+  //     contractTemplate.id,
+  //     txResponse.contractAddresses || []
+  //   );
+  //   await fetchContracts(true);
+
+  //   return txResponse;
+  // };
+
+  const read = async (
+    wallet: Wallet,
+    blockchain: Blockchain,
+    funcName: string,
+    parsedParams: any
+  ): Promise<TxResponse | undefined> => {
+    if (!contractAddress) {
+      notification.error({
+        message: "No contract selected",
+        description: "You must select a contract first",
+      });
+      return;
+    }
+
+    return await wallet.readContract(
+      blockchain,
+      contractAddress.address,
+      null,
+      funcName,
+      parsedParams
+    );
+  };
+
+  const write = async (
+    wallet: Wallet,
+    blockchain: Blockchain,
+    funcName: string,
+    parsedParams: any,
+    payableAmount?: string
+  ): Promise<TxResponse | undefined> => {
+    if (!contractAddress) {
+      notification.error({
+        message: "No contract selected",
+        description: "You must select a contract first",
+      });
+      return;
+    }
+
+    return await wallet.writeContract(
+      blockchain,
+      contractAddress.address,
+      null,
+      funcName,
+      parsedParams,
+      { payment: payableAmount } as CosmosExtra
+    );
+  };
+
+  const execute = async (funcName: string, params: Record<string, string>) => {
+    // Check for necessary information
+    if (!wallet) {
+      notification.error({
+        message: "No wallet selected",
+        description: "You must select a wallet first",
+      });
+      return;
+    }
+    if (!blockchain) {
+      notification.error({
+        message: "No blockchain selected",
+        description: "You must select a blockchain first",
+      });
+      return;
+    }
+
+    // Parse function params
+    const parsedParams = params;
+    const payableAmount = params[FUNDS];
+    // const parsedParams = func.inputs.map((param, paramIdx) => {
+    //   const rawParam = params[paramKey(param, paramIdx)];
+    //   if (param.type.includes("tuple") || param.type.includes("[]"))
+    //     return JSON.parse(rawParam);
+    //   return rawParam;
+    // });
+
+    // Pre-tx UI handling
+    setLoading(true);
+    const { [funcName]: _, ...newTxResponses } = txResps;
+    setTxResponses(newTxResponses);
+
+    // Execute
+    try {
+      let response: TxResponse | undefined;
+      if (action === AbiAction.Deploy) return;
+      //   response = await deploy(
+      //     wallet,
+      //     blockchain,
+      //     parsedParams,
+      //     payableAmount
+      //   );
+      else if (action === AbiAction.Read)
+        response = await read(wallet, blockchain, funcName, parsedParams);
+      else if (action === AbiAction.Write)
+        response = await write(
+          wallet,
+          blockchain,
+          funcName,
+          parsedParams,
+          payableAmount
+        );
+      if (response) setTxResponses({ ...txResps, [funcName]: response });
+    } catch (e) {
+      notification.error({
+        message: "Execution Failed",
+        description: <ContractCallError error={e} />,
+      });
+    }
+
+    // Post-tx UI handling
+    setLoading(false);
+  };
 
   return (
     <>
@@ -48,7 +190,7 @@ const CosmosForm: React.FC<{
                   name={funcName}
                   layout="horizontal"
                   autoComplete="off"
-                  onFinish={console.log}
+                  onFinish={(values) => execute(funcName, values)}
                 >
                   {funcData.required?.map((paramName) => (
                     <Form.Item
