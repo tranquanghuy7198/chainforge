@@ -12,6 +12,8 @@ import CollapseForm from "@components/abi-form/collapse-form";
 import {
   getCowmWasmFuncs,
   cwParamType,
+  CosmWasmJSONSchema,
+  parseCosmosArguments,
 } from "@components/abi-form/cosmos-form/utils";
 import "@/styles.scss";
 import TransactionResult from "@components/abi-form/tx-response";
@@ -47,7 +49,7 @@ const CosmosForm: React.FC<{
     wallet: Wallet,
     blockchain: Blockchain,
     parsedParams: any,
-    payableAmount?: string
+    funds?: string
   ): Promise<TxResponse> => {
     // Deploy
     const txResponse = await wallet.deploy(
@@ -56,7 +58,7 @@ const CosmosForm: React.FC<{
       contractTemplate.bytecode,
       parsedParams,
       {
-        payment: payableAmount,
+        payment: funds,
         contractName: contractTemplate.name,
       } as CosmosExtra
     );
@@ -100,7 +102,7 @@ const CosmosForm: React.FC<{
     blockchain: Blockchain,
     funcName: string,
     parsedParams: any,
-    payableAmount?: string
+    funds?: string
   ): Promise<TxResponse | undefined> => {
     if (!contractAddress) {
       notification.error({
@@ -116,11 +118,15 @@ const CosmosForm: React.FC<{
       null,
       funcName,
       parsedParams,
-      { payment: payableAmount } as CosmosExtra
+      { payment: funds } as CosmosExtra
     );
   };
 
-  const execute = async (funcName: string, params: Record<string, string>) => {
+  const execute = async (
+    funcName: string,
+    funcData: CosmWasmJSONSchema,
+    params: Record<string, string | undefined>
+  ) => {
     // Check for necessary information
     if (!wallet) {
       notification.error({
@@ -138,14 +144,8 @@ const CosmosForm: React.FC<{
     }
 
     // Parse function params
-    const parsedParams = params;
-    const payableAmount = params[FUNDS];
-    // const parsedParams = func.inputs.map((param, paramIdx) => {
-    //   const rawParam = params[paramKey(param, paramIdx)];
-    //   if (param.type.includes("tuple") || param.type.includes("[]"))
-    //     return JSON.parse(rawParam);
-    //   return rawParam;
-    // });
+    const parsedParams = parseCosmosArguments(funcData, params);
+    const funds = params[FUNDS];
 
     // Pre-tx UI handling
     setLoading(true);
@@ -156,12 +156,7 @@ const CosmosForm: React.FC<{
     try {
       let response: TxResponse | undefined;
       if (action === AbiAction.Deploy)
-        response = await deploy(
-          wallet,
-          blockchain,
-          parsedParams,
-          payableAmount
-        );
+        response = await deploy(wallet, blockchain, parsedParams, funds);
       else if (action === AbiAction.Read)
         response = await read(wallet, blockchain, funcName, parsedParams);
       else if (action === AbiAction.Write)
@@ -170,7 +165,7 @@ const CosmosForm: React.FC<{
           blockchain,
           funcName,
           parsedParams,
-          payableAmount
+          funds
         );
       if (response) setTxResponses({ ...txResps, [funcName]: response });
     } catch (e) {
@@ -198,7 +193,7 @@ const CosmosForm: React.FC<{
                   name={funcName}
                   layout="horizontal"
                   autoComplete="off"
-                  onFinish={(values) => execute(funcName, values)}
+                  onFinish={(values) => execute(funcName, funcData, values)}
                 >
                   {funcData.required?.map((paramName) => (
                     <Form.Item
