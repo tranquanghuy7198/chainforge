@@ -13,7 +13,7 @@ import { IdlInstruction } from "@utils/types/solana";
 import useNotification from "antd/es/notification/useNotification";
 import {
   IxRawData,
-  parseArguments,
+  parseSolanaArguments,
 } from "@components/abi-form/solana-form/utils";
 import "@components/abi-form/solana-form/solana-form.scss";
 import AbiWalletForm from "@components/abi-form/abi-wallet-form";
@@ -175,7 +175,7 @@ const SolanaAdvancedInstructionForm: React.FC<{
           parsedIxs.push(null);
 
           // Prepare args and accounts
-          [args, accounts, extraAccounts] = parseArguments(
+          [args, accounts, extraAccounts] = parseSolanaArguments(
             contractTemplate.abi,
             instruction,
             ix.rawData

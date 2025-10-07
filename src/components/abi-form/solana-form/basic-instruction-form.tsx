@@ -21,7 +21,7 @@ import { capitalize } from "@utils/utils";
 import TransactionResult from "@components/abi-form/tx-response";
 import {
   IxRawData,
-  parseArguments,
+  parseSolanaArguments,
 } from "@components/abi-form/solana-form/utils";
 import useNotification from "antd/es/notification/useNotification";
 import camelcase from "camelcase";
@@ -152,7 +152,7 @@ const SolanaBasicInstructionForm: React.FC<{
     // Execute
     try {
       // Prepare args and accounts
-      const [args, accounts, extraAccounts] = parseArguments(
+      const [args, accounts, extraAccounts] = parseSolanaArguments(
         contractTemplate.abi,
         instruction,
         ixRawData
@@ -209,7 +209,7 @@ const SolanaBasicInstructionForm: React.FC<{
     }
     try {
       setCopying(true);
-      const [args, accounts, extraAccounts] = parseArguments(
+      const [args, accounts, extraAccounts] = parseSolanaArguments(
         contractTemplate.abi,
         instruction,
         ixRawData

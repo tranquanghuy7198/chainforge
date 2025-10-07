@@ -366,7 +366,7 @@ export const stringifyArgType = (argType: IdlType): string => {
     .join("|");
 };
 
-export const parseArguments = (
+export const parseSolanaArguments = (
   idl: Idl,
   instruction: IdlInstruction,
   ixRawData: IxRawData
