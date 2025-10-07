@@ -116,12 +116,7 @@ export class KeplrWallet extends Wallet {
     await this.connect(blockchain);
     const client = await SigningCosmWasmClient.connectWithSigner(
       blockchain.rpcUrl,
-      this.provider!.getOfflineSigner(blockchain.chainId),
-      {
-        gasPrice: GasPrice.fromString(
-          `${DEFAULT_GAS_PRICE}${blockchain.nativeDenom}`
-        ),
-      }
+      this.provider!.getOfflineSigner(blockchain.chainId)
     );
     const result = await client.queryContractSmart(contractAddress, {
       [method]: args,
@@ -140,7 +135,12 @@ export class KeplrWallet extends Wallet {
     await this.connect(blockchain);
     const client = await SigningCosmWasmClient.connectWithSigner(
       blockchain.rpcUrl,
-      this.provider!.getOfflineSigner(blockchain.chainId)
+      this.provider!.getOfflineSigner(blockchain.chainId),
+      {
+        gasPrice: GasPrice.fromString(
+          `${DEFAULT_GAS_PRICE}${blockchain.nativeDenom}`
+        ),
+      }
     );
     const { transactionHash } = await client.execute(
       this.address!,
