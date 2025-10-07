@@ -161,9 +161,44 @@ export const cwParamType = (param: CosmWasmJSONSchema): [string, boolean] => {
   return [mainType, required];
 };
 
+const parseCosmosParam = (
+  paramName: string,
+  paramType: CosmWasmJSONSchema,
+  rawParam: string | undefined
+) => {
+  // Primitive types
+  if (
+    rawParam &&
+    paramType.format &&
+    ["u8", "i8", "u16", "i16", "u32", "i32"].includes(paramType.format)
+  )
+    return JSON.parse(rawParam);
+  if (rawParam && paramType.type === "boolean") return JSON.parse(rawParam);
+
+  // Array
+  if (rawParam && paramType.type === "array") {
+    const parsedParam = JSON.parse(rawParam);
+    if (!Array.isArray(parsedParam))
+      throw new Error(`${paramName} is an invalid array`);
+    return parsedParam.map((subParam) =>
+      parseCosmosParam(paramName, paramType.items, JSON.stringify(subParam))
+    );
+  }
+
+  // Option
+
+  // Other types, string accepted
+  return rawParam;
+};
+
 export const parseCosmosArguments = (
   func: CosmWasmJSONSchema,
   rawParams: Record<string, string | undefined>
 ) => {
-  // For small number types, use TS numbers
+  const parsedParams: Record<string, any> = {};
+  for (const [paramName, rawValue] of Object.entries(rawParams)) {
+    const paramType = func.properties![paramName];
+    parsedParams[paramName] = parseCosmosParam(paramName, paramType, rawValue);
+  }
+  return parsedParams;
 };
