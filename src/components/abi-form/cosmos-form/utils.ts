@@ -1,5 +1,17 @@
 import { AbiAction } from "@utils/constants";
 
+export type CosmWasmFormat =
+  | "int8"
+  | "uint8"
+  | "int16"
+  | "uint16"
+  | "int32"
+  | "uint32"
+  | "int64"
+  | "uint64"
+  | "int128"
+  | "uint128";
+
 export type CosmWasmType =
   | "null"
   | "boolean"
@@ -61,7 +73,7 @@ export interface CosmWasmJSONSchema {
   default?: any;
   examples?: any[];
 
-  format?: string;
+  format?: CosmWasmFormat;
   contentEncoding?: string;
   contentMediaType?: string;
 
@@ -108,17 +120,50 @@ export const getCowmWasmFuncs = (
   return functions;
 };
 
-export const cwParamType = (param: CosmWasmJSONSchema): string => {
-  let mainType = "";
-  if (typeof param.type === "string") mainType = param.type;
-  if (Array.isArray(param.type)) mainType = param.type.join("|");
-  if (param.$ref) mainType = param.$ref.split("/").pop() || param.$ref;
-  if (param.items) {
-    let itemType = "";
-    if (Array.isArray(param.items))
-      itemType = param.items.map((item) => cwParamType(item)).join("|");
-    else itemType = cwParamType(param.items);
-    return `${mainType}<${itemType}>`;
+// Human-readable param type, to use as input placeholders
+export const cwParamType = (param: CosmWasmJSONSchema): [string, boolean] => {
+  // Complex param type
+  if (param.anyOf) {
+    const paramTypes: string[] = [];
+    let required = true;
+    for (const subParam of param.anyOf) {
+      const [subParamType, subRequired] = cwParamType(subParam);
+      paramTypes.push(subParamType);
+      required &&= subRequired;
+    }
+    return [paramTypes.join("|"), required];
   }
-  return mainType;
+
+  // Parse main type
+  let mainType = "";
+  let required = true;
+  if (param.format) mainType = param.format;
+  else if (typeof param.type === "string") {
+    mainType = param.type;
+    required &&= param.type !== "null";
+  } else if (Array.isArray(param.type)) {
+    mainType = param.type.join("|");
+    required &&= !param.type.includes("null");
+  } else if (param.$ref) mainType = param.$ref.split("/").pop() || param.$ref;
+
+  // Parse sub type
+  if (param.items) {
+    const items = Array.isArray(param.items) ? param.items : [param.items];
+    const itemTypes: string[] = [];
+    for (const item of items) {
+      const [itemType, itemRequired] = cwParamType(item);
+      itemTypes.push(itemType);
+      required &&= itemRequired;
+    }
+    return [`${mainType}<${itemTypes.join("|")}>`, required];
+  }
+
+  return [mainType, required];
+};
+
+export const parseCosmosArguments = (
+  func: CosmWasmJSONSchema,
+  rawParams: Record<string, string | undefined>
+) => {
+  // For small number types, use TS numbers
 };

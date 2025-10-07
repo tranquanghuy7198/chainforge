@@ -195,21 +195,21 @@ const CosmosForm: React.FC<{
                   autoComplete="off"
                   onFinish={(values) => execute(funcName, funcData, values)}
                 >
-                  {funcData.required?.map((paramName) => (
-                    <Form.Item
-                      key={paramName}
-                      name={paramName}
-                      label={paramName}
-                      required
-                    >
-                      <Input
-                        placeholder={cwParamType(
-                          funcData.properties![paramName]
-                        )}
-                        disabled={loading}
-                      />
-                    </Form.Item>
-                  ))}
+                  {Object.keys(funcData.properties || {}).map((paramName) => {
+                    const [paramType, required] = cwParamType(
+                      (funcData.properties || {})[paramName]
+                    );
+                    return (
+                      <Form.Item
+                        key={paramName}
+                        name={paramName}
+                        label={paramName}
+                        required={required}
+                      >
+                        <Input placeholder={paramType} disabled={loading} />
+                      </Form.Item>
+                    );
+                  })}
                   <Form.Item name={FUNDS} label="Funds">
                     <Input
                       placeholder={`${blockchain?.nativeDenom} amount to pay`}
