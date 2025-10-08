@@ -226,12 +226,14 @@ const CosmosForm: React.FC<{
                       </Form.Item>
                     );
                   })}
-                  <Form.Item name={FUNDS} label="Funds">
-                    <Input
-                      placeholder={`${blockchain?.nativeDenom} amount to pay`}
-                      disabled={loading}
-                    />
-                  </Form.Item>
+                  {action !== AbiAction.Read && (
+                    <Form.Item name={FUNDS} label="Funds">
+                      <Input
+                        placeholder={`${blockchain?.nativeDenom} amount to pay`}
+                        disabled={loading}
+                      />
+                    </Form.Item>
+                  )}
                   <Form.Item>
                     <Button
                       type="primary"
