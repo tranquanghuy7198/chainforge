@@ -143,14 +143,6 @@ const CosmosForm: React.FC<{
       return;
     }
 
-    // Parse function params
-    const { [FUNDS]: funds, ...rawParam } = params;
-    const parsedParams = parseCosmosArguments(
-      contractTemplate.abi,
-      funcData,
-      rawParam
-    );
-
     // Pre-tx UI handling
     setLoading(true);
     const { [funcName]: _, ...newTxResponses } = txResps;
@@ -158,6 +150,15 @@ const CosmosForm: React.FC<{
 
     // Execute
     try {
+      // Parse function params
+      const { [FUNDS]: funds, ...rawParam } = params;
+      const parsedParams = parseCosmosArguments(
+        contractTemplate.abi,
+        funcData,
+        rawParam
+      );
+
+      // Call to contract
       let response: TxResponse | undefined;
       if (action === AbiAction.Deploy)
         response = await deploy(wallet, blockchain, parsedParams, funds);

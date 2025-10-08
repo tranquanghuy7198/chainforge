@@ -373,7 +373,7 @@ const parseCosmosParam = (
   }
 
   // Remaining types
-  if (paramType.type) return rawParam;
+  if (paramType.type && rawParam) return rawParam;
 
   // Parse $ref
   if (paramType.$ref) {
