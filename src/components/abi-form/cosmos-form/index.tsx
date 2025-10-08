@@ -144,7 +144,11 @@ const CosmosForm: React.FC<{
     }
 
     // Parse function params
-    const parsedParams = parseCosmosArguments(funcData, params);
+    const parsedParams = parseCosmosArguments(
+      contractTemplate.abi,
+      funcData,
+      params
+    );
     const funds = params[FUNDS];
 
     // Pre-tx UI handling
