@@ -49,7 +49,7 @@ export class KeplrWallet extends Wallet {
   public async signMessage(message: string): Promise<string> {
     await this.connect({ chainId: this.chainId } as any); // try to connect to current blockchain
     const { signature } = await this.provider!.signArbitrary(
-      DEFAULT_COSMOS_CHAIN,
+      this.chainId!,
       this.address!,
       message
     );
