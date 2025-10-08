@@ -48,7 +48,7 @@ const TransactionResult: React.FC<{
     try {
       setLoading(true);
       if (!wallet) throw new Error(`Cannot connect wallet`);
-      await wallet.connect();
+      await wallet.connect(blockchain);
       const key = wallet.verificationKey;
       const [timestamp, nonce, challenge] = await requestChallenge(key);
       const signature = await wallet.signMessage(challenge, nonce);
