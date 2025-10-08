@@ -1,4 +1,4 @@
-import { ProfileResponse } from "@/api/account";
+import { ProfileResponse } from "@api/account";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 interface ProfileState {

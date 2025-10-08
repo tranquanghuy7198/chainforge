@@ -31,7 +31,7 @@ import ContractCallError from "@components/abi-form/contract-call-error";
 import { useAuth } from "@hooks/auth";
 import { addContractAddresses } from "@api/contracts";
 import { useFetchMyContracts } from "@hooks/contract";
-import "@/components/abi-form/abi-form.scss";
+import "@components/abi-form/abi-form.scss";
 
 const SolanaBasicInstructionForm: React.FC<{
   action: AbiAction;
