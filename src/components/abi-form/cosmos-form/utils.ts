@@ -259,6 +259,12 @@ const isOptionalCosmosType = (
   return [false, paramType];
 };
 
+const toRawFormat = (value: any): string | undefined => {
+  if (value === undefined || value === null) return undefined;
+  if (typeof value === "string") return value;
+  return JSON.stringify(value);
+};
+
 const parseCosmosParam = (
   paramName: string,
   paramType: CosmWasmJSONSchema,
@@ -325,7 +331,7 @@ const parseCosmosParam = (
           const parsedItem = parseCosmosParam(
             `${paramName}[${index}]`,
             itemType,
-            subParam ? JSON.stringify(subParam) : undefined,
+            toRawFormat(subParam),
             definitions
           );
           parsedArray.push(parsedItem);
@@ -339,7 +345,7 @@ const parseCosmosParam = (
   // Option
   const [isOptional, nonOptionalType] = isOptionalCosmosType(paramType);
   if (isOptional) {
-    if (rawParam === undefined) return null;
+    if (!rawParam) return null;
     if (nonOptionalType)
       return parseCosmosParam(
         paramName,
@@ -360,9 +366,7 @@ const parseCosmosParam = (
       result[propName] = parseCosmosParam(
         `${paramName}.${propName}`,
         propType,
-        parsedParam[propName]
-          ? JSON.stringify(parsedParam[propName])
-          : undefined,
+        toRawFormat(parsedParam[propName]),
         definitions
       );
     return result;
