@@ -110,11 +110,14 @@ const ContractForm: React.FC<{
                     <Select
                       className="contract-chain-select"
                       placeholder="Blockchain"
-                      options={blockchains.map((chain) => ({
-                        label: chain.name,
-                        value: chain.id,
-                        emoji: chain.logo,
-                      }))}
+                      options={blockchains
+                        .slice()
+                        .sort((a, b) => a.code.localeCompare(b.code))
+                        .map((chain) => ({
+                          label: chain.name,
+                          value: chain.id,
+                          emoji: chain.logo,
+                        }))}
                       optionRender={(option) => (
                         <SelectOption
                           icon={option.data.emoji}
