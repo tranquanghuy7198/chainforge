@@ -162,7 +162,7 @@ export const cwParamType = (param: CosmWasmJSONSchema): [string, boolean] => {
   return [mainType, required];
 };
 
-const cwIdlDefinitions = (
+export const cwIdlDefinitions = (
   idl: CosmWasmIdl
 ): Record<string, CosmWasmJSONSchema> => {
   let result: Record<string, CosmWasmJSONSchema> = {};

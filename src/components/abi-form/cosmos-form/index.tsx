@@ -14,6 +14,7 @@ import {
   cwParamType,
   CosmWasmJSONSchema,
   parseCosmosArguments,
+  cwIdlDefinitions,
 } from "@components/abi-form/cosmos-form/utils";
 import "@/styles.scss";
 import TransactionResult from "@components/abi-form/tx-response";
@@ -44,6 +45,7 @@ const CosmosForm: React.FC<{
   const [loading, setLoading] = useState<boolean>(false);
   const { callAuthenticatedApi } = useAuth();
   const { fetchContracts } = useFetchMyContracts();
+  const definitions = cwIdlDefinitions(contractTemplate.abi);
 
   const deploy = async (
     wallet: Wallet,
@@ -204,11 +206,20 @@ const CosmosForm: React.FC<{
                     const [paramType, required] = cwParamType(
                       (funcData.properties || {})[paramName]
                     );
+                    let description: string | undefined = undefined;
+                    for (const [definedTypeName, definedType] of Object.entries(
+                      definitions
+                    ))
+                      if (paramType.includes(definedTypeName)) {
+                        description = definedType.description;
+                        break;
+                      }
                     return (
                       <Form.Item
                         key={paramName}
                         name={paramName}
                         label={paramName}
+                        tooltip={description}
                         required={required}
                       >
                         <Input placeholder={paramType} disabled={loading} />
