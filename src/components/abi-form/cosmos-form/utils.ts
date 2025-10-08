@@ -302,19 +302,10 @@ const parseCosmosParam = (
   // Primitive types
   if (
     rawParam &&
-    paramType.format &&
-    ["uint8", "int8", "uint16", "int16", "uint32", "int32"].includes(
-      paramType.format
-    )
+    typeof paramType.type === "string" &&
+    ["integer", "boolean"].includes(paramType.type)
   )
     return JSON.parse(rawParam);
-  if (
-    rawParam &&
-    paramType.format &&
-    ["uint64", "int64", "uint128", "int128"].includes(paramType.format)
-  )
-    return rawParam;
-  if (rawParam && paramType.type === "boolean") return JSON.parse(rawParam);
 
   // Array
   if (rawParam && paramType.type === "array" && paramType.items) {
