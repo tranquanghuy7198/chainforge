@@ -85,6 +85,7 @@ export interface CosmWasmMsgSchema {
   oneOf: CosmWasmJSONSchema[];
   title?: string;
   $schema?: string;
+  definitions?: Record<string, CosmWasmJSONSchema>;
 }
 
 export interface CosmWasmIdl {
@@ -167,19 +168,20 @@ const cwIdlDefinitions = (
   let result: Record<string, CosmWasmJSONSchema> = {};
   if (idl.instantiate)
     result = { ...result, ...cwSchemaDefinitions(idl.instantiate) };
-  if (idl.execute)
-    for (const func of idl.execute.oneOf)
-      result = { ...result, ...cwSchemaDefinitions(func) };
-  if (idl.query)
-    for (const func of idl.query.oneOf)
-      result = { ...result, ...cwSchemaDefinitions(func) };
+  if (idl.execute) result = { ...result, ...cwMsgDefinitions(idl.execute) };
+  if (idl.query) result = { ...result, ...cwMsgDefinitions(idl.query) };
   if (idl.migrate) result = { ...result, ...cwSchemaDefinitions(idl.migrate) };
-  if (idl.sudo)
-    for (const func of idl.sudo.oneOf)
-      result = { ...result, ...cwSchemaDefinitions(func) };
+  if (idl.sudo) result = { ...result, ...cwMsgDefinitions(idl.sudo) };
   if (idl.responses)
     for (const response of Object.values(idl.responses))
       result = { ...result, ...cwSchemaDefinitions(response) };
+  return result;
+};
+
+const cwMsgDefinitions = (msg: CosmWasmMsgSchema) => {
+  let result = msg.definitions || {};
+  for (const func of msg.oneOf)
+    result = { ...result, ...cwSchemaDefinitions(func) };
   return result;
 };
 
