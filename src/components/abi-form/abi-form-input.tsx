@@ -13,7 +13,7 @@ import { Blockchain, ContractAddress } from "@utils/constants";
 import VSCodeEditor from "@components/vscode-editor";
 
 enum AddressOption {
-  Custom = "custom-address",
+  Custom = "custom-value",
   Wallet = "wallet-address",
   Contract = "contract-address",
 }
@@ -21,15 +21,15 @@ enum AddressOption {
 const items: MenuProps["items"] = [
   {
     key: AddressOption.Custom,
-    label: "Custom Account",
+    label: "Custom Value",
   },
   {
     key: AddressOption.Wallet,
-    label: "Wallet Account",
+    label: "Wallet Address",
   },
   {
     key: AddressOption.Contract,
-    label: "Program Account",
+    label: "Contract Address",
   },
 ];
 
@@ -37,13 +37,10 @@ interface AbiFormInputProps {
   wallet?: Wallet;
   blockchain?: Blockchain;
   contractAddress?: ContractAddress;
-  value?: string;
-  onChange?: (value: string | undefined, event: any) => void;
-  onBlur?: () => void;
   name: NamePath;
   label?: ReactNode;
   tooltip?: ReactNode;
-  required: boolean;
+  required?: boolean;
   placeholder?: string;
   disabled?: boolean;
   json: boolean;
@@ -61,9 +58,6 @@ const AbiFormInput = forwardRef<AbiFormInputRef, AbiFormInputProps>(
       wallet,
       blockchain,
       contractAddress,
-      value,
-      onChange,
-      onBlur,
       name,
       label,
       tooltip,
@@ -77,6 +71,7 @@ const AbiFormInput = forwardRef<AbiFormInputRef, AbiFormInputProps>(
     const [accType, setAccType] = useState<string>(AddressOption.Custom);
     const [loading, setLoading] = useState<boolean>(false);
     const inputRef = useRef<any>(null);
+    const form = Form.useFormInstance();
     const isDisabled = disabled || loading;
 
     useImperativeHandle(ref, () => ({
@@ -86,18 +81,17 @@ const AbiFormInput = forwardRef<AbiFormInputRef, AbiFormInputProps>(
       getValue: () => inputRef.current?.getValue(),
     }));
 
-    const handleEditorChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-      onChange?.(e.target.value, e);
+    const handleEditorChange = (value: string | undefined) => {
+      form.setFieldValue(name, value);
     };
 
-    const handleEditorBlur = () => {
-      onBlur?.();
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+      form.setFieldValue(name, e.target.value);
     };
 
     const accTypeSelected = async (keyPath: string[]) => {
       setLoading(true);
       if (keyPath.length === 0) {
-        setLoading(false);
         return;
       }
 
@@ -120,8 +114,7 @@ const AbiFormInput = forwardRef<AbiFormInputRef, AbiFormInputProps>(
       }
 
       // Set the address value to the input
-      if (address) onChange?.(address, null);
-
+      form.setFieldValue(name, address);
       setLoading(false);
     };
 
@@ -135,20 +128,16 @@ const AbiFormInput = forwardRef<AbiFormInputRef, AbiFormInputProps>(
         {json ? (
           <VSCodeEditor
             ref={inputRef}
-            value={value}
             placeholder={placeholder}
             disabled={isDisabled}
-            onChange={onChange}
-            onBlur={handleEditorBlur}
+            onChange={handleEditorChange}
           />
         ) : (
           <Input
             ref={inputRef}
-            value={value}
             placeholder={placeholder}
             disabled={isDisabled}
-            onChange={handleEditorChange}
-            onBlur={handleEditorBlur}
+            onChange={handleInputChange}
             addonAfter={
               <Dropdown
                 trigger={["click"]}
