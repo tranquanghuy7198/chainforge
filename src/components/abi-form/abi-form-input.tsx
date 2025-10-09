@@ -10,6 +10,7 @@ import { DownOutlined, LoadingOutlined } from "@ant-design/icons";
 import { NamePath } from "antd/es/form/interface";
 import { Wallet } from "@utils/wallets/wallet";
 import { Blockchain, ContractAddress } from "@utils/constants";
+import VSCodeEditor from "@components/vscode-editor";
 
 enum AddressOption {
   Custom = "custom-address",
@@ -45,6 +46,7 @@ interface AbiFormInputProps {
   required: boolean;
   placeholder?: string;
   disabled?: boolean;
+  json: boolean;
 }
 
 interface AbiFormInputRef {
@@ -68,6 +70,7 @@ const AbiFormInput = forwardRef<AbiFormInputRef, AbiFormInputProps>(
       required,
       placeholder,
       disabled,
+      json,
     },
     ref
   ) => {
@@ -83,8 +86,8 @@ const AbiFormInput = forwardRef<AbiFormInputRef, AbiFormInputProps>(
       getValue: () => inputRef.current?.getValue(),
     }));
 
-    const handleEditorChange = (value: string | undefined) => {
-      onChange?.(value, null);
+    const handleEditorChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+      onChange?.(e.target.value, e);
     };
 
     const handleEditorBlur = () => {
@@ -97,6 +100,8 @@ const AbiFormInput = forwardRef<AbiFormInputRef, AbiFormInputProps>(
         setLoading(false);
         return;
       }
+
+      // Find auto-complete value
       setAccType(keyPath[0]);
       let address = undefined;
       switch (keyPath[0]) {
@@ -113,7 +118,10 @@ const AbiFormInput = forwardRef<AbiFormInputRef, AbiFormInputProps>(
           address = wallet.address;
           break;
       }
-      // TODO: Set this address value to the input
+
+      // Set the address value to the input
+      if (address) onChange?.(address, null);
+
       setLoading(false);
     };
 
@@ -124,32 +132,48 @@ const AbiFormInput = forwardRef<AbiFormInputRef, AbiFormInputProps>(
         label={label}
         required={required}
       >
-        <Input
-          placeholder={placeholder}
-          disabled={isDisabled}
-          onChange={handleEditorChange}
-          addonAfter={
-            <Dropdown
-              trigger={["click"]}
-              disabled={isDisabled}
-              menu={{
-                selectable: true,
-                onClick: ({ keyPath }) => accTypeSelected(keyPath.reverse()),
-                defaultSelectedKeys: [AddressOption.Custom],
-                items: items,
-              }}
-            >
-              <Space style={{ cursor: isDisabled ? "not-allowed" : "pointer" }}>
-                <>
-                  {accType
-                    .replace(/-/g, " ")
-                    .replace(/\b\w/g, (char) => char.toUpperCase())}
-                </>
-                {loading ? <LoadingOutlined /> : <DownOutlined />}
-              </Space>
-            </Dropdown>
-          }
-        />
+        {json ? (
+          <VSCodeEditor
+            ref={inputRef}
+            value={value}
+            placeholder={placeholder}
+            disabled={isDisabled}
+            onChange={onChange}
+            onBlur={handleEditorBlur}
+          />
+        ) : (
+          <Input
+            ref={inputRef}
+            value={value}
+            placeholder={placeholder}
+            disabled={isDisabled}
+            onChange={handleEditorChange}
+            onBlur={handleEditorBlur}
+            addonAfter={
+              <Dropdown
+                trigger={["click"]}
+                disabled={isDisabled}
+                menu={{
+                  selectable: true,
+                  onClick: ({ keyPath }) => accTypeSelected(keyPath.reverse()),
+                  defaultSelectedKeys: [AddressOption.Custom],
+                  items: items,
+                }}
+              >
+                <Space
+                  style={{ cursor: isDisabled ? "not-allowed" : "pointer" }}
+                >
+                  <>
+                    {accType
+                      .replace(/-/g, " ")
+                      .replace(/\b\w/g, (char) => char.toUpperCase())}
+                  </>
+                  {loading ? <LoadingOutlined /> : <DownOutlined />}
+                </Space>
+              </Dropdown>
+            }
+          />
+        )}
       </Form.Item>
     );
   }
