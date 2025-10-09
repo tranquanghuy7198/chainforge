@@ -26,12 +26,14 @@ const AbiWalletForm: React.FC<{
 
   useEffect(() => {
     // Set default blockchain
-    if (contractAddress?.blockchainId) {
-      form.setFieldValue("blockchain", contractAddress.blockchainId);
-      const selectedChain = blockchains.find(
-        (chain) => chain.id === contractAddress.blockchainId
-      );
-      if (selectedChain) onBlockchainSelected(selectedChain);
+    const selectedChain = contractAddress?.blockchainId
+      ? blockchains.find((chain) => chain.id === contractAddress.blockchainId)
+      : blockchains.find((chain) =>
+          networkClusters.includes(chain.networkCluster)
+        );
+    if (selectedChain) {
+      form.setFieldValue("blockchain", selectedChain.id);
+      onBlockchainSelected(selectedChain);
     }
 
     // Set default wallet
