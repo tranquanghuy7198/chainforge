@@ -1,6 +1,7 @@
 import { Button, Flex, Modal } from "antd";
-import React from "react";
+import React, { useState } from "react";
 import {
+  CheckOutlined,
   FacebookFilled,
   LinkedinFilled,
   LinkOutlined,
@@ -16,6 +17,7 @@ const ShareModal: React.FC<{
   onHide: () => void;
 }> = ({ shareableUrl, showModal, onHide }) => {
   const [message, contextHolder] = useMessage();
+  const [copying, setCopying] = useState<boolean>(false);
 
   const shareToX = async () => {
     const text =
@@ -54,8 +56,10 @@ const ShareModal: React.FC<{
   };
 
   const copyLink = () => {
+    setCopying(true);
     navigator.clipboard.writeText(shareableUrl);
     message.success("Copied to clipboard");
+    setTimeout(() => setCopying(false), 3000);
   };
 
   const shareablePlatforms = [
@@ -123,6 +127,9 @@ const ShareModal: React.FC<{
             variant="filled"
             size="large"
             icon={<LinkOutlined />}
+            loading={
+              copying && { icon: <CheckOutlined className="copy-done" /> }
+            }
             onClick={copyLink}
           >
             Copy Link
