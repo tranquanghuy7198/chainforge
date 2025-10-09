@@ -35,6 +35,7 @@ import { useAuth } from "@hooks/auth";
 import { useFetchMyContracts, useFetchMyTemplates } from "@hooks/contract";
 import { addContractAddresses, updateTemplate } from "@api/contracts";
 import { SuiMoveNormalizedModules } from "@mysten/sui/client";
+import AbiFormInput from "@components/abi-form/abi-form-input";
 
 const SuiForm: React.FC<{
   action: AbiAction;
@@ -229,8 +230,12 @@ const SuiForm: React.FC<{
                         paramName(param, funcData.typeParameters) !== TX_CONTEXT
                     )
                     .map((param, index) => (
-                      <Form.Item
+                      <AbiFormInput
                         key={index}
+                        action={action}
+                        wallet={wallet}
+                        blockchain={blockchain}
+                        contractAddress={contractAddress}
                         name={[PARAM, index]}
                         label={`Arg${index}`}
                         tooltip={
@@ -239,15 +244,10 @@ const SuiForm: React.FC<{
                             : undefined
                         }
                         required
-                      >
-                        <Input
-                          placeholder={paramName(
-                            param,
-                            funcData.typeParameters
-                          )}
-                          disabled={loading}
-                        />
-                      </Form.Item>
+                        placeholder={paramName(param, funcData.typeParameters)}
+                        disabled={loading}
+                        json={false}
+                      />
                     ))}
                   <Form.Item>
                     <Button
