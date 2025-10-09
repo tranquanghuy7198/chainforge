@@ -235,6 +235,7 @@ const EvmForm: React.FC<{
                   {func.inputs.map((param, paramIdx) => (
                     <AbiFormInput
                       key={paramKey(param, paramIdx)}
+                      action={action}
                       wallet={wallet}
                       blockchain={blockchain}
                       contractAddress={contractAddress}
