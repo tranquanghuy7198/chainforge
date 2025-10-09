@@ -12,6 +12,7 @@ const APTOS_NETWORKS: Record<Network, number> = {
   mainnet: 1,
   testnet: 2,
   devnet: 204,
+  shelbynet: 1990,
   local: 204,
   custom: 204,
 };
