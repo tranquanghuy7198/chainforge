@@ -18,7 +18,6 @@ import useNotification from "antd/es/notification/useNotification";
 import { EthereumExtra } from "@utils/wallets/ethereum/utils";
 import CollapseForm from "@components/abi-form/collapse-form";
 import TransactionResult from "@components/abi-form/tx-response";
-import VSCodeEditor from "@components/vscode-editor";
 import "@/styles.scss";
 import {
   EvmAbi,
@@ -31,6 +30,7 @@ import ContractCallError from "@components/abi-form/contract-call-error";
 import { useAuth } from "@hooks/auth";
 import { useFetchMyContracts } from "@hooks/contract";
 import { addContractAddresses } from "@api/contracts";
+import AbiFormInput from "@components/abi-form/abi-form-input";
 
 const PAYABLE_AMOUNT = "payable";
 
@@ -233,22 +233,21 @@ const EvmForm: React.FC<{
                   onFinish={(values) => execute(func, values)}
                 >
                   {func.inputs.map((param, paramIdx) => (
-                    <Form.Item
+                    <AbiFormInput
                       key={paramKey(param, paramIdx)}
+                      wallet={wallet}
+                      blockchain={blockchain}
+                      contractAddress={contractAddress}
                       name={paramKey(param, paramIdx)}
                       label={param.name}
                       required
-                    >
-                      {param.type.includes("tuple") ||
-                      param.type.includes("[]") ? (
-                        <VSCodeEditor
-                          placeholder={param.type}
-                          disabled={loading}
-                        />
-                      ) : (
-                        <Input placeholder={param.type} disabled={loading} />
-                      )}
-                    </Form.Item>
+                      placeholder={param.type}
+                      disabled={loading}
+                      json={
+                        param.type.includes("tuple") ||
+                        param.type.includes("[]")
+                      }
+                    />
                   ))}
                   {func.stateMutability === "payable" && (
                     <Form.Item name={PAYABLE_AMOUNT} label="Payment" required>
