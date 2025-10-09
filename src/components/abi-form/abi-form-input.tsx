@@ -9,8 +9,9 @@ import { Dropdown, Form, Input, MenuProps, Space } from "antd";
 import { DownOutlined, LoadingOutlined } from "@ant-design/icons";
 import { NamePath } from "antd/es/form/interface";
 import { Wallet } from "@utils/wallets/wallet";
-import { Blockchain, ContractAddress } from "@utils/constants";
+import { AbiAction, Blockchain, ContractAddress } from "@utils/constants";
 import VSCodeEditor from "@components/vscode-editor";
+import useNotification from "antd/es/notification/useNotification";
 
 enum AddressOption {
   Custom = "custom-value",
@@ -34,6 +35,7 @@ const items: MenuProps["items"] = [
 ];
 
 interface AbiFormInputProps {
+  action: AbiAction;
   wallet?: Wallet;
   blockchain?: Blockchain;
   contractAddress?: ContractAddress;
@@ -55,6 +57,7 @@ interface AbiFormInputRef {
 const AbiFormInput = forwardRef<AbiFormInputRef, AbiFormInputProps>(
   (
     {
+      action,
       wallet,
       blockchain,
       contractAddress,
@@ -72,7 +75,12 @@ const AbiFormInput = forwardRef<AbiFormInputRef, AbiFormInputProps>(
     const [loading, setLoading] = useState<boolean>(false);
     const inputRef = useRef<any>(null);
     const form = Form.useFormInstance();
+    const [notification, contextHolder] = useNotification();
     const isDisabled = disabled || loading;
+    const possibleItems =
+      action === AbiAction.Deploy
+        ? items.filter((item) => item?.key !== AddressOption.Contract)
+        : items;
 
     useImperativeHandle(ref, () => ({
       focus: () => inputRef.current?.focus(),
@@ -90,80 +98,92 @@ const AbiFormInput = forwardRef<AbiFormInputRef, AbiFormInputProps>(
     };
 
     const accTypeSelected = async (keyPath: string[]) => {
-      setLoading(true);
-      if (keyPath.length === 0) {
-        return;
-      }
+      try {
+        setLoading(true);
+        if (keyPath.length === 0) {
+          return;
+        }
 
-      // Find auto-complete value
-      setAccType(keyPath[0]);
-      let address = undefined;
-      switch (keyPath[0]) {
-        case AddressOption.Contract:
-          if (!contractAddress)
-            throw new Error("You must select a contract first");
-          address = contractAddress.address;
-          break;
-        case AddressOption.Wallet:
-          if (!wallet) throw new Error("You must select a wallet first");
-          if (!blockchain)
-            throw new Error("You must select a blockchain first");
-          await wallet.connect(blockchain);
-          address = wallet.address;
-          break;
-      }
+        // Find auto-complete value
+        setAccType(keyPath[0]);
+        let address = undefined;
+        switch (keyPath[0]) {
+          case AddressOption.Contract:
+            if (!contractAddress)
+              throw new Error("You must select a contract first");
+            address = contractAddress.address;
+            break;
+          case AddressOption.Wallet:
+            if (!wallet) throw new Error("You must select a wallet first");
+            if (!blockchain)
+              throw new Error("You must select a blockchain first");
+            await wallet.connect(blockchain);
+            address = wallet.address;
+            break;
+        }
 
-      // Set the address value to the input
-      form.setFieldValue(name, address);
-      setLoading(false);
+        // Set the address value to the input
+        form.setFieldValue(name, address);
+      } catch (e) {
+        notification.error({
+          message: "Input Calculation Failed",
+          description: e instanceof Error ? e.message : String(e),
+        });
+      } finally {
+        setLoading(false);
+      }
     };
 
     return (
-      <Form.Item
-        name={name}
-        tooltip={tooltip}
-        label={label}
-        required={required}
-      >
-        {json ? (
-          <VSCodeEditor
-            ref={inputRef}
-            placeholder={placeholder}
-            disabled={isDisabled}
-            onChange={handleEditorChange}
-          />
-        ) : (
-          <Input
-            ref={inputRef}
-            placeholder={placeholder}
-            disabled={isDisabled}
-            onChange={handleInputChange}
-            addonAfter={
-              <Dropdown
-                trigger={["click"]}
-                disabled={isDisabled}
-                menu={{
-                  selectable: true,
-                  onClick: ({ keyPath }) => accTypeSelected(keyPath.reverse()),
-                  defaultSelectedKeys: [AddressOption.Custom],
-                  items: items,
-                }}
-              >
-                <Space
-                  style={{ cursor: isDisabled ? "not-allowed" : "pointer" }}
+      <>
+        {contextHolder}
+        <Form.Item
+          name={name}
+          tooltip={tooltip}
+          label={label}
+          required={required}
+        >
+          {json ? (
+            <VSCodeEditor
+              ref={inputRef}
+              placeholder={placeholder}
+              disabled={isDisabled}
+              onChange={handleEditorChange}
+            />
+          ) : (
+            <Input
+              ref={inputRef}
+              placeholder={placeholder}
+              disabled={isDisabled}
+              onChange={handleInputChange}
+              addonAfter={
+                <Dropdown
+                  trigger={["click"]}
+                  disabled={isDisabled}
+                  menu={{
+                    selectable: true,
+                    onClick: ({ keyPath }) =>
+                      accTypeSelected(keyPath.reverse()),
+                    defaultSelectedKeys: [AddressOption.Custom],
+                    items: possibleItems,
+                  }}
                 >
-                  <>
-                    {accType
-                      .replace(/-/g, " ")
-                      .replace(/\b\w/g, (char) => char.toUpperCase())}
-                  </>
-                  {loading ? <LoadingOutlined /> : <DownOutlined />}
-                </Space>
-              </Dropdown>
-            }
-          />
-        )}
-      </Form.Item>
+                  <Space
+                    style={{ cursor: isDisabled ? "not-allowed" : "pointer" }}
+                  >
+                    <>
+                      {accType
+                        .replace(/-/g, " ")
+                        .replace(/\b\w/g, (char) => char.toUpperCase())}
+                    </>
+                    {loading ? <LoadingOutlined /> : <DownOutlined />}
+                  </Space>
+                </Dropdown>
+              }
+            />
+          )}
+        </Form.Item>
+      </>
     );
   }
 );
