@@ -1,6 +1,7 @@
 import {
   forwardRef,
   ReactNode,
+  useEffect,
   useImperativeHandle,
   useRef,
   useState,
@@ -13,7 +14,7 @@ import { AbiAction, Blockchain, ContractAddress } from "@utils/constants";
 import VSCodeEditor from "@components/vscode-editor";
 import useNotification from "antd/es/notification/useNotification";
 
-enum AddressOption {
+export enum AddressOption {
   Custom = "custom-value",
   Wallet = "wallet-address",
   Contract = "contract-address",
@@ -45,6 +46,7 @@ interface AbiFormInputProps {
   required?: boolean;
   placeholder?: string;
   disabled?: boolean;
+  defaultOption?: AddressOption;
   json: boolean;
 }
 
@@ -67,6 +69,7 @@ const AbiFormInput = forwardRef<AbiFormInputRef, AbiFormInputProps>(
       required,
       placeholder,
       disabled,
+      defaultOption,
       json,
     },
     ref
@@ -77,10 +80,15 @@ const AbiFormInput = forwardRef<AbiFormInputRef, AbiFormInputProps>(
     const form = Form.useFormInstance();
     const [notification, contextHolder] = useNotification();
     const isDisabled = disabled || loading;
+    const defaultAddrOption = defaultOption || AddressOption.Custom;
     const possibleItems =
       action === AbiAction.Deploy
         ? items.filter((item) => item?.key !== AddressOption.Contract)
         : items;
+
+    useEffect(() => {
+      accTypeSelected([defaultAddrOption]);
+    }, [defaultOption, wallet, blockchain, contractAddress]);
 
     useImperativeHandle(ref, () => ({
       focus: () => inputRef.current?.focus(),
@@ -164,7 +172,7 @@ const AbiFormInput = forwardRef<AbiFormInputRef, AbiFormInputProps>(
                     selectable: true,
                     onClick: ({ keyPath }) =>
                       accTypeSelected(keyPath.reverse()),
-                    defaultSelectedKeys: [AddressOption.Custom],
+                    defaultSelectedKeys: [defaultAddrOption],
                     items: possibleItems,
                   }}
                 >
