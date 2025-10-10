@@ -31,6 +31,7 @@ import { useAuth } from "@hooks/auth";
 import { addContractAddresses } from "@api/contracts";
 import { useFetchMyContracts } from "@hooks/contract";
 import AbiFormInput from "@components/abi-form/abi-form-input";
+import AdvancedCosmosConfigs from "@components/abi-form/cosmos-form/advanced-configs";
 
 const FUNDS = "use"; // Rust keyword
 
@@ -239,6 +240,13 @@ const CosmosForm: React.FC<{
                         disabled={loading}
                       />
                     </Form.Item>
+                  )}
+                  {action === AbiAction.Deploy && (
+                    <AdvancedCosmosConfigs
+                      wallet={wallet}
+                      blockchain={blockchain}
+                      disabled={loading}
+                    />
                   )}
                   <Form.Item>
                     <Button

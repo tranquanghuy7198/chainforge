@@ -1,5 +1,10 @@
 import { AbiAction } from "@utils/constants";
 
+export const COSMOS_ADVANCED_CONFIGS = "advanced-configs";
+export const CODE_ID = "code-id";
+export const ADMIN = "admin";
+export const ACCESS = "access";
+
 export type CosmWasmFormat =
   | "int8"
   | "uint8"
