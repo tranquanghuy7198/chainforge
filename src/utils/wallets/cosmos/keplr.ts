@@ -7,11 +7,14 @@ import { CosmosExtra } from "@utils/wallets/cosmos/utils";
 import { GasPrice } from "@cosmjs/stargate";
 
 const DEFAULT_COSMOS_CHAIN = "cosmoshub-4";
+const DEFAULT_BECH32_PREFIX = "cosmos";
 const DEFAULT_GAS_PRICE = 0.025;
 
 export class KeplrWallet extends Wallet {
   public key: string = "KEPLR";
   private provider: Keplr | undefined;
+  private publicKey: string | undefined;
+  private bech32Prefix: string | undefined;
 
   constructor() {
     super({
@@ -26,6 +29,12 @@ export class KeplrWallet extends Wallet {
       networkCluster: NetworkCluster.Cosmos,
     });
     this.provider = (window as any).keplr;
+  }
+
+  get verificationKey(): string {
+    if (!this.publicKey || !this.bech32Prefix)
+      throw new Error(`Cannot connect to ${this.ui.name} wallet`);
+    return `${this.bech32Prefix}|${this.publicKey}`;
   }
 
   public async connect(blockchain?: Blockchain): Promise<void> {
@@ -43,6 +52,8 @@ export class KeplrWallet extends Wallet {
     await this.provider.enable(chainId);
     const walletKey = await this.provider.getKey(chainId);
     this.address = walletKey.bech32Address;
+    this.publicKey = Buffer.from(walletKey.pubKey).toString("base64");
+    this.bech32Prefix = blockchain?.bech32Prefix || DEFAULT_BECH32_PREFIX;
     this.chainId = chainId;
   }
 
