@@ -1,8 +1,13 @@
-import { CaretRightOutlined } from "@ant-design/icons";
-import { Collapse, Form, Input } from "antd";
+import {
+  CaretRightOutlined,
+  CloseOutlined,
+  PlusOutlined,
+} from "@ant-design/icons";
+import { Button, Collapse, Flex, Form, Input, Space } from "antd";
 import React from "react";
 import {
   ACCESS,
+  ACCESS_LIST,
   ADMIN,
   CODE_ID,
   COSMOS_ADVANCED_CONFIGS,
@@ -45,7 +50,6 @@ const AdvancedCosmosConfigs: React.FC<{
                 action={AbiAction.Deploy}
                 wallet={wallet}
                 blockchain={blockchain}
-                contractAddress={undefined}
                 name={[COSMOS_ADVANCED_CONFIGS, ADMIN]}
                 label="Admin"
                 tooltip="Specify an admin to upgrade this contract later. If not specified, contract cannot be upgraded in the future"
@@ -61,6 +65,36 @@ const AdvancedCosmosConfigs: React.FC<{
                 tooltip="Who are allowed to instantiate a new contract from your uploaded bytecode"
               >
                 <Input placeholder="Instantiation authority" />
+              </Form.Item>
+              <Form.Item label="Instantiators">
+                <Form.List name={[COSMOS_ADVANCED_CONFIGS, ACCESS_LIST]}>
+                  {(fields, { add, remove }) => (
+                    <div>
+                      {fields.map((field, index) => (
+                        <Space align="baseline">
+                          <AbiFormInput
+                            action={AbiAction.Deploy}
+                            wallet={wallet}
+                            blockchain={blockchain}
+                            name={[field.name]}
+                            placeholder={`Instantiator ${index}`}
+                            disabled={disabled}
+                            json={false}
+                          />
+                          <Button
+                            type="text"
+                            size="small"
+                            icon={<CloseOutlined />}
+                            onClick={() => remove(field.name)}
+                          />
+                        </Space>
+                      ))}
+                      <Button type="dashed" onClick={() => add()} block>
+                        <PlusOutlined /> Add Instantiator
+                      </Button>
+                    </div>
+                  )}
+                </Form.List>
               </Form.Item>
             </>
           ),

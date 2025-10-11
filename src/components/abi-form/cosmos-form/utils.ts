@@ -4,6 +4,7 @@ export const COSMOS_ADVANCED_CONFIGS = "advanced-configs";
 export const CODE_ID = "code-id";
 export const ADMIN = "admin";
 export const ACCESS = "access";
+export const ACCESS_LIST = "access-list";
 
 export type CosmWasmFormat =
   | "int8"
