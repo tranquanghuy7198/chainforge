@@ -15,6 +15,7 @@ import {
   CosmWasmJSONSchema,
   parseCosmosArguments,
   cwIdlDefinitions,
+  COSMOS_ADVANCED_CONFIGS,
 } from "@components/abi-form/cosmos-form/utils";
 import "@/styles.scss";
 import TransactionResult from "@components/abi-form/tx-response";
@@ -155,7 +156,11 @@ const CosmosForm: React.FC<{
     // Execute
     try {
       // Parse function params
-      const { [FUNDS]: funds, ...rawParam } = params;
+      const {
+        [FUNDS]: funds,
+        [COSMOS_ADVANCED_CONFIGS]: advancedConfigs,
+        ...rawParam
+      } = params;
       const parsedParams = parseCosmosArguments(
         contractTemplate.abi,
         funcData,

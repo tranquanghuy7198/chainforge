@@ -5,6 +5,13 @@ export const capitalize = (value: string): string => {
   return value.charAt(0).toUpperCase() + value.slice(1);
 };
 
+export const parseScreemingSnake = (value: string): string => {
+  return value
+    .toLowerCase()
+    .replace(/(^|_)([a-z])/g, (_, __, c) => " " + c.toUpperCase())
+    .trim();
+};
+
 export const shorten = (value: string): string => {
   if (value.length > 14) return `${value.slice(0, 8)}...${value.slice(-6)}`;
   return value;

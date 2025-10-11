@@ -3,10 +3,10 @@ import {
   CloseOutlined,
   PlusOutlined,
 } from "@ant-design/icons";
-import { Button, Collapse, Flex, Form, Input, Space } from "antd";
+import { Button, Collapse, Form, Input, Select, Space } from "antd";
 import React from "react";
 import {
-  ACCESS,
+  ACCESS_TYPE,
   ACCESS_LIST,
   ADMIN,
   CODE_ID,
@@ -14,10 +14,12 @@ import {
 } from "@components/abi-form/cosmos-form/utils";
 import { Wallet } from "@utils/wallets/wallet";
 import { AbiAction, Blockchain } from "@utils/constants";
-import "./cosmos-form.scss";
 import AbiFormInput, {
   AddressOption,
 } from "@components/abi-form/abi-form-input";
+import { AccessType } from "cosmjs-types/cosmwasm/wasm/v1/types";
+import { parseScreemingSnake } from "@utils/utils";
+import "./cosmos-form.scss";
 
 const AdvancedCosmosConfigs: React.FC<{
   wallet?: Wallet;
@@ -60,18 +62,26 @@ const AdvancedCosmosConfigs: React.FC<{
                 json={false}
               />
               <Form.Item
-                name={[COSMOS_ADVANCED_CONFIGS, ACCESS]}
-                label="Access"
+                name={[COSMOS_ADVANCED_CONFIGS, ACCESS_TYPE]}
+                label="Access Type"
                 tooltip="Who are allowed to instantiate a new contract from your uploaded bytecode"
               >
-                <Input placeholder="Instantiation authority" />
+                <Select
+                  placeholder="Instantiation authority"
+                  options={Object.entries(AccessType)
+                    .filter(([key]) => isNaN(Number(key)))
+                    .map(([key, value]) => ({
+                      label: parseScreemingSnake(key),
+                      value: value,
+                    }))}
+                />
               </Form.Item>
               <Form.Item label="Instantiators">
                 <Form.List name={[COSMOS_ADVANCED_CONFIGS, ACCESS_LIST]}>
                   {(fields, { add, remove }) => (
                     <div>
                       {fields.map((field, index) => (
-                        <Space align="baseline">
+                        <Space key={field.key} align="baseline">
                           <AbiFormInput
                             action={AbiAction.Deploy}
                             wallet={wallet}
