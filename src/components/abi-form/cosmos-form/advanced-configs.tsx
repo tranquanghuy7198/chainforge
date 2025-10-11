@@ -46,7 +46,10 @@ const AdvancedCosmosConfigs: React.FC<{
                 label="Code ID"
                 tooltip="Use an available code ID to instantiate the contract instead of uploading bytecode again"
               >
-                <Input placeholder="Use available code ID" />
+                <Input
+                  placeholder="Use available code ID"
+                  disabled={disabled}
+                />
               </Form.Item>
               <AbiFormInput
                 action={AbiAction.Deploy}
@@ -67,6 +70,7 @@ const AdvancedCosmosConfigs: React.FC<{
                 tooltip="Who are allowed to instantiate a new contract from your uploaded bytecode"
               >
                 <Select
+                  disabled={disabled}
                   placeholder="Instantiation authority"
                   options={Object.entries(AccessType)
                     .filter(([key]) => isNaN(Number(key)))
