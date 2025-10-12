@@ -3,7 +3,15 @@ import {
   CloseOutlined,
   PlusOutlined,
 } from "@ant-design/icons";
-import { Button, Collapse, Form, Input, Select, Space } from "antd";
+import {
+  Button,
+  Collapse,
+  Form,
+  FormInstance,
+  Input,
+  Select,
+  Space,
+} from "antd";
 import React from "react";
 import {
   ACCESS_TYPE,
@@ -20,12 +28,19 @@ import AbiFormInput, {
 import { AccessType } from "cosmjs-types/cosmwasm/wasm/v1/types";
 import { parseScreemingSnake } from "@utils/utils";
 import "./cosmos-form.scss";
+import { useWatch } from "antd/es/form/Form";
 
 const AdvancedCosmosConfigs: React.FC<{
+  cosmosAbiForm: FormInstance;
   wallet?: Wallet;
   blockchain?: Blockchain;
   disabled: boolean;
-}> = ({ wallet, blockchain, disabled }) => {
+}> = ({ cosmosAbiForm: cosmosForm, wallet, blockchain, disabled }) => {
+  const accessType = useWatch<AccessType>(
+    [COSMOS_ADVANCED_CONFIGS, ACCESS_TYPE],
+    cosmosForm
+  );
+
   return (
     <Collapse
       bordered={false}
@@ -77,39 +92,44 @@ const AdvancedCosmosConfigs: React.FC<{
                     .map(([key, value]) => ({
                       label: parseScreemingSnake(key),
                       value: value,
+                      disabled:
+                        value === AccessType.ACCESS_TYPE_UNSPECIFIED ||
+                        value === AccessType.UNRECOGNIZED,
                     }))}
                 />
               </Form.Item>
-              <Form.Item label="Instantiators">
-                <Form.List name={[COSMOS_ADVANCED_CONFIGS, ACCESS_LIST]}>
-                  {(fields, { add, remove }) => (
-                    <div>
-                      {fields.map((field, index) => (
-                        <Space key={field.key} align="baseline">
-                          <AbiFormInput
-                            action={AbiAction.Deploy}
-                            wallet={wallet}
-                            blockchain={blockchain}
-                            name={[field.name]}
-                            placeholder={`Instantiator ${index}`}
-                            disabled={disabled}
-                            json={false}
-                          />
-                          <Button
-                            type="text"
-                            size="small"
-                            icon={<CloseOutlined />}
-                            onClick={() => remove(field.name)}
-                          />
-                        </Space>
-                      ))}
-                      <Button type="dashed" onClick={() => add()} block>
-                        <PlusOutlined /> Add Instantiator
-                      </Button>
-                    </div>
-                  )}
-                </Form.List>
-              </Form.Item>
+              {accessType === AccessType.ACCESS_TYPE_ANY_OF_ADDRESSES && (
+                <Form.Item label="Instantiators">
+                  <Form.List name={[COSMOS_ADVANCED_CONFIGS, ACCESS_LIST]}>
+                    {(fields, { add, remove }) => (
+                      <div>
+                        {fields.map((field, index) => (
+                          <Space key={field.key} align="baseline">
+                            <AbiFormInput
+                              action={AbiAction.Deploy}
+                              wallet={wallet}
+                              blockchain={blockchain}
+                              name={[field.name]}
+                              placeholder={`Instantiator ${index + 1}`}
+                              disabled={disabled}
+                              json={false}
+                            />
+                            <Button
+                              type="text"
+                              size="small"
+                              icon={<CloseOutlined />}
+                              onClick={() => remove(field.name)}
+                            />
+                          </Space>
+                        ))}
+                        <Button type="dashed" onClick={() => add()} block>
+                          <PlusOutlined /> Add Instantiator
+                        </Button>
+                      </div>
+                    )}
+                  </Form.List>
+                </Form.Item>
+              )}
             </>
           ),
         },
