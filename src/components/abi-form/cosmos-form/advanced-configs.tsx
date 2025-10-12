@@ -40,6 +40,10 @@ const AdvancedCosmosConfigs: React.FC<{
     [COSMOS_ADVANCED_CONFIGS, ACCESS_TYPE],
     cosmosForm
   );
+  const codeId = useWatch<string>(
+    [COSMOS_ADVANCED_CONFIGS, CODE_ID],
+    cosmosForm
+  );
 
   return (
     <Collapse
@@ -79,57 +83,60 @@ const AdvancedCosmosConfigs: React.FC<{
                 defaultOption={AddressOption.Wallet}
                 json={false}
               />
-              <Form.Item
-                name={[COSMOS_ADVANCED_CONFIGS, ACCESS_TYPE]}
-                label="Access Type"
-                tooltip="Who are allowed to instantiate a new contract from your uploaded bytecode"
-              >
-                <Select
-                  disabled={disabled}
-                  placeholder="Instantiation authority"
-                  options={Object.entries(AccessType)
-                    .filter(([key]) => isNaN(Number(key)))
-                    .map(([key, value]) => ({
-                      label: parseScreemingSnake(key),
-                      value: value,
-                      disabled:
-                        value === AccessType.ACCESS_TYPE_UNSPECIFIED ||
-                        value === AccessType.UNRECOGNIZED,
-                    }))}
-                />
-              </Form.Item>
-              {accessType === AccessType.ACCESS_TYPE_ANY_OF_ADDRESSES && (
-                <Form.Item label="Instantiators">
-                  <Form.List name={[COSMOS_ADVANCED_CONFIGS, ACCESS_LIST]}>
-                    {(fields, { add, remove }) => (
-                      <div>
-                        {fields.map((field, index) => (
-                          <Space key={field.key} align="baseline">
-                            <AbiFormInput
-                              action={AbiAction.Deploy}
-                              wallet={wallet}
-                              blockchain={blockchain}
-                              name={[field.name]}
-                              placeholder={`Instantiator ${index + 1}`}
-                              disabled={disabled}
-                              json={false}
-                            />
-                            <Button
-                              type="text"
-                              size="small"
-                              icon={<CloseOutlined />}
-                              onClick={() => remove(field.name)}
-                            />
-                          </Space>
-                        ))}
-                        <Button type="dashed" onClick={() => add()} block>
-                          <PlusOutlined /> Add Instantiator
-                        </Button>
-                      </div>
-                    )}
-                  </Form.List>
+              {!codeId && (
+                <Form.Item
+                  name={[COSMOS_ADVANCED_CONFIGS, ACCESS_TYPE]}
+                  label="Access Type"
+                  tooltip="People who are allowed to instantiate a new contract from your uploaded bytecode. Only available when you upload a new bytecode"
+                >
+                  <Select
+                    disabled={disabled}
+                    placeholder="Instantiation authority"
+                    options={Object.entries(AccessType)
+                      .filter(([key]) => isNaN(Number(key)))
+                      .map(([key, value]) => ({
+                        label: parseScreemingSnake(key),
+                        value: value,
+                        disabled:
+                          value === AccessType.ACCESS_TYPE_UNSPECIFIED ||
+                          value === AccessType.UNRECOGNIZED,
+                      }))}
+                  />
                 </Form.Item>
               )}
+              {!codeId &&
+                accessType === AccessType.ACCESS_TYPE_ANY_OF_ADDRESSES && (
+                  <Form.Item label="Instantiators">
+                    <Form.List name={[COSMOS_ADVANCED_CONFIGS, ACCESS_LIST]}>
+                      {(fields, { add, remove }) => (
+                        <div>
+                          {fields.map((field, index) => (
+                            <Space key={field.key} align="baseline">
+                              <AbiFormInput
+                                action={AbiAction.Deploy}
+                                wallet={wallet}
+                                blockchain={blockchain}
+                                name={[field.name]}
+                                placeholder={`Instantiator ${index + 1}`}
+                                disabled={disabled}
+                                json={false}
+                              />
+                              <Button
+                                type="text"
+                                size="small"
+                                icon={<CloseOutlined />}
+                                onClick={() => remove(field.name)}
+                              />
+                            </Space>
+                          ))}
+                          <Button type="dashed" onClick={() => add()} block>
+                            <PlusOutlined /> Add Instantiator
+                          </Button>
+                        </div>
+                      )}
+                    </Form.List>
+                  </Form.Item>
+                )}
             </>
           ),
         },
