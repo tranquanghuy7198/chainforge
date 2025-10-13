@@ -21,6 +21,7 @@ export type ContractFormStructure = {
   name: string;
   description?: string;
   abi: string;
+  bytecode: string;
   flattenSource?: string;
   addresses: ContractAddress[];
 };
@@ -35,7 +36,7 @@ export const parseContractForm = (
       name: form.name,
       desscription: form.description,
       abi: form.abi,
-      bytecode: "{}",
+      bytecode: form.bytecode,
       flattenSource: form.flattenSource,
       programKeypair: "[]",
       networkClusters: blockchains
@@ -66,6 +67,7 @@ const ContractForm: React.FC<{
     await saveContract({
       ...values,
       templateId: contractForm.form?.templateId ?? v4(),
+      bytecode: contractForm.form?.bytecode ?? "{}",
     });
     setLoading(false);
   };
