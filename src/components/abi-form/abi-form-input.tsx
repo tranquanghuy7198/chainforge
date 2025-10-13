@@ -107,13 +107,10 @@ const AbiFormInput = forwardRef<AbiFormInputRef, AbiFormInputProps>(
 
     const accTypeSelected = async (keyPath: string[]) => {
       try {
-        if (keyPath.length === 0) return;
-        const newAccountType = keyPath[0] as AddressOption;
-        if (newAccountType === accType) return;
-
         // Find auto-complete value
+        if (keyPath.length === 0) return;
         setLoading(true);
-        setAccType(newAccountType);
+        setAccType(keyPath[0] as AddressOption);
         let address = undefined;
         switch (keyPath[0]) {
           case AddressOption.Contract:
@@ -131,7 +128,7 @@ const AbiFormInput = forwardRef<AbiFormInputRef, AbiFormInputProps>(
         }
 
         // Set the address value to the input
-        form.setFieldValue(name, address);
+        form.setFields([{ name, value: address }]);
       } catch (e) {
         notification.error({
           message: "Input Calculation Failed",
