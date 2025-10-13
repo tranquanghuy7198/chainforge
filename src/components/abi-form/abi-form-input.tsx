@@ -74,7 +74,7 @@ const AbiFormInput = forwardRef<AbiFormInputRef, AbiFormInputProps>(
     },
     ref
   ) => {
-    const [accType, setAccType] = useState<string>(AddressOption.Custom);
+    const [accType, setAccType] = useState<AddressOption>(AddressOption.Custom);
     const [loading, setLoading] = useState<boolean>(false);
     const inputRef = useRef<any>(null);
     const form = Form.useFormInstance();
@@ -107,13 +107,13 @@ const AbiFormInput = forwardRef<AbiFormInputRef, AbiFormInputProps>(
 
     const accTypeSelected = async (keyPath: string[]) => {
       try {
-        setLoading(true);
-        if (keyPath.length === 0) {
-          return;
-        }
+        if (keyPath.length === 0) return;
+        const newAccountType = keyPath[0] as AddressOption;
+        if (newAccountType === accType) return;
 
         // Find auto-complete value
-        setAccType(keyPath[0]);
+        setLoading(true);
+        setAccType(newAccountType);
         let address = undefined;
         switch (keyPath[0]) {
           case AddressOption.Contract:
