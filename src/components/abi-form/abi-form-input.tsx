@@ -98,11 +98,11 @@ const AbiFormInput = forwardRef<AbiFormInputRef, AbiFormInputProps>(
     }));
 
     const handleEditorChange = (value: string | undefined) => {
-      form.setFieldValue(name, value);
+      form.setFields([{ name, value }]);
     };
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-      form.setFieldValue(name, e.target.value);
+      form.setFields([{ name, value: e.target.value }]);
     };
 
     const accTypeSelected = async (keyPath: string[]) => {
