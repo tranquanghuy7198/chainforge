@@ -20,6 +20,13 @@ export type CosmosTxRawData = {
   };
 };
 
+export const DEFAULT_COSMOS_TX_RAW_DATA: CosmosTxRawData = {
+  [BASIC_PARAMS]: {},
+  [COSMOS_ADVANCED_CONFIGS]: {
+    [ACCESS_TYPE]: AccessType.ACCESS_TYPE_EVERYBODY,
+  },
+};
+
 export type CosmWasmFormat =
   | "int8"
   | "uint8"

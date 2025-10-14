@@ -19,6 +19,7 @@ import {
   CosmosTxRawData,
   FUNDS,
   BASIC_PARAMS,
+  DEFAULT_COSMOS_TX_RAW_DATA,
 } from "@components/abi-form/cosmos-form/utils";
 import "@/styles.scss";
 import TransactionResult from "@components/abi-form/tx-response";
@@ -206,6 +207,7 @@ const CosmosForm: React.FC<{
               <>
                 <Form
                   name={funcName}
+                  initialValues={DEFAULT_COSMOS_TX_RAW_DATA}
                   layout="horizontal"
                   autoComplete="off"
                   onFinish={(values) => execute(funcName, funcData, values)}
