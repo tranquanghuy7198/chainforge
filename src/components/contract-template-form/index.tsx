@@ -45,11 +45,14 @@ const ContractTemplateForm: React.FC<{
     open: boolean;
     form?: ContractTemplateFormStructure;
   };
-  saveContractTemplate: (template: ContractTemplateFormStructure) => void;
+  saveContractTemplate: (
+    template: ContractTemplateFormStructure
+  ) => Promise<void>;
 }> = ({ templateForm, saveContractTemplate }) => {
   const [form] = useForm();
   const networkClusters = useWatch<string[]>("networkClusters", form);
   const [solanaProgramId, setSolanaProgramId] = useState<string>();
+  const [loading, setLoading] = useState<boolean>(false);
 
   useEffect(() => {
     if (templateForm.open) form.resetFields();
@@ -76,6 +79,20 @@ const ContractTemplateForm: React.FC<{
     }
   };
 
+  const saveTemplate = async (formValues: any) => {
+    try {
+      setLoading(true);
+      await saveContractTemplate({
+        ...formValues,
+        id: templateForm.form?.id ?? v4(),
+      });
+    } catch (err) {
+      console.log(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <Form
       form={form}
@@ -83,9 +100,7 @@ const ContractTemplateForm: React.FC<{
       layout="horizontal"
       initialValues={templateForm.form}
       autoComplete="off"
-      onFinish={(values) =>
-        saveContractTemplate({ ...values, id: templateForm.form?.id ?? v4() })
-      }
+      onFinish={saveTemplate}
     >
       <Form.Item name="networkClusters" label="Network Clusters" required>
         <Select
@@ -94,17 +109,25 @@ const ContractTemplateForm: React.FC<{
             label: capitalize(cluster.toString()),
           }))}
           mode="multiple"
+          disabled={loading}
           allowClear
         />
       </Form.Item>
       <Form.Item name="name" label="Name" required>
-        <Input placeholder="Contract Name" />
+        <Input placeholder="Contract Name" disabled={loading} />
       </Form.Item>
       <Form.Item name="abi" label="ABI" required>
-        <VSCodeEditor placeholder="Contract ABI (EVM) or IDL (Solana)" />
+        <VSCodeEditor
+          placeholder="Contract ABI (EVM) or IDL (Solana)"
+          disabled={loading}
+        />
       </Form.Item>
       <Form.Item name="bytecode" label="Bytecode" required>
-        <Input.TextArea placeholder="Contract bytecode" rows={4} />
+        <Input.TextArea
+          placeholder="Contract bytecode"
+          rows={4}
+          disabled={loading}
+        />
       </Form.Item>
       {(networkClusters || []).includes(NetworkCluster.Solana.toString()) && (
         <Form.Item name="bytecodeFile" label="Bytecode File">
@@ -156,7 +179,7 @@ const ContractTemplateForm: React.FC<{
         </Form.Item>
       )}
       <Form.Item>
-        <Button type="primary" htmlType="submit">
+        <Button type="primary" htmlType="submit" loading={loading}>
           Save Template
         </Button>
       </Form.Item>
