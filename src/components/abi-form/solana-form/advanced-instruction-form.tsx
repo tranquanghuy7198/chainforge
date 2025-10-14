@@ -12,7 +12,7 @@ import { Wallet } from "@utils/wallets/wallet";
 import { IdlInstruction } from "@utils/types/solana";
 import useNotification from "antd/es/notification/useNotification";
 import {
-  IxRawData,
+  SolanaIxRawData,
   parseSolanaArguments,
 } from "@components/abi-form/solana-form/utils";
 import "@components/abi-form/solana-form/solana-form.scss";
@@ -104,7 +104,7 @@ const SolanaAdvancedInstructionForm: React.FC<{
     );
   };
 
-  const setIxRawData = (data: IxRawData) => {
+  const setIxRawData = (data: SolanaIxRawData) => {
     let exists = false;
     const newInstructions: SolanaInstruction[] = [];
 

@@ -23,7 +23,7 @@ export const EXTRA_WRITABLE = "writable";
 export const EXTRA_ACCOUNT = "account";
 export const ARG_PARAM = "arg";
 
-export type IxRawData = {
+export type SolanaIxRawData = {
   [ACCOUNT_PARAM]?: Record<string, string>;
   [ARG_PARAM]?: Record<string, string>;
   [EXTRA_ACCOUNT_PARAM]?: Array<{
@@ -369,7 +369,7 @@ export const stringifyArgType = (argType: IdlType): string => {
 export const parseSolanaArguments = (
   idl: Idl,
   instruction: IdlInstruction,
-  ixRawData: IxRawData
+  ixRawData: SolanaIxRawData
 ): [any[], Record<string, PublicKey>, AccountMeta[]] => {
   const argParser = new SolanaIdlParser(idl);
   const args = instruction.args.map((arg) =>

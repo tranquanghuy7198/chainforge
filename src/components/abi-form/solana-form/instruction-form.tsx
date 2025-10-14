@@ -18,7 +18,7 @@ import {
   ARG_PARAM,
   deriveFrom,
   deserializeAccountData,
-  IxRawData,
+  SolanaIxRawData,
   stringifyArgType,
 } from "@components/abi-form/solana-form/utils";
 import lodash from "lodash";
@@ -35,8 +35,8 @@ const SolanaInstructionForm: React.FC<{
   instruction: IdlInstruction;
   disabled: boolean;
   extraAccounts: boolean;
-  defaultValue?: IxRawData;
-  onIxDataChange: (data: IxRawData) => void;
+  defaultValue?: SolanaIxRawData;
+  onIxDataChange: (data: SolanaIxRawData) => void;
 }> = ({
   action,
   contractTemplate,

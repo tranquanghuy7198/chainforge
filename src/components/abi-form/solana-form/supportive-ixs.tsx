@@ -7,7 +7,7 @@ import { IdlInstruction } from "@utils/types/solana";
 import {
   ACCOUNT_PARAM,
   ARG_PARAM,
-  IxRawData,
+  SolanaIxRawData,
   SolanaIdlParser,
 } from "@components/abi-form/solana-form/utils";
 import {
@@ -23,8 +23,8 @@ export type SolanaInstruction = {
   id: string;
   name: string;
   idlInstruction: IdlInstruction;
-  rawData: IxRawData;
-  parseIx?: (data: IxRawData) => TransactionInstruction[];
+  rawData: SolanaIxRawData;
+  parseIx?: (data: SolanaIxRawData) => TransactionInstruction[];
 };
 
 const APPROVE_SPL_TOKEN_IX: SolanaInstruction = {
@@ -58,7 +58,7 @@ const APPROVE_SPL_TOKEN_IX: SolanaInstruction = {
     args: [{ name: "amount", type: "u64" }],
   },
   rawData: {},
-  parseIx: (data: IxRawData) => [
+  parseIx: (data: SolanaIxRawData) => [
     createApproveInstruction(
       new PublicKey(data[ACCOUNT_PARAM]!["token"]),
       new PublicKey(data[ACCOUNT_PARAM]!["delegate"]),
@@ -101,7 +101,7 @@ const INIT_ATA_IX: SolanaInstruction = {
     args: [],
   },
   rawData: {},
-  parseIx: (data: IxRawData) => [
+  parseIx: (data: SolanaIxRawData) => [
     createAssociatedTokenAccountInstruction(
       new PublicKey(data[ACCOUNT_PARAM]!["payer"]),
       new PublicKey(data[ACCOUNT_PARAM]!["token"]),
@@ -142,7 +142,7 @@ const WRAP_SOL_IX: SolanaInstruction = {
     args: [{ name: "lamports", type: "u64" }],
   },
   rawData: {},
-  parseIx: (data: IxRawData) => [
+  parseIx: (data: SolanaIxRawData) => [
     SystemProgram.transfer({
       fromPubkey: new PublicKey(data[ACCOUNT_PARAM]!["owner"]),
       toPubkey: new PublicKey(data[ACCOUNT_PARAM]!["wrapped_token"]),
@@ -185,7 +185,7 @@ const UNWRAP_SOL_IX: SolanaInstruction = {
     args: [],
   },
   rawData: {},
-  parseIx: (data: IxRawData) => [
+  parseIx: (data: SolanaIxRawData) => [
     createCloseAccountInstruction(
       new PublicKey(data[ACCOUNT_PARAM]!["wrapped_token"]),
       new PublicKey(data[ACCOUNT_PARAM]!["owner"]),
@@ -209,7 +209,7 @@ const VERIFY_SIGNATURE_IX: SolanaInstruction = {
     ],
   },
   rawData: {},
-  parseIx: (data: IxRawData) => [
+  parseIx: (data: SolanaIxRawData) => [
     web3.Ed25519Program.createInstructionWithPublicKey({
       publicKey: new PublicKey(data[ACCOUNT_PARAM]!["signer"]).toBytes(),
       message: SolanaIdlParser.parseBytes(data[ARG_PARAM]!["message"]),
@@ -231,7 +231,7 @@ const INIT_ACCOUNT_IX: SolanaInstruction = {
     args: [],
   },
   rawData: {},
-  parseIx: (data: IxRawData) => [
+  parseIx: (data: SolanaIxRawData) => [
     SystemProgram.transfer({
       fromPubkey: new PublicKey(data[ACCOUNT_PARAM]!["payer"]),
       toPubkey: new PublicKey(data[ACCOUNT_PARAM]!["account"]),

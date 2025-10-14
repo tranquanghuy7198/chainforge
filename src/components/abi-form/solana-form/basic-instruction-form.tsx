@@ -20,7 +20,7 @@ import {
 import { capitalize } from "@utils/utils";
 import TransactionResult from "@components/abi-form/tx-response";
 import {
-  IxRawData,
+  SolanaIxRawData,
   parseSolanaArguments,
 } from "@components/abi-form/solana-form/utils";
 import useNotification from "antd/es/notification/useNotification";
@@ -49,7 +49,7 @@ const SolanaBasicInstructionForm: React.FC<{
   instruction,
 }) => {
   const [notification, contextHolder] = useNotification();
-  const [ixRawData, setIxRawData] = useState<IxRawData>({});
+  const [ixRawData, setIxRawData] = useState<SolanaIxRawData>({});
   const [loading, setLoading] = useState<boolean>(false);
   const [copying, setCopying] = useState<boolean>(false);
   const [txResp, setTxResp] = useState<TxResponse>();
