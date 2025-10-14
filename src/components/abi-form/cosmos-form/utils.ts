@@ -1,13 +1,13 @@
 import { AbiAction } from "@utils/constants";
 import { AccessType } from "cosmjs-types/cosmwasm/wasm/v1/types";
 
-export const BASIC_PARAMS = "basic-params";
+export const BASIC_PARAMS = "basicParams";
 export const FUNDS = "funds";
-export const COSMOS_ADVANCED_CONFIGS = "advanced-configs";
-export const CODE_ID = "code-id";
+export const COSMOS_ADVANCED_CONFIGS = "advancedConfigs";
+export const CODE_ID = "codeId";
 export const ADMIN = "admin";
-export const ACCESS_TYPE = "access-type";
-export const ACCESS_LIST = "access-list";
+export const ACCESS_TYPE = "accessType";
+export const ACCESS_LIST = "accessList";
 
 export type CosmosTxRawData = {
   [BASIC_PARAMS]: Record<string, string | undefined>;
