@@ -73,7 +73,9 @@ const CosmosForm: React.FC<{
       {
         payment: funds,
         contractName: contractTemplate.name,
-        codeId: advancedConfigs?.[CODE_ID],
+        codeId: advancedConfigs?.[CODE_ID]
+          ? JSON.parse(advancedConfigs?.[CODE_ID])
+          : undefined,
         admin: advancedConfigs?.[ADMIN],
         accessType: advancedConfigs?.[ACCESS_TYPE],
         accessList: advancedConfigs?.[ACCESS_LIST],
