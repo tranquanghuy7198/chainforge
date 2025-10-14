@@ -33,7 +33,6 @@ import { addContractAddresses } from "@api/contracts";
 import { useFetchMyContracts } from "@hooks/contract";
 import AbiFormInput from "@components/abi-form/abi-form-input";
 import AdvancedCosmosConfigs from "@components/abi-form/cosmos-form/advanced-configs";
-import { useForm } from "antd/es/form/Form";
 
 const FUNDS = "use"; // Rust keyword
 
@@ -50,7 +49,6 @@ const CosmosForm: React.FC<{
   const { callAuthenticatedApi } = useAuth();
   const { fetchContracts } = useFetchMyContracts();
   const definitions = cwIdlDefinitions(contractTemplate.abi);
-  const [cosmosAbiForm] = useForm();
 
   const deploy = async (
     wallet: Wallet,
@@ -206,7 +204,6 @@ const CosmosForm: React.FC<{
             children: (
               <>
                 <Form
-                  form={cosmosAbiForm}
                   name={funcName}
                   layout="horizontal"
                   autoComplete="off"
@@ -251,7 +248,6 @@ const CosmosForm: React.FC<{
                   )}
                   {action === AbiAction.Deploy && (
                     <AdvancedCosmosConfigs
-                      cosmosAbiForm={cosmosAbiForm}
                       wallet={wallet}
                       blockchain={blockchain}
                       disabled={loading}

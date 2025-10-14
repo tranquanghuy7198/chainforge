@@ -31,18 +31,18 @@ import "./cosmos-form.scss";
 import { useWatch } from "antd/es/form/Form";
 
 const AdvancedCosmosConfigs: React.FC<{
-  cosmosAbiForm: FormInstance;
   wallet?: Wallet;
   blockchain?: Blockchain;
   disabled: boolean;
-}> = ({ cosmosAbiForm: cosmosForm, wallet, blockchain, disabled }) => {
+}> = ({ wallet, blockchain, disabled }) => {
+  const cosmosAbiForm = Form.useFormInstance();
   const accessType = useWatch<AccessType>(
     [COSMOS_ADVANCED_CONFIGS, ACCESS_TYPE],
-    cosmosForm
+    cosmosAbiForm
   );
   const codeId = useWatch<string>(
     [COSMOS_ADVANCED_CONFIGS, CODE_ID],
-    cosmosForm
+    cosmosAbiForm
   );
 
   return (
