@@ -82,16 +82,23 @@ const ContractForm: React.FC<{
       onFinish={save}
     >
       <Form.Item name="name" label="Name" required>
-        <Input placeholder="Contract Name" />
+        <Input placeholder="Contract Name" disabled={loading} />
       </Form.Item>
       <Form.Item name="description" label="Description">
-        <Input.TextArea placeholder="Description" />
+        <Input.TextArea placeholder="Description" disabled={loading} />
       </Form.Item>
       <Form.Item name="abi" label="ABI" required>
-        <VSCodeEditor placeholder="Contract ABI (EVM) or IDL (Solana)" />
+        <VSCodeEditor
+          placeholder="Contract ABI (EVM) or IDL (Solana)"
+          disabled={loading}
+        />
       </Form.Item>
       <Form.Item name="flattenSource" label="Flatten Source">
-        <Input.TextArea rows={4} placeholder="Contract flatten source" />
+        <Input.TextArea
+          rows={4}
+          placeholder="Contract flatten source"
+          disabled={loading}
+        />
       </Form.Item>
       <Form.Item
         label="Addresses"
@@ -110,6 +117,7 @@ const ContractForm: React.FC<{
                   </Form.Item>
                   <Form.Item name={[field.name, "blockchainId"]}>
                     <Select
+                      disabled={loading}
                       className="contract-chain-select"
                       placeholder="Blockchain"
                       options={blockchains
@@ -139,7 +147,7 @@ const ContractForm: React.FC<{
                     />
                   </Form.Item>
                   <Form.Item name={[field.name, "address"]}>
-                    <Input placeholder="Address" />
+                    <Input placeholder="Address" disabled={loading} />
                   </Form.Item>
                   {addresses &&
                     blockchains.find(
@@ -155,6 +163,7 @@ const ContractForm: React.FC<{
                     type="text"
                     size="small"
                     icon={<CloseOutlined />}
+                    disabled={loading}
                     onClick={() => remove(field.name)}
                   />
                 </Space>
