@@ -5,6 +5,7 @@ import { SigningCosmWasmClient } from "@cosmjs/cosmwasm-stargate";
 import SuperJSON from "superjson";
 import { CosmosExtra } from "@utils/wallets/cosmos/utils";
 import { GasPrice } from "@cosmjs/stargate";
+import { AccessConfig } from "cosmjs-types/cosmwasm/wasm/v1/types";
 
 const DEFAULT_COSMOS_CHAIN = "cosmoshub-4";
 const DEFAULT_BECH32_PREFIX = "cosmos";
@@ -86,20 +87,30 @@ export class KeplrWallet extends Wallet {
       }
     );
 
-    // Upload bytecode and instantiate
-    const { codeId } = await client.upload(
-      this.address!,
-      Buffer.from(bytecode, "base64"),
-      "auto"
-    );
+    // Upload bytecode if necessary
+    if (!extra.codeId) {
+      const accessConfig: AccessConfig | undefined = extra.accessType
+        ? { permission: extra.accessType, addresses: extra.accessList || [] }
+        : undefined;
+      const { codeId } = await client.upload(
+        this.address!,
+        Buffer.from(bytecode, "base64"),
+        "auto",
+        undefined,
+        accessConfig
+      );
+      extra.codeId = codeId;
+    }
+
+    // Instantiate
     const { contractAddress, transactionHash } = await client.instantiate(
       this.address!,
-      codeId,
+      extra.codeId,
       args,
       extra.contractName || this.address!,
       "auto",
       {
-        admin: this.address,
+        admin: extra.admin,
         funds: extra.payment
           ? [{ denom: blockchain.nativeDenom, amount: extra.payment }]
           : undefined,
