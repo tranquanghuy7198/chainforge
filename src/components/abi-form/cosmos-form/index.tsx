@@ -165,7 +165,7 @@ const CosmosForm: React.FC<{
       const parsedParams = parseCosmosArguments(
         contractTemplate.abi,
         funcData,
-        rawParam
+        rawParam || {}
       );
 
       // Call to contract
