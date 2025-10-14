@@ -3,15 +3,7 @@ import {
   CloseOutlined,
   PlusOutlined,
 } from "@ant-design/icons";
-import {
-  Button,
-  Collapse,
-  Form,
-  FormInstance,
-  Input,
-  Select,
-  Space,
-} from "antd";
+import { Button, Collapse, Form, Input, Select, Space } from "antd";
 import React from "react";
 import {
   ACCESS_TYPE,
@@ -28,7 +20,6 @@ import AbiFormInput, {
 import { AccessType } from "cosmjs-types/cosmwasm/wasm/v1/types";
 import { parseScreemingSnake } from "@utils/utils";
 import "./cosmos-form.scss";
-import { useWatch } from "antd/es/form/Form";
 
 const AdvancedCosmosConfigs: React.FC<{
   wallet?: Wallet;
@@ -36,11 +27,11 @@ const AdvancedCosmosConfigs: React.FC<{
   disabled: boolean;
 }> = ({ wallet, blockchain, disabled }) => {
   const cosmosAbiForm = Form.useFormInstance();
-  const accessType = useWatch<AccessType>(
+  const accessType = Form.useWatch<AccessType>(
     [COSMOS_ADVANCED_CONFIGS, ACCESS_TYPE],
     cosmosAbiForm
   );
-  const codeId = useWatch<string>(
+  const codeId = Form.useWatch<string>(
     [COSMOS_ADVANCED_CONFIGS, CODE_ID],
     cosmosAbiForm
   );
