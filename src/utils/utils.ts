@@ -34,7 +34,7 @@ export const normalizeAddr = (
     case NetworkCluster.Aptos:
       return address.toLowerCase();
     case NetworkCluster.Sui:
-      return normalizeSuiAddress(address, true);
+      return normalizeSuiAddress(address);
     default:
       return address;
   }

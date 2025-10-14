@@ -128,6 +128,7 @@ const Contracts: React.FC = () => {
           name: contract.template.name,
           description: contract.template.description,
           abi: JSON.stringify(contract.template.abi),
+          bytecode: contract.template.bytecode,
           flattenSource: contract.template.flattenSource,
           addresses: contract.addresses,
         },

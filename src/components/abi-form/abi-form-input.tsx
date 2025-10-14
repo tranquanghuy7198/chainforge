@@ -74,7 +74,7 @@ const AbiFormInput = forwardRef<AbiFormInputRef, AbiFormInputProps>(
     },
     ref
   ) => {
-    const [accType, setAccType] = useState<string>(AddressOption.Custom);
+    const [accType, setAccType] = useState<AddressOption>(AddressOption.Custom);
     const [loading, setLoading] = useState<boolean>(false);
     const inputRef = useRef<any>(null);
     const form = Form.useFormInstance();
@@ -98,22 +98,19 @@ const AbiFormInput = forwardRef<AbiFormInputRef, AbiFormInputProps>(
     }));
 
     const handleEditorChange = (value: string | undefined) => {
-      form.setFieldValue(name, value);
+      form.setFields([{ name, value }]);
     };
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-      form.setFieldValue(name, e.target.value);
+      form.setFields([{ name, value: e.target.value }]);
     };
 
     const accTypeSelected = async (keyPath: string[]) => {
       try {
-        setLoading(true);
-        if (keyPath.length === 0) {
-          return;
-        }
-
         // Find auto-complete value
-        setAccType(keyPath[0]);
+        if (keyPath.length === 0) return;
+        setLoading(true);
+        setAccType(keyPath[0] as AddressOption);
         let address = undefined;
         switch (keyPath[0]) {
           case AddressOption.Contract:
@@ -131,7 +128,7 @@ const AbiFormInput = forwardRef<AbiFormInputRef, AbiFormInputProps>(
         }
 
         // Set the address value to the input
-        form.setFieldValue(name, address);
+        form.setFields([{ name, value: address }]);
       } catch (e) {
         notification.error({
           message: "Input Calculation Failed",

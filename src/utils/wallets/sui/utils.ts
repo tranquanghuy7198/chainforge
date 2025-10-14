@@ -118,7 +118,7 @@ const buildStructTypeString = (structType: {
 
 // Sui addresses can have 0x-prefix or not, can be full-length or 0-padded
 const compareSuiAddress = (addr1: string, addr2: string): boolean => {
-  return normalizeSuiAddress(addr1, true) === normalizeSuiAddress(addr2, true);
+  return normalizeSuiAddress(addr1) === normalizeSuiAddress(addr2);
 };
 
 export const isSuiCoin = (structType: {

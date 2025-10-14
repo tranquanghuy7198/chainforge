@@ -29,14 +29,12 @@ const ShareModal: React.FC<{
   };
 
   const shareToReddit = async () => {
-    message.info("Available soon...");
-    // const shareUrl = new URL("https://www.reddit.com/submit");
-    // shareUrl.searchParams.set("url", shareableUrl);
-    // shareUrl.searchParams.set(
-    //   "title",
-    //   "🚀 Discover trending smart contract templates on our Web3 platform!"
-    // );
-    // window.open(shareUrl.toString(), "_blank", "width=800,height=600");
+    const text =
+      "🚀 Discover trending smart contract templates on our Web3 platform!";
+    const shareUrl = new URL("https://www.reddit.com/submit");
+    shareUrl.searchParams.set("url", shareableUrl);
+    shareUrl.searchParams.set("title", text);
+    window.open(shareUrl.toString(), "_blank");
   };
 
   const shareToFacebook = async () => {
