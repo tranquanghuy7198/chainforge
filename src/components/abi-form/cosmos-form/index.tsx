@@ -16,6 +16,9 @@ import {
   parseCosmosArguments,
   cwIdlDefinitions,
   COSMOS_ADVANCED_CONFIGS,
+  CosmosTxRawData,
+  FUNDS,
+  BASIC_PARAMS,
 } from "@components/abi-form/cosmos-form/utils";
 import "@/styles.scss";
 import TransactionResult from "@components/abi-form/tx-response";
@@ -33,8 +36,6 @@ import { addContractAddresses } from "@api/contracts";
 import { useFetchMyContracts } from "@hooks/contract";
 import AbiFormInput from "@components/abi-form/abi-form-input";
 import AdvancedCosmosConfigs from "@components/abi-form/cosmos-form/advanced-configs";
-
-const FUNDS = "use"; // Rust keyword
 
 const CosmosForm: React.FC<{
   action: AbiAction;
@@ -130,7 +131,7 @@ const CosmosForm: React.FC<{
   const execute = async (
     funcName: string,
     funcData: CosmWasmJSONSchema,
-    params: Record<string, string | undefined>
+    params: CosmosTxRawData
   ) => {
     // Check for necessary information
     if (!wallet) {
@@ -157,9 +158,9 @@ const CosmosForm: React.FC<{
     try {
       // Parse function params
       const {
+        [BASIC_PARAMS]: rawParam,
         [FUNDS]: funds,
         [COSMOS_ADVANCED_CONFIGS]: advancedConfigs,
-        ...rawParam
       } = params;
       const parsedParams = parseCosmosArguments(
         contractTemplate.abi,
@@ -228,7 +229,7 @@ const CosmosForm: React.FC<{
                         wallet={wallet}
                         blockchain={blockchain}
                         contractAddress={contractAddress}
-                        name={paramName}
+                        name={[BASIC_PARAMS, paramName]}
                         label={paramName}
                         tooltip={description}
                         required={required}

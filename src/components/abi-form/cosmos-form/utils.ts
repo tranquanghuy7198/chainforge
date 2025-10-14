@@ -10,7 +10,7 @@ export const ACCESS_TYPE = "access-type";
 export const ACCESS_LIST = "access-list";
 
 export type CosmosTxRawData = {
-  [BASIC_PARAMS]?: Record<string, string>;
+  [BASIC_PARAMS]: Record<string, string | undefined>;
   [FUNDS]?: string;
   [COSMOS_ADVANCED_CONFIGS]?: {
     [CODE_ID]?: string;
