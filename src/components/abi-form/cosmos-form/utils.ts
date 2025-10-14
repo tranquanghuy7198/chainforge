@@ -9,15 +9,17 @@ export const ADMIN = "admin";
 export const ACCESS_TYPE = "accessType";
 export const ACCESS_LIST = "accessList";
 
+export type CosmosAdvancedAbiConfigs = {
+  [CODE_ID]?: string;
+  [ADMIN]?: string;
+  [ACCESS_TYPE]?: AccessType;
+  [ACCESS_LIST]?: string[];
+};
+
 export type CosmosTxRawData = {
   [BASIC_PARAMS]: Record<string, string | undefined>;
   [FUNDS]?: string;
-  [COSMOS_ADVANCED_CONFIGS]?: {
-    [CODE_ID]?: string;
-    [ADMIN]?: string;
-    [ACCESS_TYPE]?: AccessType;
-    [ACCESS_LIST]?: string[];
-  };
+  [COSMOS_ADVANCED_CONFIGS]?: CosmosAdvancedAbiConfigs;
 };
 
 export const DEFAULT_COSMOS_TX_RAW_DATA: CosmosTxRawData = {

@@ -20,6 +20,11 @@ import {
   FUNDS,
   BASIC_PARAMS,
   DEFAULT_COSMOS_TX_RAW_DATA,
+  CosmosAdvancedAbiConfigs,
+  CODE_ID,
+  ADMIN,
+  ACCESS_TYPE,
+  ACCESS_LIST,
 } from "@components/abi-form/cosmos-form/utils";
 import "@/styles.scss";
 import TransactionResult from "@components/abi-form/tx-response";
@@ -56,7 +61,8 @@ const CosmosForm: React.FC<{
     wallet: Wallet,
     blockchain: Blockchain,
     parsedParams: any,
-    funds?: string
+    funds?: string,
+    advancedConfigs?: CosmosAdvancedAbiConfigs
   ): Promise<TxResponse> => {
     // Deploy
     const txResponse = await wallet.deploy(
@@ -67,6 +73,10 @@ const CosmosForm: React.FC<{
       {
         payment: funds,
         contractName: contractTemplate.name,
+        codeId: advancedConfigs?.[CODE_ID],
+        admin: advancedConfigs?.[ADMIN],
+        accessType: advancedConfigs?.[ACCESS_TYPE],
+        accessList: advancedConfigs?.[ACCESS_LIST],
       } as CosmosExtra
     );
 
@@ -172,7 +182,13 @@ const CosmosForm: React.FC<{
       // Call to contract
       let response: TxResponse | undefined;
       if (action === AbiAction.Deploy)
-        response = await deploy(wallet, blockchain, parsedParams, funds);
+        response = await deploy(
+          wallet,
+          blockchain,
+          parsedParams,
+          funds,
+          advancedConfigs
+        );
       else if (action === AbiAction.Read)
         response = await read(wallet, blockchain, funcName, parsedParams);
       else if (action === AbiAction.Write)
