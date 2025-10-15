@@ -3,7 +3,7 @@ import {
   CloseOutlined,
   PlusOutlined,
 } from "@ant-design/icons";
-import { Button, Collapse, Form, Input, Select, Space } from "antd";
+import { Button, Collapse, Flex, Form, Input, Select, Space } from "antd";
 import React from "react";
 import {
   ACCESS_TYPE,
@@ -100,18 +100,15 @@ const AdvancedCosmosConfigs: React.FC<{
                   <Form.Item label="Instantiators">
                     <Form.List name={[COSMOS_ADVANCED_CONFIGS, ACCESS_LIST]}>
                       {(fields, { add, remove }) => (
-                        <div>
+                        <Flex vertical align="stretch">
                           {fields.map((field, index) => (
                             <Space key={field.key} align="baseline">
-                              <AbiFormInput
-                                action={AbiAction.Deploy}
-                                wallet={wallet}
-                                blockchain={blockchain}
-                                name={[field.name]}
-                                placeholder={`Instantiator ${index + 1}`}
-                                disabled={disabled}
-                                json={false}
-                              />
+                              <Form.Item name={field.name}>
+                                <Input
+                                  placeholder={`Instantiator ${index + 1}`}
+                                  disabled={disabled}
+                                />
+                              </Form.Item>
                               <Button
                                 type="text"
                                 size="small"
@@ -123,7 +120,7 @@ const AdvancedCosmosConfigs: React.FC<{
                           <Button type="dashed" onClick={() => add()} block>
                             <PlusOutlined /> Add Instantiator
                           </Button>
-                        </div>
+                        </Flex>
                       )}
                     </Form.List>
                   </Form.Item>
