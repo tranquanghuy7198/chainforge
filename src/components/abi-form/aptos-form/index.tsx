@@ -9,12 +9,13 @@ import {
 } from "@utils/constants";
 import { Wallet } from "@utils/wallets/wallet";
 import useNotification from "antd/es/notification/useNotification";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import CollapseForm from "@components/abi-form/collapse-form";
 import {
   APTOS_PARAM,
   APTOS_TYPE_PARAM,
   aptosTypeParamName,
+  fetchAptosModule,
   getAptosFuncs,
 } from "@components/abi-form/aptos-form/utils";
 import { Button, Form, Input } from "antd";
@@ -27,6 +28,7 @@ import {
 import { capitalize } from "@utils/utils";
 import TransactionResult from "@components/abi-form/tx-response";
 import "./aptos-form.scss";
+import { MoveModule } from "@aptos-labs/ts-sdk";
 
 const AptosForm: React.FC<{
   action: AbiAction;
@@ -40,79 +42,90 @@ const AptosForm: React.FC<{
   const [loading, setLoading] = useState<boolean>(false);
   const { callAuthenticatedApi } = useAuth();
   const { fetchContracts } = useFetchMyContracts();
+  const [moduleAbi, setModuleAbi] = useState<MoveModule | undefined>(
+    contractTemplate.abi
+  );
+
+  useEffect(() => {
+    // Each module has its own ABI, so we must fetch again before further interaction
+    if (blockchain && contractAddress)
+      fetchAptosModule(blockchain, contractAddress).then(setModuleAbi);
+  }, [blockchain, contractAddress]);
 
   return (
     <>
       {contextHolder}
       <CollapseForm
-        items={getAptosFuncs(contractTemplate.abi, action).map((func) => ({
-          key: func.name,
-          label: <div className="function-name">{func.name}</div>,
-          children: (
-            <>
-              <Form
-                name={func.name}
-                layout="horizontal"
-                autoComplete="off"
-                onFinish={console.log}
-              >
-                {func.generic_type_params.map((typeParam, index) => (
-                  <Form.Item
-                    key={index}
-                    name={[APTOS_TYPE_PARAM, index]}
-                    label={`Type${index}`}
-                    required
-                  >
-                    <Input
-                      placeholder={aptosTypeParamName(typeParam, index)}
+        items={getAptosFuncs(moduleAbi || contractTemplate.abi, action).map(
+          (func) => ({
+            key: func.name,
+            label: <div className="function-name">{func.name}</div>,
+            children: (
+              <>
+                <Form
+                  name={func.name}
+                  layout="horizontal"
+                  autoComplete="off"
+                  onFinish={console.log}
+                >
+                  {func.generic_type_params.map((typeParam, index) => (
+                    <Form.Item
+                      key={index}
+                      name={[APTOS_TYPE_PARAM, index]}
+                      label={`Type${index}`}
+                      required
+                    >
+                      <Input
+                        placeholder={aptosTypeParamName(typeParam, index)}
+                        disabled={loading}
+                      />
+                    </Form.Item>
+                  ))}
+                  {func.params.map((param, index) => (
+                    <AbiFormInput
+                      key={index}
+                      action={action}
+                      wallet={wallet}
+                      blockchain={blockchain}
+                      contractAddress={contractAddress}
+                      name={[APTOS_PARAM, index]}
+                      label={`Arg${index}`}
+                      required
+                      placeholder={param}
                       disabled={loading}
+                      json={false}
                     />
+                  ))}
+                  <Form.Item>
+                    <Button
+                      type="primary"
+                      htmlType="submit"
+                      loading={loading}
+                      icon={
+                        action === AbiAction.Deploy ? (
+                          <CloudUploadOutlined />
+                        ) : action === AbiAction.Read ? (
+                          <EyeOutlined />
+                        ) : (
+                          <EditOutlined />
+                        )
+                      }
+                    >
+                      {capitalize(action.toString())}
+                    </Button>
                   </Form.Item>
-                ))}
-                {func.params.map((param, index) => (
-                  <AbiFormInput
-                    key={index}
-                    action={action}
-                    wallet={wallet}
+                </Form>
+                {Object.keys(txResps).includes(func.name) && (
+                  <TransactionResult
                     blockchain={blockchain}
-                    contractAddress={contractAddress}
-                    name={[APTOS_PARAM, index]}
-                    label={`Arg${index}`}
-                    required
-                    placeholder={param}
-                    disabled={loading}
-                    json={false}
+                    wallet={wallet}
+                    txResponse={txResps[func.name]}
                   />
-                ))}
-                <Form.Item>
-                  <Button
-                    type="primary"
-                    htmlType="submit"
-                    loading={loading}
-                    icon={
-                      action === AbiAction.Deploy ? (
-                        <CloudUploadOutlined />
-                      ) : action === AbiAction.Read ? (
-                        <EyeOutlined />
-                      ) : (
-                        <EditOutlined />
-                      )
-                    }
-                  >
-                    {capitalize(action.toString())}
-                  </Button>
-                </Form.Item>
-              </Form>
-              {Object.keys(txResps).includes(func.name) && (
-                <TransactionResult
-                  blockchain={blockchain}
-                  wallet={wallet}
-                  txResponse={txResps[func.name]}
-                />
-              )}
-            </>
-          ),
-        }))}
+                )}
+              </>
+            ),
+          })
+        )}
       />
     </>
   );
