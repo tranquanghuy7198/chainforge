@@ -150,11 +150,14 @@ const ContractForm: React.FC<{
                     <Input placeholder="Address" disabled={loading} />
                   </Form.Item>
                   {addresses &&
-                    blockchains.find(
+                    (blockchains.find(
                       (chain) =>
                         chain.id === addresses[field.name]?.blockchainId
-                      // TODO: Sui and Aptos
-                    )?.networkCluster === NetworkCluster.Sui && (
+                    )?.networkCluster === NetworkCluster.Sui ||
+                      blockchains.find(
+                        (chain) =>
+                          chain.id === addresses[field.name]?.blockchainId
+                      )?.networkCluster === NetworkCluster.Aptos) && (
                       <Form.Item name={[field.name, "module"]}>
                         <Input placeholder="Module" />
                       </Form.Item>
