@@ -9,6 +9,7 @@ import {
 } from "@utils/constants";
 import EvmForm from "@components/abi-form/evm-form";
 import SuiForm from "@components/abi-form/sui-form";
+import AptosForm from "@components/abi-form/aptos-form";
 import SolanaForm from "@components/abi-form/solana-form";
 import CosmosForm from "@components/abi-form/cosmos-form";
 import AbiWalletForm from "@components/abi-form/abi-wallet-form";
@@ -185,7 +186,13 @@ const AbiForm: React.FC<{
         ) ? (
         <>Available soon</>
       ) : contractTemplate.networkClusters.includes(NetworkCluster.Aptos) ? (
-        <>Available soon</>
+        <AptosForm
+          action={action}
+          contractTemplate={contractTemplate}
+          contractAddress={contractAddress}
+          wallet={wallet}
+          blockchain={blockchain}
+        />
       ) : (
         <EvmForm
           action={action}
