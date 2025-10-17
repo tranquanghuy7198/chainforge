@@ -33,11 +33,11 @@ export const getAptosFuncs = (
 ): MoveFunction[] => {
   if (action === AbiAction.Deploy) return [];
   const functions = abi.exposed_functions.filter(
-    (func) => func.visibility === MoveFunctionVisibility.PUBLIC && func.is_entry
+    (func) => func.visibility === MoveFunctionVisibility.PUBLIC
   );
   if (action === AbiAction.Read)
     return functions.filter((func) => func.is_view);
-  return functions.filter((func) => !func.is_view);
+  return functions.filter((func) => func.is_entry && !func.is_view);
 };
 
 export const fetchAptosModule = async (
