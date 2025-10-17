@@ -12,6 +12,11 @@ import { AbiAction, Blockchain, ContractAddress } from "@utils/constants";
 export const APTOS_TYPE_PARAM = "typeParam";
 export const APTOS_PARAM = "param";
 
+export type AptosTxRawData = {
+  [APTOS_TYPE_PARAM]?: string[];
+  [APTOS_PARAM]?: string[];
+};
+
 // Human-readable type param name, to use as an input placeholder
 export const aptosTypeParamName = (
   typeParam: MoveFunctionGenericTypeParam,

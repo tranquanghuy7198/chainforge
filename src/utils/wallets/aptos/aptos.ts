@@ -6,7 +6,13 @@ import {
 import { Wallet } from "@utils/wallets/wallet";
 import { Blockchain, NetworkCluster, TxResponse } from "@utils/constants";
 import { WalletIcon } from "@wallet-standard/core";
-import { Aptos, AptosConfig } from "@aptos-labs/ts-sdk";
+import {
+  Aptos,
+  AptosConfig,
+  EntryFunctionArgumentTypes,
+  SimpleEntryFunctionArgumentTypes,
+  TypeArgument,
+} from "@aptos-labs/ts-sdk";
 
 const APTOS_NETWORKS: Record<Network, number> = {
   mainnet: 1,
@@ -104,20 +110,24 @@ export class AptosWallet extends Wallet {
 
   public async writeContract(
     blockchain: Blockchain,
-    contractAddress: string,
-    abi: any,
+    contractAddress: `${string}::${string}`,
+    _abi: any, // we don't need ABI now
     method: string,
-    args: any,
-    extra: any
+    args: [
+      Array<TypeArgument>,
+      Array<EntryFunctionArgumentTypes | SimpleEntryFunctionArgumentTypes>
+    ],
+    _extra: any // no extra data for current cases
   ): Promise<TxResponse> {
     await this.connect(blockchain);
+    const [typeParams, params] = args;
     const result = await this.adapter!.features[
       "aptos:signAndSubmitTransaction"
     ]!.signAndSubmitTransaction({
       payload: {
         function: `${contractAddress}::${method}`,
-        typeArguments: [],
-        functionArguments: [],
+        typeArguments: typeParams,
+        functionArguments: params,
       },
     });
     if (result.status === "Rejected")

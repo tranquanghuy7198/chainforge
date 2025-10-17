@@ -14,6 +14,7 @@ import CollapseForm from "@components/abi-form/collapse-form";
 import {
   APTOS_PARAM,
   APTOS_TYPE_PARAM,
+  AptosTxRawData,
   aptosTypeParamName,
   fetchAptosModule,
   getAptosFuncs,
@@ -28,7 +29,14 @@ import {
 import { capitalize } from "@utils/utils";
 import TransactionResult from "@components/abi-form/tx-response";
 import "./aptos-form.scss";
-import { MoveFunction, MoveModule } from "@aptos-labs/ts-sdk";
+import {
+  convertArgument,
+  EntryFunctionArgumentTypes,
+  MoveFunction,
+  MoveModule,
+  parseTypeTag,
+  TypeArgument,
+} from "@aptos-labs/ts-sdk";
 import ContractCallError from "@components/abi-form/contract-call-error";
 
 const AptosForm: React.FC<{
@@ -53,10 +61,32 @@ const AptosForm: React.FC<{
       fetchAptosModule(blockchain, contractAddress).then(setModuleAbi);
   }, [blockchain, contractAddress]);
 
-  const execute = async (
-    func: MoveFunction,
-    params: Record<string, string>
-  ) => {
+  const write = async (
+    wallet: Wallet,
+    blockchain: Blockchain,
+    funcName: string,
+    parsedTypeArgs: TypeArgument[],
+    parsedArgs: EntryFunctionArgumentTypes[]
+  ): Promise<TxResponse | undefined> => {
+    if (!contractAddress) {
+      notification.error({
+        message: "No contract selected",
+        description: "You must select a contract first",
+      });
+      return;
+    }
+
+    return await wallet.writeContract(
+      blockchain,
+      `${contractAddress.address}::${contractAddress.module}`,
+      null,
+      funcName,
+      [parsedTypeArgs, parsedArgs],
+      null
+    );
+  };
+
+  const execute = async (func: MoveFunction, params: AptosTxRawData) => {
     // Check for necessary information
     if (!wallet) {
       notification.error({
@@ -80,7 +110,35 @@ const AptosForm: React.FC<{
 
     // Execute
     try {
-      //
+      // Parse function params
+      const { [APTOS_TYPE_PARAM]: typeArgs, [APTOS_PARAM]: args } = params;
+      const parsedTypeArgs = (typeArgs || []).map((typeArg) =>
+        parseTypeTag(typeArg, { allowGenerics: true })
+      );
+      const parsedArgs = (args || []).map((arg, index) =>
+        convertArgument(
+          func.name,
+          moduleAbi || contractTemplate.abi,
+          arg,
+          index,
+          parsedTypeArgs,
+          { allowUnknownStructs: true }
+        )
+      );
+
+      // Call to contract
+      let response: TxResponse | undefined;
+      if (action === AbiAction.Deploy) return;
+      else if (action === AbiAction.Read) return;
+      else if (action === AbiAction.Write)
+        response = await write(
+          wallet,
+          blockchain,
+          func.name,
+          parsedTypeArgs,
+          parsedArgs
+        );
+      if (response) setTxResponses({ ...txResps, [func.name]: response });
     } catch (e) {
       notification.error({
         message: "Error executing transaction",
