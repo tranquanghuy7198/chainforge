@@ -7,6 +7,7 @@ import { Wallet } from "@utils/wallets/wallet";
 import { Blockchain, NetworkCluster, TxResponse } from "@utils/constants";
 import { WalletIcon } from "@wallet-standard/core";
 import {
+  AccountAddress,
   Aptos,
   AptosConfig,
   EntryFunctionArgumentTypes,
@@ -14,11 +15,12 @@ import {
   TypeArgument,
 } from "@aptos-labs/ts-sdk";
 import SuperJSON from "superjson";
+import { AptosCompiledBytecode } from "@utils/wallets/aptos/utils";
 
 const APTOS_NETWORKS: Record<Network, number> = {
   mainnet: 1,
   testnet: 2,
-  devnet: 204,
+  devnet: 10,
   shelbynet: 1990,
   local: 204,
   custom: 204,
@@ -116,19 +118,49 @@ export class AptosWallet extends Wallet {
     _args: any, // we don't need args now
     _extra: any // no extra data for current cases
   ): Promise<TxResponse> {
+    // Connect wallet and prepare
     await this.connect(blockchain);
-    const result = await this.adapter!.features[
-      "aptos:signAndSubmitTransaction"
-    ]!.signAndSubmitTransaction({
-      payload: {
-        function: "0x1::code::publish_package_txn",
-        typeArguments: [],
-        functionArguments: [new Uint8Array(0), Buffer.from(bytecode, "hex")],
-      },
+    const config = new AptosConfig({ network: blockchain.chainId as Network });
+    const client = new Aptos(config);
+
+    // Build deployment transaction
+    const parsedBytecode = JSON.parse(bytecode) as AptosCompiledBytecode;
+    const [metadataBytes, moduleBytes] = parsedBytecode.args;
+    const tx = await client.publishPackageTransaction({
+      account: AccountAddress.from(this.address!),
+      metadataBytes: metadataBytes.value,
+      moduleBytecode: moduleBytes.value,
     });
-    if (result.status === "Rejected")
+
+    // Sign deployment transaction
+    const signingResult = await this.adapter!.features[
+      "aptos:signTransaction"
+    ]!.signTransaction(tx);
+    if (signingResult.status === "Rejected")
       throw new Error("User rejected transaction");
-    return { txHash: result.args.hash };
+
+    // Send signed deployment transaction to Aptos
+    const submissionResult = await client.transaction.submit.simple({
+      transaction: tx,
+      senderAuthenticator: signingResult.args,
+    });
+
+    // Wait for transaction and extract contract address
+    const txResult = await client.waitForTransaction({
+      transactionHash: submissionResult.hash,
+    });
+    console.log(txResult.changes);
+    return {
+      txHash: submissionResult.hash,
+      contractAddresses: [
+        {
+          blockchainId: blockchain.id,
+          address: "abcxyz",
+          module: "xxx",
+          publicity: false,
+        },
+      ],
+    };
   }
 
   public async readContract(
