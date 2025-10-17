@@ -31,7 +31,18 @@ export const getAptosFuncs = (
   abi: MoveModule,
   action: AbiAction
 ): MoveFunction[] => {
-  if (action === AbiAction.Deploy) return [];
+  if (action === AbiAction.Deploy)
+    return [
+      {
+        name: "deploy",
+        visibility: MoveFunctionVisibility.PUBLIC,
+        is_entry: true,
+        is_view: false,
+        generic_type_params: [],
+        params: [],
+        return: [],
+      },
+    ];
   const functions = abi.exposed_functions.filter(
     (func) => func.visibility === MoveFunctionVisibility.PUBLIC
   );
