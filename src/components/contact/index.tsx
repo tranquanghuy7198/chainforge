@@ -1,5 +1,6 @@
 import {
   DiscordFilled,
+  FileFilled,
   GiftFilled,
   GoogleOutlined,
   LinkedinFilled,
@@ -10,6 +11,12 @@ import "./contact.scss";
 const ProductContact: React.FC = () => {
   return (
     <div className="about-product">
+      <FileFilled
+        className="product-contact"
+        onClick={() =>
+          window.open("https://tranquanghuy7198.github.io/chainforge-doc/")
+        }
+      />
       <DiscordFilled
         className="product-contact"
         onClick={() => window.open("https://discord.gg/pW8kw8JX7s")}
