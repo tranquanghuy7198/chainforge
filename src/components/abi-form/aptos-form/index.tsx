@@ -28,7 +28,8 @@ import {
 import { capitalize } from "@utils/utils";
 import TransactionResult from "@components/abi-form/tx-response";
 import "./aptos-form.scss";
-import { MoveModule } from "@aptos-labs/ts-sdk";
+import { MoveFunction, MoveModule } from "@aptos-labs/ts-sdk";
+import ContractCallError from "@components/abi-form/contract-call-error";
 
 const AptosForm: React.FC<{
   action: AbiAction;
@@ -52,6 +53,44 @@ const AptosForm: React.FC<{
       fetchAptosModule(blockchain, contractAddress).then(setModuleAbi);
   }, [blockchain, contractAddress]);
 
+  const execute = async (
+    func: MoveFunction,
+    params: Record<string, string>
+  ) => {
+    // Check for necessary information
+    if (!wallet) {
+      notification.error({
+        message: "No wallet selected",
+        description: "You must select a wallet first",
+      });
+      return;
+    }
+    if (!blockchain) {
+      notification.error({
+        message: "No blockchain selected",
+        description: "You must select a blockchain first",
+      });
+      return;
+    }
+
+    // Pre-tx UI handling
+    setLoading(true);
+    const { [func.name]: _, ...newTxResponses } = txResps;
+    setTxResponses(newTxResponses);
+
+    // Execute
+    try {
+      //
+    } catch (e) {
+      notification.error({
+        message: "Error executing transaction",
+        description: <ContractCallError error={e} />,
+      });
+    }
+
+    setLoading(false);
+  };
+
   return (
     <>
       {contextHolder}
@@ -66,7 +105,7 @@ const AptosForm: React.FC<{
                   name={func.name}
                   layout="horizontal"
                   autoComplete="off"
-                  onFinish={console.log}
+                  onFinish={(values) => execute(func, values)}
                 >
                   {func.generic_type_params.map((typeParam, index) => (
                     <Form.Item
