@@ -109,6 +109,28 @@ export class AptosWallet extends Wallet {
     return amount / 10 ** blockchain.nativeDecimal;
   }
 
+  public async deploy(
+    blockchain: Blockchain,
+    _abi: any, // we don't need ABI now
+    bytecode: string,
+    _args: any, // we don't need args now
+    _extra: any // no extra data for current cases
+  ): Promise<TxResponse> {
+    await this.connect(blockchain);
+    const result = await this.adapter!.features[
+      "aptos:signAndSubmitTransaction"
+    ]!.signAndSubmitTransaction({
+      payload: {
+        function: "0x1::code::publish_package_txn",
+        typeArguments: [],
+        functionArguments: [new Uint8Array(0), Buffer.from(bytecode, "hex")],
+      },
+    });
+    if (result.status === "Rejected")
+      throw new Error("User rejected transaction");
+    return { txHash: result.args.hash };
+  }
+
   public async readContract(
     blockchain: Blockchain,
     contractAddress: `${string}::${string}`,

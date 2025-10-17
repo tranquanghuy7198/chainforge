@@ -38,6 +38,7 @@ import {
   TypeArgument,
 } from "@aptos-labs/ts-sdk";
 import ContractCallError from "@components/abi-form/contract-call-error";
+import { addContractAddresses } from "@api/contracts";
 
 const AptosForm: React.FC<{
   action: AbiAction;
@@ -60,6 +61,30 @@ const AptosForm: React.FC<{
     if (blockchain && contractAddress)
       fetchAptosModule(blockchain, contractAddress).then(setModuleAbi);
   }, [blockchain, contractAddress]);
+
+  const deploy = async (
+    wallet: Wallet,
+    blockchain: Blockchain
+  ): Promise<TxResponse> => {
+    // Deploy
+    const txResponse = await wallet.deploy(
+      blockchain,
+      null,
+      contractTemplate.bytecode,
+      null,
+      null
+    );
+
+    // Save deployed Etherem contract
+    await callAuthenticatedApi(
+      addContractAddresses,
+      contractTemplate.id,
+      txResponse.contractAddresses || []
+    );
+    await fetchContracts(true);
+
+    return txResponse;
+  };
 
   const read = async (
     wallet: Wallet,
@@ -152,7 +177,8 @@ const AptosForm: React.FC<{
 
       // Call to contract
       let response: TxResponse | undefined;
-      if (action === AbiAction.Deploy) return;
+      if (action === AbiAction.Deploy)
+        response = await deploy(wallet, blockchain);
       else if (action === AbiAction.Read)
         response = await read(
           wallet,
