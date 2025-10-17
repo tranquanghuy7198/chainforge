@@ -4,7 +4,7 @@ import {
   WalletCore,
 } from "@aptos-labs/wallet-adapter-core";
 import { Wallet } from "@utils/wallets/wallet";
-import { Blockchain, NetworkCluster } from "@utils/constants";
+import { Blockchain, NetworkCluster, TxResponse } from "@utils/constants";
 import { WalletIcon } from "@wallet-standard/core";
 import { Aptos, AptosConfig } from "@aptos-labs/ts-sdk";
 
@@ -92,15 +92,37 @@ export class AptosWallet extends Wallet {
     if (!this.address)
       throw new Error(`Cannot connect to ${this.ui.name} wallet`);
     const amount = 10 ** blockchain.nativeDecimal;
-    const client = new Aptos(
-      new AptosConfig({ network: blockchain.chainId as Network })
-    );
+    const config = new AptosConfig({ network: blockchain.chainId as Network });
+    const client = new Aptos(config);
     await client.fundAccount({
       accountAddress: this.address,
       amount: amount,
       options: { waitForIndexer: false },
     });
     return amount / 10 ** blockchain.nativeDecimal;
+  }
+
+  public async writeContract(
+    blockchain: Blockchain,
+    contractAddress: string,
+    abi: any,
+    method: string,
+    args: any,
+    extra: any
+  ): Promise<TxResponse> {
+    await this.connect(blockchain);
+    const result = await this.adapter!.features[
+      "aptos:signAndSubmitTransaction"
+    ]!.signAndSubmitTransaction({
+      payload: {
+        function: `${contractAddress}::${method}`,
+        typeArguments: [],
+        functionArguments: [],
+      },
+    });
+    if (result.status === "Rejected")
+      throw new Error("User rejected transaction");
+    return { txHash: result.args.hash };
   }
 }
 
