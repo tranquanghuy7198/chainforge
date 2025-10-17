@@ -61,6 +61,30 @@ const AptosForm: React.FC<{
       fetchAptosModule(blockchain, contractAddress).then(setModuleAbi);
   }, [blockchain, contractAddress]);
 
+  const read = async (
+    wallet: Wallet,
+    blockchain: Blockchain,
+    funcName: string,
+    parsedTypeArgs: TypeArgument[],
+    parsedArgs: EntryFunctionArgumentTypes[]
+  ): Promise<TxResponse | undefined> => {
+    if (!contractAddress) {
+      notification.error({
+        message: "No contract selected",
+        description: "You must select a contract first",
+      });
+      return;
+    }
+
+    return await wallet.readContract(
+      blockchain,
+      `${contractAddress.address}::${contractAddress.module}`,
+      null,
+      funcName,
+      [parsedTypeArgs, parsedArgs]
+    );
+  };
+
   const write = async (
     wallet: Wallet,
     blockchain: Blockchain,
@@ -129,7 +153,14 @@ const AptosForm: React.FC<{
       // Call to contract
       let response: TxResponse | undefined;
       if (action === AbiAction.Deploy) return;
-      else if (action === AbiAction.Read) return;
+      else if (action === AbiAction.Read)
+        response = await read(
+          wallet,
+          blockchain,
+          func.name,
+          parsedTypeArgs,
+          parsedArgs
+        );
       else if (action === AbiAction.Write)
         response = await write(
           wallet,

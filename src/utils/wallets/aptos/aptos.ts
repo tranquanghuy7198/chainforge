@@ -13,6 +13,7 @@ import {
   SimpleEntryFunctionArgumentTypes,
   TypeArgument,
 } from "@aptos-labs/ts-sdk";
+import SuperJSON from "superjson";
 
 const APTOS_NETWORKS: Record<Network, number> = {
   mainnet: 1,
@@ -106,6 +107,30 @@ export class AptosWallet extends Wallet {
       options: { waitForIndexer: false },
     });
     return amount / 10 ** blockchain.nativeDecimal;
+  }
+
+  public async readContract(
+    blockchain: Blockchain,
+    contractAddress: `${string}::${string}`,
+    _abi: any, // we don't need ABI now
+    method: string,
+    args: [
+      Array<TypeArgument>,
+      Array<EntryFunctionArgumentTypes | SimpleEntryFunctionArgumentTypes>
+    ]
+  ): Promise<TxResponse> {
+    await this.connect(blockchain);
+    const [typeParams, params] = args;
+    const config = new AptosConfig({ network: blockchain.chainId as Network });
+    const client = new Aptos(config);
+    const result = await client.view({
+      payload: {
+        function: `${contractAddress}::${method}`,
+        typeArguments: typeParams,
+        functionArguments: params,
+      },
+    });
+    return { data: JSON.stringify(JSON.parse(SuperJSON.stringify(result))) };
   }
 
   public async writeContract(
