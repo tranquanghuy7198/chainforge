@@ -145,21 +145,20 @@ export class AptosWallet extends Wallet {
       senderAuthenticator: signingResult.args,
     });
 
-    // Wait for transaction and extract contract address
+    // Wait for transaction and extract contract modules
     const txResult = await client.waitForTransaction({
       transactionHash: submissionResult.hash,
     });
-    console.log(txResult.changes);
     return {
       txHash: submissionResult.hash,
-      contractAddresses: [
-        {
+      contractAddresses: txResult.changes
+        .filter((change) => "address" in change)
+        .map((change) => ({
           blockchainId: blockchain.id,
-          address: "abcxyz",
-          module: "xxx",
+          address: change.address,
+          module: change.type,
           publicity: false,
-        },
-      ],
+        })),
     };
   }
 
