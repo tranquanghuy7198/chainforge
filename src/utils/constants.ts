@@ -6,7 +6,6 @@ export const TX_PATTERN = "[[tx]]";
 export enum NetworkCluster {
   Ethereum = "ethereum",
   Klaytn = "klaytn",
-  KardiaChain = "kardiachain",
   Ronin = "ronin",
   Solana = "solana",
   Sui = "sui",
