@@ -93,8 +93,10 @@ const ContractTemplates: React.FC = () => {
         template
       );
       await fetchTemplates(true);
-      await fetchContracts(true); // This can affect my contracts
-      await fetchPopularContracts(true); // This can affect popular contracts
+
+      // Less important, no need to await
+      fetchContracts(true); // This can affect my contracts
+      fetchPopularContracts(true); // This can affect popular contracts
       notification.success({
         message: "Template Saved",
         description: "A contract template has been saved",
@@ -114,8 +116,10 @@ const ContractTemplates: React.FC = () => {
     try {
       await callAuthenticatedApi(deleteTemplateById, id);
       await fetchTemplates(true);
-      await fetchContracts(true); // This can affect my contracts
-      await fetchPopularContracts(true); // This can affect popular contracts
+
+      // Less important, no need to await
+      fetchContracts(true); // This can affect my contracts
+      fetchPopularContracts(true); // This can affect popular contracts
       notification.success({
         message: "Template Deleted",
         description: "A contract template has been deleted",
