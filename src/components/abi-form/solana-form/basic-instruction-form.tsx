@@ -16,6 +16,7 @@ import {
   CopyOutlined,
   EditOutlined,
   EyeOutlined,
+  LoadingOutlined,
 } from "@ant-design/icons";
 import { capitalize } from "@utils/utils";
 import TransactionResult from "@components/abi-form/tx-response";
@@ -51,7 +52,7 @@ const SolanaBasicInstructionForm: React.FC<{
   const [notification, contextHolder] = useNotification();
   const [ixRawData, setIxRawData] = useState<SolanaIxRawData>({});
   const [loading, setLoading] = useState<boolean>(false);
-  const [copying, setCopying] = useState<boolean>(false);
+  const [copying, setCopying] = useState<"copy" | "copying" | "copied">("copy");
   const [txResp, setTxResp] = useState<TxResponse>();
   const { callAuthenticatedApi } = useAuth();
   const { fetchContracts } = useFetchMyContracts();
@@ -208,7 +209,7 @@ const SolanaBasicInstructionForm: React.FC<{
       return;
     }
     try {
-      setCopying(true);
+      setCopying("copying");
       const [args, accounts, extraAccounts] = parseSolanaArguments(
         contractTemplate.abi,
         instruction,
@@ -226,13 +227,14 @@ const SolanaBasicInstructionForm: React.FC<{
         } as SolanaExtra
       );
       navigator.clipboard.writeText(bytecode);
+      setCopying("copied");
     } catch (error) {
       notification.error({
         message: "Copy Failed",
         description: <ContractCallError error={error} />,
       });
     } finally {
-      setTimeout(() => setCopying(false), 3000);
+      setTimeout(() => setCopying("copy"), 3000);
     }
   };
 
@@ -273,7 +275,10 @@ const SolanaBasicInstructionForm: React.FC<{
               icon={<CopyOutlined />}
               iconPosition="end"
               loading={
-                copying && { icon: <CheckOutlined className="copy-done" /> }
+                (copying === "copying" && { icon: <LoadingOutlined /> }) ||
+                (copying === "copied" && {
+                  icon: <CheckOutlined className="copy-done" />,
+                })
               }
               onClick={copyTxBytecode}
             >
