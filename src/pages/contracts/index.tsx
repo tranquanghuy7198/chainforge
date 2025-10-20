@@ -101,8 +101,10 @@ const Contracts: React.FC = () => {
         contract
       );
       await fetchContracts(true);
-      await fetchTemplates(true); // This can affect my templates
-      await fetchPopularContracts(true); // This can affect popular contracts
+
+      // Less important, no need to await
+      fetchTemplates(true); // This can affect my templates
+      fetchPopularContracts(true); // This can affect popular contracts
       notification.success({
         message: "Contract Saved",
         description: "A contract has been saved",
