@@ -43,7 +43,7 @@ export const getAptosFuncs = (
         return: [],
       },
     ];
-  const functions = abi.exposed_functions.filter(
+  const functions = (abi.exposed_functions || []).filter(
     (func) => func.visibility === MoveFunctionVisibility.PUBLIC
   );
   if (action === AbiAction.Read)
