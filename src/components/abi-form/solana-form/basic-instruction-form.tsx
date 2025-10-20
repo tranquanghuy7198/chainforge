@@ -272,6 +272,8 @@ const SolanaBasicInstructionForm: React.FC<{
           </Button>
           {action === AbiAction.Write && (
             <Button
+              variant="filled"
+              color="default"
               icon={<CopyOutlined />}
               iconPosition="end"
               loading={

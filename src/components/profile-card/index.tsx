@@ -7,7 +7,7 @@ const ProfileCard: React.FC = () => {
   const { profile } = useFetchProfile();
 
   return profile ? (
-    <Card size="small" hoverable className="profile-card">
+    <Card size="small" className="profile-card">
       <Card.Meta
         avatar={<></>}
         title={profile.username}

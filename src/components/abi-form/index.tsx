@@ -133,9 +133,8 @@ const AbiForm: React.FC<{
           <Space>
             {blockchain?.faucet && (
               <Button
-                type="link"
                 variant="filled"
-                color="primary"
+                color="default"
                 icon={<FireOutlined />}
                 loading={faucetRequesting}
                 onClick={requestFaucet}
@@ -144,9 +143,8 @@ const AbiForm: React.FC<{
               </Button>
             )}
             <Button
-              type="link"
               variant="filled"
-              color="primary"
+              color="default"
               icon={<SendOutlined />}
               iconPosition="end"
               loading={sharing}
