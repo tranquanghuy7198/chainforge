@@ -196,10 +196,7 @@ const EvmTxForm: React.FC<{
     setLoading(false);
   };
 
-  const copyTxBytecode = async (
-    func: EvmAbiFunction,
-    params: Record<string, string>
-  ) => {
+  const copyTxBytecode = async () => {
     if (!wallet) {
       notification.error({
         message: "No wallet selected",
@@ -223,7 +220,25 @@ const EvmTxForm: React.FC<{
     }
     try {
       setCopying("copying");
-      const bytecode = "abcabc";
+
+      // Parse function params
+      const params: Record<string, string> = evmAbiForm.getFieldsValue();
+      const parsedParams = evmFunction.inputs.map((param, paramIdx) => {
+        const rawParam = params[paramKey(param, paramIdx)];
+        if (param.type.includes("tuple") || param.type.includes("[]"))
+          return JSON.parse(rawParam);
+        return rawParam;
+      });
+
+      // Calculate and copy tx bytecode
+      const bytecode = await wallet.getTxBytecode(
+        blockchain,
+        contractAddress.address,
+        contractTemplate.abi,
+        funcSignature(evmFunction),
+        parsedParams,
+        null
+      );
       navigator.clipboard.writeText(bytecode);
       setCopying("copied");
     } catch (error) {
@@ -298,7 +313,7 @@ const EvmTxForm: React.FC<{
                     icon: <CheckOutlined className="copy-done" />,
                   })
                 }
-                onClick={() => copyTxBytecode(evmFunction, {})}
+                onClick={copyTxBytecode}
               >
                 Copy bytecode
               </Button>

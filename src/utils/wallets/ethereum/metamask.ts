@@ -160,7 +160,7 @@ export class MetaMask extends Wallet {
     await this.connect(blockchain);
     const signer = await this.provider!.getSigner();
     const contract = new ethers.Contract(contractAddress, abi, signer);
-    return contract.interface.encodeFunctionData(method, ...args);
+    return contract.interface.encodeFunctionData(method, args);
   }
 
   public clone(): Wallet {
