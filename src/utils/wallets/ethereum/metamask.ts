@@ -124,7 +124,8 @@ export class MetaMask extends Wallet {
     args: any[]
   ): Promise<TxResponse> {
     await this.connect(blockchain);
-    const contract = new ethers.Contract(contractAddress, abi, this.provider);
+    const provider = new ethers.JsonRpcProvider(blockchain.rpcUrl);
+    const contract = new ethers.Contract(contractAddress, abi, provider);
     const response = await contract[method](...args);
     return {
       data: JSON.stringify(JSON.parse(SuperJSON.stringify(response)).json),
