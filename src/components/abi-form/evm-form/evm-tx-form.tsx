@@ -278,7 +278,10 @@ const EvmTxForm: React.FC<{
         ))}
         {evmFunction.stateMutability === "payable" && (
           <Form.Item name={EVM_PAYABLE_AMOUNT} label="Payment" required>
-            <Input placeholder="Wei amount to pay" disabled={loading} />
+            <Input
+              placeholder={`${blockchain?.nativeDenom} amount to pay`}
+              disabled={loading}
+            />
           </Form.Item>
         )}
         <Form.Item>
