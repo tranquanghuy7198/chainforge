@@ -32,7 +32,7 @@ const EvmForm: React.FC<{
             <div className="function-name">{func.name || func.type}</div>
             <Tooltip title="Function Selector">
               <Tag color="green" bordered={false}>
-                0x{evmFunctionSelector(func)}
+                {evmFunctionSelector(func)}
               </Tag>
             </Tooltip>
           </Space>

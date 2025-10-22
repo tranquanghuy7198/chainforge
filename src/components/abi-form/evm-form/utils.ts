@@ -48,9 +48,9 @@ export const paramKey = (param: EvmAbiField, index: number): string => {
 };
 
 export const evmFunctionSelector = (func: EvmAbiFunction): string => {
-  if (!func.name) return "60806040";
+  if (!func.name) return "0x60806040";
   const functionSignature = `${func.name}(${func.inputs
     .map((param) => param.type)
     .join(",")})`;
-  return keccak256(toUtf8Bytes(functionSignature)).slice(2, 10);
+  return keccak256(toUtf8Bytes(functionSignature)).slice(0, 10);
 };
