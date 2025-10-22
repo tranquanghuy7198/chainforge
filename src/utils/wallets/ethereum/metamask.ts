@@ -149,6 +149,20 @@ export class MetaMask extends Wallet {
     return { txHash: response.hash };
   }
 
+  public async getTxBytecode(
+    blockchain: Blockchain,
+    contractAddress: string,
+    abi: any,
+    method: string,
+    args: any,
+    _extra: any // we don't need extra for bytecode generation
+  ): Promise<string> {
+    await this.connect(blockchain);
+    const signer = await this.provider!.getSigner();
+    const contract = new ethers.Contract(contractAddress, abi, signer);
+    return contract.interface.encodeFunctionData(method, ...args);
+  }
+
   public clone(): Wallet {
     let newWallet = super.clone() as MetaMask;
     newWallet.inject = this.inject;
