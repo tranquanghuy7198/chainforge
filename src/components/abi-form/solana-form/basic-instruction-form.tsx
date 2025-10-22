@@ -234,7 +234,7 @@ const SolanaBasicInstructionForm: React.FC<{
         description: <ContractCallError error={error} />,
       });
     } finally {
-      setTimeout(() => setCopying("copy"), 3000);
+      setTimeout(() => setCopying("copy"), 2000);
     }
   };
 
