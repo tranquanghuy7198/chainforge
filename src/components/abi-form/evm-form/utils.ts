@@ -1,4 +1,7 @@
+import { AbiAction } from "@utils/constants";
 import { keccak256, toUtf8Bytes } from "ethers";
+
+export const EVM_PAYABLE_AMOUNT = "payable";
 
 type EvmAbiField = {
   internalType: string;
@@ -16,6 +19,24 @@ export type EvmAbiFunction = {
 };
 
 export type EvmAbi = EvmAbiFunction[];
+
+export const getEvmAbiFunctions = (
+  abi: EvmAbi,
+  action: AbiAction
+): EvmAbiFunction[] => {
+  return abi.filter((func) => {
+    switch (action) {
+      case AbiAction.Deploy:
+        return func.type === "constructor";
+      case AbiAction.Read:
+        return func.type === "function" && func.stateMutability === "view";
+      case AbiAction.Write:
+        return func.type === "function" && func.stateMutability !== "view";
+      default:
+        return false;
+    }
+  });
+};
 
 export const funcSignature = (func: EvmAbiFunction): string => {
   if (!func.name) return func.type;
