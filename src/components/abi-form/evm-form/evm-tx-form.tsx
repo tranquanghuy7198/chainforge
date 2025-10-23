@@ -2,8 +2,8 @@ import { Button, Form, Input, Space } from "antd";
 import React, { useState } from "react";
 import {
   EVM_PAYABLE_AMOUNT,
-  EvmAbiFunction,
   funcSignature,
+  isComplex,
   paramKey,
 } from "@components/abi-form/evm-form/utils";
 import AbiFormInput from "@components/abi-form/abi-form-input";
@@ -31,6 +31,7 @@ import { EthereumExtra } from "@utils/wallets/ethereum/utils";
 import { useAuth } from "@hooks/auth";
 import { useFetchMyContracts } from "@hooks/contract";
 import { addContractAddresses } from "@api/contracts";
+import { JsonFragment } from "ethers";
 
 const EvmTxForm: React.FC<{
   action: AbiAction;
@@ -38,7 +39,7 @@ const EvmTxForm: React.FC<{
   contractAddress?: ContractAddress;
   wallet?: Wallet;
   blockchain?: Blockchain;
-  evmFunction: EvmAbiFunction;
+  evmFunction: JsonFragment;
 }> = ({
   action,
   contractTemplate,
@@ -148,10 +149,9 @@ const EvmTxForm: React.FC<{
 
     // Parse function params
     const payableAmount = params[EVM_PAYABLE_AMOUNT];
-    const parsedParams = evmFunction.inputs.map((param, paramIdx) => {
+    const parsedParams = (evmFunction.inputs || []).map((param, paramIdx) => {
       const rawParam = params[paramKey(param, paramIdx)];
-      if (param.type.includes("tuple") || param.type.includes("[]"))
-        return JSON.parse(rawParam);
+      if (isComplex(param.type)) return JSON.parse(rawParam);
       return rawParam;
     });
 
@@ -223,10 +223,9 @@ const EvmTxForm: React.FC<{
 
       // Parse function params
       const params: Record<string, string> = evmAbiForm.getFieldsValue();
-      const parsedParams = evmFunction.inputs.map((param, paramIdx) => {
+      const parsedParams = evmFunction.inputs?.map((param, paramIdx) => {
         const rawParam = params[paramKey(param, paramIdx)];
-        if (param.type.includes("tuple") || param.type.includes("[]"))
-          return JSON.parse(rawParam);
+        if (isComplex(param.type)) return JSON.parse(rawParam);
         return rawParam;
       });
 
@@ -261,7 +260,7 @@ const EvmTxForm: React.FC<{
         autoComplete="off"
         onFinish={execute}
       >
-        {evmFunction.inputs.map((param, paramIdx) => (
+        {evmFunction.inputs?.map((param, paramIdx) => (
           <AbiFormInput
             key={paramKey(param, paramIdx)}
             action={action}
@@ -273,7 +272,7 @@ const EvmTxForm: React.FC<{
             required
             placeholder={param.type}
             disabled={loading}
-            json={param.type.includes("tuple") || param.type.includes("[]")}
+            json={isComplex(param.type)}
           />
         ))}
         {evmFunction.stateMutability === "payable" && (
