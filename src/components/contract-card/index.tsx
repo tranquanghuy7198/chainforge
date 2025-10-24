@@ -87,7 +87,11 @@ const ContractCard: React.FC<{
                       <Image
                         src={blockchain.logo}
                         preview={false}
-                        className="contract-chain"
+                        className={
+                          blockchain.isTestnet
+                            ? "contract-chain-testnet"
+                            : "contract-chain"
+                        }
                       />
                     ) : (
                       <QuestionCircleFilled />
