@@ -2,13 +2,14 @@ import { Alert, Button, Form, Input, Select } from "antd";
 import { ContractTemplate, NetworkCluster } from "@utils/constants";
 import { capitalize } from "@utils/utils";
 import { useForm, useWatch } from "antd/es/form/Form";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { InboxOutlined } from "@ant-design/icons";
 import Dragger from "antd/es/upload/Dragger";
 import { v4 } from "uuid";
 import { Keypair } from "@solana/web3.js";
 import VSCodeEditor from "@components/vscode-editor";
 import "./contract-template-form.scss";
+import { DocType, getDocLink } from "@docs/index";
 
 export type ContractTemplateFormStructure = {
   id: string;
@@ -50,9 +51,14 @@ const ContractTemplateForm: React.FC<{
   ) => Promise<void>;
 }> = ({ templateForm, saveContractTemplate }) => {
   const [form] = useForm();
-  const networkClusters = useWatch<string[]>("networkClusters", form);
+  const networkClusters = useWatch<string[] | undefined>(
+    "networkClusters",
+    form
+  );
   const [solanaProgramId, setSolanaProgramId] = useState<string>();
   const [loading, setLoading] = useState<boolean>(false);
+  const defautNetworkCluster = (networkClusters?.at(0) ||
+    NetworkCluster.Ethereum) as NetworkCluster;
 
   useEffect(() => {
     if (templateForm.open) form.resetFields();
@@ -116,13 +122,47 @@ const ContractTemplateForm: React.FC<{
       <Form.Item name="name" label="Name" required>
         <Input placeholder="Contract Name" disabled={loading} />
       </Form.Item>
-      <Form.Item name="abi" label="ABI" required>
+      <Form.Item
+        name="abi"
+        label="ABI"
+        required
+        help={
+          <div
+            className="doc-link"
+            onClick={() =>
+              window.open(
+                getDocLink(defautNetworkCluster, DocType.GenerateAbiBytecode),
+                "_blank"
+              )
+            }
+          >
+            See how to generate {capitalize(defautNetworkCluster)} ABI
+          </div>
+        }
+      >
         <VSCodeEditor
           placeholder="Contract ABI (EVM) or IDL (Solana)"
           disabled={loading}
         />
       </Form.Item>
-      <Form.Item name="bytecode" label="Bytecode" required>
+      <Form.Item
+        name="bytecode"
+        label="Bytecode"
+        required
+        help={
+          <div
+            className="doc-link"
+            onClick={() =>
+              window.open(
+                getDocLink(defautNetworkCluster, DocType.GenerateAbiBytecode),
+                "_blank"
+              )
+            }
+          >
+            See how to generate {capitalize(defautNetworkCluster)} bytecode
+          </div>
+        }
+      >
         <Input.TextArea
           placeholder="Contract bytecode"
           rows={4}
