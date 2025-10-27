@@ -9,7 +9,7 @@ import { v4 } from "uuid";
 import { Keypair } from "@solana/web3.js";
 import VSCodeEditor from "@components/vscode-editor";
 import "./contract-template-form.scss";
-import { DocType, getDocLink } from "@docs/index";
+import { DocType, docUrl } from "@docs/index";
 
 export type ContractTemplateFormStructure = {
   id: string;
@@ -57,7 +57,7 @@ const ContractTemplateForm: React.FC<{
   );
   const [solanaProgramId, setSolanaProgramId] = useState<string>();
   const [loading, setLoading] = useState<boolean>(false);
-  const defautNetworkCluster = (networkClusters?.at(0) ||
+  const cluster = (networkClusters?.at(0) ||
     NetworkCluster.Ethereum) as NetworkCluster;
 
   useEffect(() => {
@@ -129,14 +129,9 @@ const ContractTemplateForm: React.FC<{
         help={
           <div
             className="doc-link"
-            onClick={() =>
-              window.open(
-                getDocLink(defautNetworkCluster, DocType.GenerateAbiBytecode),
-                "_blank"
-              )
-            }
+            onClick={() => window.open(docUrl(cluster, DocType.AbiBytecode))}
           >
-            See how to generate {capitalize(defautNetworkCluster)} ABI
+            See how to generate {capitalize(cluster)} ABI
           </div>
         }
       >
@@ -152,14 +147,9 @@ const ContractTemplateForm: React.FC<{
         help={
           <div
             className="doc-link"
-            onClick={() =>
-              window.open(
-                getDocLink(defautNetworkCluster, DocType.GenerateAbiBytecode),
-                "_blank"
-              )
-            }
+            onClick={() => window.open(docUrl(cluster, DocType.AbiBytecode))}
           >
-            See how to generate {capitalize(defautNetworkCluster)} bytecode
+            See how to generate {capitalize(cluster)} bytecode
           </div>
         }
       >
