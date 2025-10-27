@@ -1,25 +1,17 @@
 import React, { useState } from "react";
 import SolanaInstructionForm from "@components/abi-form/solana-form/instruction-form";
-import { Button, Flex, Space } from "antd";
+import { Flex } from "antd";
 import {
   AbiAction,
   Blockchain,
   ContractAddress,
   ContractTemplate,
   CopyStatus,
+  NetworkCluster,
   TxResponse,
 } from "@utils/constants";
 import { Wallet } from "@utils/wallets/wallet";
 import { IdlInstruction } from "@utils/types/solana";
-import {
-  CheckOutlined,
-  CloudUploadOutlined,
-  CopyOutlined,
-  EditOutlined,
-  EyeOutlined,
-  LoadingOutlined,
-} from "@ant-design/icons";
-import { capitalize } from "@utils/utils";
 import TransactionResult from "@components/abi-form/tx-response";
 import {
   SolanaIxRawData,
@@ -34,6 +26,7 @@ import { useAuth } from "@hooks/auth";
 import { addContractAddresses } from "@api/contracts";
 import { useFetchMyContracts } from "@hooks/contract";
 import "@components/abi-form/abi-form.scss";
+import AbiFormAction from "@components/abi-form/abi-form-action";
 
 const SolanaBasicInstructionForm: React.FC<{
   action: AbiAction;
@@ -253,42 +246,15 @@ const SolanaBasicInstructionForm: React.FC<{
         extraAccounts
         onIxDataChange={(data) => setIxRawData(data)}
       />
-      <Flex vertical align="start" gap="middle">
-        <Space>
-          <Button
-            type="primary"
-            loading={loading}
-            onClick={() => execute()}
-            icon={
-              action === AbiAction.Deploy ? (
-                <CloudUploadOutlined />
-              ) : action === AbiAction.Read ? (
-                <EyeOutlined />
-              ) : (
-                <EditOutlined />
-              )
-            }
-          >
-            {capitalize(action.toString())}
-          </Button>
-          {action === AbiAction.Write && (
-            <Button
-              variant="filled"
-              color="default"
-              icon={<CopyOutlined />}
-              iconPosition="end"
-              loading={
-                (copying === "copying" && { icon: <LoadingOutlined /> }) ||
-                (copying === "copied" && {
-                  icon: <CheckOutlined className="copy-done" />,
-                })
-              }
-              onClick={copyTxBytecode}
-            >
-              Copy bytecode
-            </Button>
-          )}
-        </Space>
+      <Flex vertical gap="middle">
+        <AbiFormAction
+          action={action}
+          networkCluster={NetworkCluster.Solana}
+          loading={loading}
+          copying={copying}
+          execute={execute}
+          copyTxBytecode={copyTxBytecode}
+        />
         {txResp && (
           <TransactionResult
             blockchain={blockchain}

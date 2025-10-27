@@ -9,7 +9,7 @@ import {
   EyeOutlined,
   LoadingOutlined,
 } from "@ant-design/icons";
-import { Button, Flex, Space, Tooltip } from "antd";
+import { Button, Flex, FormInstance, Space, Tooltip } from "antd";
 import React from "react";
 import { DocType, docUrl } from "@docs/index";
 import "./abi-form.scss";
@@ -19,14 +19,29 @@ const AbiFormAction: React.FC<{
   networkCluster: NetworkCluster;
   loading: boolean;
   copying: CopyStatus;
+  form?: FormInstance;
+  execute?: () => Promise<void>;
   copyTxBytecode: () => Promise<void>;
-}> = ({ action, networkCluster, loading, copying, copyTxBytecode }) => {
+}> = ({
+  action,
+  networkCluster,
+  loading,
+  copying,
+  form,
+  execute,
+  copyTxBytecode,
+}) => {
+  const executeAbiForm = async () => {
+    if (form) form.submit();
+    else if (execute) await execute();
+  };
+
   return (
-    <Flex justify="space-between">
+    <Flex justify="space-between" align="center">
       <Space>
         <Button
           type="primary"
-          htmlType="submit"
+          onClick={executeAbiForm}
           loading={loading}
           icon={
             action === AbiAction.Deploy ? (

@@ -283,6 +283,7 @@ const EvmTxForm: React.FC<{
             networkCluster={NetworkCluster.Ethereum}
             loading={loading}
             copying={copying}
+            form={evmAbiForm}
             copyTxBytecode={copyTxBytecode}
           />
         </Form.Item>
