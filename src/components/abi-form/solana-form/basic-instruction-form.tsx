@@ -6,6 +6,7 @@ import {
   Blockchain,
   ContractAddress,
   ContractTemplate,
+  CopyStatus,
   TxResponse,
 } from "@utils/constants";
 import { Wallet } from "@utils/wallets/wallet";
@@ -52,7 +53,7 @@ const SolanaBasicInstructionForm: React.FC<{
   const [notification, contextHolder] = useNotification();
   const [ixRawData, setIxRawData] = useState<SolanaIxRawData>({});
   const [loading, setLoading] = useState<boolean>(false);
-  const [copying, setCopying] = useState<"copy" | "copying" | "copied">("copy");
+  const [copying, setCopying] = useState<CopyStatus>("copy");
   const [txResp, setTxResp] = useState<TxResponse>();
   const { callAuthenticatedApi } = useAuth();
   const { fetchContracts } = useFetchMyContracts();

@@ -20,6 +20,8 @@ export enum AbiAction {
   Write = "write",
 }
 
+export type CopyStatus = "copy" | "copying" | "copied";
+
 export type Blockchain = {
   id: string;
   code: string;

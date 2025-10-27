@@ -1,4 +1,4 @@
-import { Button, Form, Input, Space } from "antd";
+import { Form, Input } from "antd";
 import React, { useState } from "react";
 import {
   EVM_PAYABLE_AMOUNT,
@@ -8,19 +8,12 @@ import {
 } from "@components/abi-form/evm-form/utils";
 import AbiFormInput from "@components/abi-form/abi-form-input";
 import {
-  CheckOutlined,
-  CloudUploadOutlined,
-  CopyOutlined,
-  EditOutlined,
-  EyeOutlined,
-  LoadingOutlined,
-} from "@ant-design/icons";
-import { capitalize } from "@utils/utils";
-import {
   AbiAction,
   Blockchain,
   ContractAddress,
   ContractTemplate,
+  CopyStatus,
+  NetworkCluster,
   TxResponse,
 } from "@utils/constants";
 import TransactionResult from "@components/abi-form/tx-response";
@@ -32,6 +25,7 @@ import { useAuth } from "@hooks/auth";
 import { useFetchMyContracts } from "@hooks/contract";
 import { addContractAddresses } from "@api/contracts";
 import { JsonFragment } from "ethers";
+import AbiFormAction from "@components/abi-form/abi-form-action";
 
 const EvmTxForm: React.FC<{
   action: AbiAction;
@@ -52,7 +46,7 @@ const EvmTxForm: React.FC<{
   const [notification, contextHolder] = useNotification();
   const [txResponse, setTxResponse] = useState<TxResponse>();
   const [loading, setLoading] = useState<boolean>(false);
-  const [copying, setCopying] = useState<"copy" | "copying" | "copied">("copy");
+  const [copying, setCopying] = useState<CopyStatus>("copy");
   const { callAuthenticatedApi } = useAuth();
   const { fetchContracts } = useFetchMyContracts();
 
@@ -284,43 +278,13 @@ const EvmTxForm: React.FC<{
           </Form.Item>
         )}
         <Form.Item>
-          <Space>
-            <Button
-              type="primary"
-              htmlType="submit"
-              loading={loading}
-              icon={
-                action === AbiAction.Deploy ? (
-                  <CloudUploadOutlined />
-                ) : action === AbiAction.Read ? (
-                  <EyeOutlined />
-                ) : (
-                  <EditOutlined />
-                )
-              }
-            >
-              {capitalize(action.toString())}
-            </Button>
-            {action === AbiAction.Write && (
-              <Button
-                variant="filled"
-                color="default"
-                icon={<CopyOutlined />}
-                iconPosition="end"
-                loading={
-                  (copying === "copying" && {
-                    icon: <LoadingOutlined />,
-                  }) ||
-                  (copying === "copied" && {
-                    icon: <CheckOutlined className="copy-done" />,
-                  })
-                }
-                onClick={copyTxBytecode}
-              >
-                Copy bytecode
-              </Button>
-            )}
-          </Space>
+          <AbiFormAction
+            action={action}
+            networkCluster={NetworkCluster.Ethereum}
+            loading={loading}
+            copying={copying}
+            copyTxBytecode={copyTxBytecode}
+          />
         </Form.Item>
       </Form>
       {txResponse && (
