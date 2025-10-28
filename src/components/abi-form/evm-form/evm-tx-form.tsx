@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import {
   EVM_PAYABLE_AMOUNT,
   funcSignature,
+  genEvmDefaultParam,
   isComplex,
   paramKey,
 } from "@components/abi-form/evm-form/utils";
@@ -267,6 +268,7 @@ const EvmTxForm: React.FC<{
             placeholder={param.type}
             disabled={loading}
             json={isComplex(param.type)}
+            genDefaultJson={() => genEvmDefaultParam(param)}
           />
         ))}
         {evmFunction.stateMutability === "payable" && (

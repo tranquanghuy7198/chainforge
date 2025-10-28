@@ -48,6 +48,7 @@ interface AbiFormInputProps {
   disabled?: boolean;
   defaultOption?: AddressOption;
   json: boolean;
+  genDefaultJson?: () => any;
 }
 
 interface AbiFormInputRef {
@@ -71,6 +72,7 @@ const AbiFormInput = forwardRef<AbiFormInputRef, AbiFormInputProps>(
       disabled,
       defaultOption,
       json,
+      genDefaultJson,
     },
     ref
   ) => {
@@ -154,6 +156,7 @@ const AbiFormInput = forwardRef<AbiFormInputRef, AbiFormInputProps>(
               placeholder={placeholder}
               disabled={isDisabled}
               onChange={handleEditorChange}
+              genDefaultJson={genDefaultJson}
             />
           ) : (
             <Input
