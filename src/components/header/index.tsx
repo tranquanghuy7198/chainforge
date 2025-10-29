@@ -20,7 +20,7 @@ const Header: React.FC<{
 }) => {
   return (
     <div className="page-header">
-      <h1 className="page-title">{header}</h1>
+      <h2 className="page-title">{header}</h2>
       <Space>
         <Select
           defaultValue={

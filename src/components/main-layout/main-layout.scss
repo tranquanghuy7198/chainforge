@@ -30,23 +30,23 @@ body {
 }
 
 .profile-logo {
-  max-height: 25px;
-  max-width: 25px;
+  max-height: 23px;
+  max-width: 23px;
 }
 
 .logo-title-left {
   font-family: "tesla";
-  font-size: 20px;
+  font-size: 18px;
   font-weight: bold;
   color: $primary;
 }
 
 .logo-title-right {
-  padding: 4px 4px 2px 6px;
+  padding: 3px 3px 1px 5px;
   border-radius: 4px;
   background-color: $primary;
   font-family: "tesla";
-  font-size: 20px;
+  font-size: 18px;
   font-weight: bold;
   mix-blend-mode: difference;
 }
