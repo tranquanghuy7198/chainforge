@@ -1,4 +1,4 @@
-import { CHAINFORGE_API } from "@api/constants";
+import { API_URL } from "@api/constants";
 
 type ApiErrorResponse = {
   error: string; // Overall error
@@ -29,7 +29,7 @@ export const makeRequest = async (
   if (contentType) headers["Content-Type"] = contentType;
 
   // Send request
-  const response = await fetch(`${CHAINFORGE_API}${endpoint}`, {
+  const response = await fetch(`${API_URL}${endpoint}`, {
     method: method,
     headers: headers,
     body: body ? JSON.stringify(body) : undefined,

@@ -1,6 +1,6 @@
 import { Flex, Image, Space } from "antd";
 import React from "react";
-import logo from "@assets/chainforge.png";
+import logo from "@assets/logo.png";
 import "./main-layout.scss";
 
 const Logo: React.FC = () => {

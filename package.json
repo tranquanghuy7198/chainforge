@@ -1,11 +1,11 @@
 {
-  "homepage": "https://tranquanghuy7198.github.io/chainforge/",
+  "homepage": "https://tranquanghuy7198.github.io/kontraxhub/",
   "name": "blockchain-tools",
   "version": "0.1.0",
   "private": true,
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/tranquanghuy7198/chainforge.git"
+    "url": "git+https://github.com/tranquanghuy7198/kontraxhub.git"
   },
   "dependencies": {
     "@ant-design/icons": "^6.1.0",

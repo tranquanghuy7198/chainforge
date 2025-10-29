@@ -64,7 +64,7 @@ const VSCodeEditor = forwardRef<VSCodeEditorRef, VSCodeEditorProps>(
       }
 
       // Set custom theme
-      monaco.editor.defineTheme("chainforge-theme", {
+      monaco.editor.defineTheme("custom-theme", {
         base: "vs-dark",
         inherit: true,
         rules: [],
@@ -76,7 +76,7 @@ const VSCodeEditor = forwardRef<VSCodeEditorRef, VSCodeEditorProps>(
           "editor.lineHighlightBorder": TRANSPARENT,
         },
       });
-      monaco.editor.setTheme("chainforge-theme");
+      monaco.editor.setTheme("custom-theme");
     };
 
     const handleEditorChange = (value: string | undefined) => {

@@ -11,7 +11,7 @@ export default defineConfig({
       globals: { global: true, process: true },
     }),
   ],
-  base: process.env.NODE_ENV === "production" ? "/chainforge/" : "/",
+  base: process.env.NODE_ENV === "production" ? "/kontraxhub/" : "/",
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
