@@ -2,7 +2,6 @@ import {
   Drawer,
   Flex,
   FloatButton,
-  Image,
   Layout,
   Menu,
   MenuProps,
@@ -21,7 +20,6 @@ import React, { ReactNode, useState } from "react";
 import WalletCard from "@components/wallet";
 import { useAppSelector } from "@redux/hook";
 import ProductContact from "@components/contact";
-import logo from "@assets/chainforge.png";
 import { useLocation, useNavigate } from "react-router-dom";
 import {
   BLOCKCHAINS,
@@ -31,6 +29,7 @@ import {
 } from "@utils/routes";
 import ProfileCard from "@components/profile-card";
 import "./main-layout.scss";
+import Logo from "@components/main-layout/logo";
 
 type MenuItem = Required<MenuProps>["items"][number];
 
@@ -79,10 +78,7 @@ const MainLayout: React.FC<{ children: ReactNode }> = ({ children }) => {
   return (
     <Layout hasSider className="main-screen">
       <Layout.Sider className="left-area" width="auto" theme="light">
-        <div className="profile-logo-container">
-          <Image src={logo} preview={false} className="profile-logo" />
-          <div className="profile-title">CHAINFORGE</div>
-        </div>
+        <Logo />
         <Menu
           className="menu"
           defaultSelectedKeys={[location.pathname]}

@@ -26,10 +26,6 @@ body {
 }
 
 .profile-logo-container {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
   height: 80px;
 }
 
@@ -38,11 +34,21 @@ body {
   max-width: 25px;
 }
 
-.profile-title {
+.logo-title-left {
   font-family: "tesla";
   font-size: 20px;
   font-weight: bold;
   color: $primary;
+}
+
+.logo-title-right {
+  padding: 4px 4px 2px 6px;
+  border-radius: 4px;
+  background-color: $primary;
+  font-family: "tesla";
+  font-size: 20px;
+  font-weight: bold;
+  mix-blend-mode: difference;
 }
 
 .menu {
