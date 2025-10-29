@@ -1,7 +1,11 @@
-import { Button, Input, Select, Space } from "antd";
+import { Button, Input, Segmented, Select, Space } from "antd";
 import React from "react";
 import "./header.scss";
-import { PlusCircleOutlined } from "@ant-design/icons";
+import {
+  AppstoreOutlined,
+  BarsOutlined,
+  PlusCircleOutlined,
+} from "@ant-design/icons";
 
 const Header: React.FC<{
   header: string;
@@ -22,6 +26,13 @@ const Header: React.FC<{
     <div className="page-header">
       <h2 className="page-title">{header}</h2>
       <Space>
+        <Segmented<"list" | "masonry">
+          defaultValue="masonry"
+          options={[
+            { value: "masonry", icon: <AppstoreOutlined /> },
+            { value: "list", icon: <BarsOutlined /> },
+          ]}
+        />
         <Select
           defaultValue={
             defaultSelectAll ? options.map((option) => option.value) : []
