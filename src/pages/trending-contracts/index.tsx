@@ -10,7 +10,7 @@ import MainLayout from "@components/main-layout";
 
 const TrendingContracts: React.FC = () => {
   const { blockchains } = useFetchBlockchains();
-  const { trendingContracts } = useFetchPopularContracts();
+  const { trendingContracts, trendingLoading } = useFetchPopularContracts();
   const [displayedContracts, setDisplayedContracts] = useState<
     DeployedContract[]
   >([]);
@@ -45,27 +45,25 @@ const TrendingContracts: React.FC = () => {
   }, [trendingContracts, blockchains, selectedClusters, searchedName]);
 
   return (
-    <MainLayout>
-      <div className="page">
-        <Header
-          header="Popular Contracts"
-          options={Object.values(NetworkCluster).map((cluster) => ({
-            value: cluster.toString(),
-            label: capitalize(cluster.toString()),
-          }))}
-          onSelected={setSelectedClusters}
-          onSearched={setSearchedName}
-          defaultSelectAll={false}
-        />
-        <div className="masonry-container">
-          <XMasonry center={false} targetBlockWidth={300}>
-            {displayedContracts.map((contract) => (
-              <XBlock key={contract.template.id}>
-                <ContractCard contract={contract} />
-              </XBlock>
-            ))}
-          </XMasonry>
-        </div>
+    <MainLayout loading={trendingLoading}>
+      <Header
+        header="Popular Contracts"
+        options={Object.values(NetworkCluster).map((cluster) => ({
+          value: cluster.toString(),
+          label: capitalize(cluster.toString()),
+        }))}
+        onSelected={setSelectedClusters}
+        onSearched={setSearchedName}
+        defaultSelectAll={false}
+      />
+      <div className="masonry-container">
+        <XMasonry center={false} targetBlockWidth={300}>
+          {displayedContracts.map((contract) => (
+            <XBlock key={contract.template.id}>
+              <ContractCard contract={contract} />
+            </XBlock>
+          ))}
+        </XMasonry>
       </div>
     </MainLayout>
   );

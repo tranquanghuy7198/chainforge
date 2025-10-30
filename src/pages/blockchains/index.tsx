@@ -15,7 +15,7 @@ const TESTNET: string = "testnet";
 const MAINNET: string = "mainnet";
 
 const Blockchains: React.FC = () => {
-  const { blockchains } = useFetchBlockchains();
+  const { blockchains, blockchainLoading } = useFetchBlockchains();
   const [displayedBlockchains, setDisplayedBlockchains] = useState<
     Blockchain[]
   >([]);
@@ -51,64 +51,62 @@ const Blockchains: React.FC = () => {
   };
 
   return (
-    <MainLayout>
-      <div className="page">
-        {contextHolder}
-        <Header
-          header="Blockchains"
-          options={[
-            { value: MAINNET, label: "Mainnet" },
-            { value: TESTNET, label: "Testnet" },
-          ]}
-          onSelected={setSelectedValues}
-          onSearched={setSearchedValue}
-          onAddRequested={() => setAddBlockchain(true)}
-          defaultSelectAll
-        />
-        <div className="masonry-container">
-          <XMasonry center={false} targetBlockWidth={380}>
-            {displayedBlockchains.map((blockchain) => (
-              <XBlock key={blockchain.id}>
-                <BlockchainCard blockchain={blockchain} />
-              </XBlock>
-            ))}
-          </XMasonry>
-        </div>
-        <Drawer
-          width={500}
-          title="Request New Blockchain"
-          open={addBlockchain}
-          closable={true}
-          onClose={() => setAddBlockchain(false)}
-        >
-          <Form
-            name="add-blockchain"
-            layout="horizontal"
-            autoComplete="off"
-            onFinish={(values) => requestChain(values)}
-          >
-            <Form.Item name="name" label="Name" required>
-              <Input placeholder="Blockchain Name" />
-            </Form.Item>
-            <Form.Item name="referenceLink" label="Reference Link" required>
-              <Input placeholder="Reference Link" />
-            </Form.Item>
-            <Form.Item
-              name="isTestnet"
-              label="Testnet"
-              valuePropName="checked"
-              required
-            >
-              <Checkbox />
-            </Form.Item>
-            <Form.Item>
-              <Button type="primary" htmlType="submit">
-                Request
-              </Button>
-            </Form.Item>
-          </Form>
-        </Drawer>
+    <MainLayout loading={blockchainLoading}>
+      {contextHolder}
+      <Header
+        header="Blockchains"
+        options={[
+          { value: MAINNET, label: "Mainnet" },
+          { value: TESTNET, label: "Testnet" },
+        ]}
+        onSelected={setSelectedValues}
+        onSearched={setSearchedValue}
+        onAddRequested={() => setAddBlockchain(true)}
+        defaultSelectAll
+      />
+      <div className="masonry-container">
+        <XMasonry center={false} targetBlockWidth={380}>
+          {displayedBlockchains.map((blockchain) => (
+            <XBlock key={blockchain.id}>
+              <BlockchainCard blockchain={blockchain} />
+            </XBlock>
+          ))}
+        </XMasonry>
       </div>
+      <Drawer
+        width={500}
+        title="Request New Blockchain"
+        open={addBlockchain}
+        closable={true}
+        onClose={() => setAddBlockchain(false)}
+      >
+        <Form
+          name="add-blockchain"
+          layout="horizontal"
+          autoComplete="off"
+          onFinish={(values) => requestChain(values)}
+        >
+          <Form.Item name="name" label="Name" required>
+            <Input placeholder="Blockchain Name" />
+          </Form.Item>
+          <Form.Item name="referenceLink" label="Reference Link" required>
+            <Input placeholder="Reference Link" />
+          </Form.Item>
+          <Form.Item
+            name="isTestnet"
+            label="Testnet"
+            valuePropName="checked"
+            required
+          >
+            <Checkbox />
+          </Form.Item>
+          <Form.Item>
+            <Button type="primary" htmlType="submit">
+              Request
+            </Button>
+          </Form.Item>
+        </Form>
+      </Drawer>
     </MainLayout>
   );
 };

@@ -39,7 +39,7 @@ const ContractTemplates: React.FC = () => {
     form?: ContractTemplateFormStructure;
   }>({ open: false, form: undefined });
   const [confirmDeleteId, setConfirmDeleteId] = useState<string>();
-  const { templates, fetchTemplates } = useFetchMyTemplates();
+  const { templates, fetchTemplates, templateLoading } = useFetchMyTemplates();
   const { fetchContracts } = useFetchMyContracts();
   const { fetchPopularContracts } = useFetchPopularContracts();
   const { callAuthenticatedApi } = useAuth();
@@ -156,62 +156,58 @@ const ContractTemplates: React.FC = () => {
   };
 
   return (
-    <MainLayout>
-      <div className="page">
-        {contextHolder}
-        <AuthModal />
-        <Header
-          header="Contract Templates"
-          options={Object.values(NetworkCluster).map((cluster) => ({
-            value: cluster.toString(),
-            label: capitalize(cluster.toString()),
-          }))}
-          onSelected={setSelectedClusters}
-          onSearched={setSearchedName}
-          onAddRequested={() =>
-            setTemplateForm({ open: true, form: undefined })
-          }
-          defaultSelectAll={false}
-        />
-        <div className="masonry-container">
-          <XMasonry center={false} targetBlockWidth={360}>
-            {displayedTemplates.map((template) => (
-              <XBlock key={template.id}>
-                <ContractTemplateCard
-                  contractTemplate={template}
-                  onDeleteTemplate={setConfirmDeleteId}
-                  onEditTemplate={editContractTemplate}
-                />
-              </XBlock>
-            ))}
-          </XMasonry>
-        </div>
-        <Drawer
-          width={700}
-          title={
-            templateForm.form ? templateForm.form.name : "Add Contract Template"
-          }
-          open={templateForm.open}
-          closable={true}
-          onClose={() => setTemplateForm({ ...templateForm, open: false })}
-        >
-          <ContractTemplateForm
-            templateForm={templateForm}
-            saveContractTemplate={(template) =>
-              saveContractTemplate(parseToContractTemplate(template))
-            }
-          />
-        </Drawer>
-        <ConfirmModal
-          showModal={confirmDeleteId !== undefined}
-          danger
-          onOk={() => deleteContractTemplate(confirmDeleteId)}
-          onCancel={() => setConfirmDeleteId(undefined)}
-          title="Delete this template?"
-          description="This action can not be undone. All information associated with this template will be lost."
-          okText="Delete Template"
-        />
+    <MainLayout loading={templateLoading}>
+      {contextHolder}
+      <AuthModal />
+      <Header
+        header="Contract Templates"
+        options={Object.values(NetworkCluster).map((cluster) => ({
+          value: cluster.toString(),
+          label: capitalize(cluster.toString()),
+        }))}
+        onSelected={setSelectedClusters}
+        onSearched={setSearchedName}
+        onAddRequested={() => setTemplateForm({ open: true, form: undefined })}
+        defaultSelectAll={false}
+      />
+      <div className="masonry-container">
+        <XMasonry center={false} targetBlockWidth={360}>
+          {displayedTemplates.map((template) => (
+            <XBlock key={template.id}>
+              <ContractTemplateCard
+                contractTemplate={template}
+                onDeleteTemplate={setConfirmDeleteId}
+                onEditTemplate={editContractTemplate}
+              />
+            </XBlock>
+          ))}
+        </XMasonry>
       </div>
+      <Drawer
+        width={700}
+        title={
+          templateForm.form ? templateForm.form.name : "Add Contract Template"
+        }
+        open={templateForm.open}
+        closable={true}
+        onClose={() => setTemplateForm({ ...templateForm, open: false })}
+      >
+        <ContractTemplateForm
+          templateForm={templateForm}
+          saveContractTemplate={(template) =>
+            saveContractTemplate(parseToContractTemplate(template))
+          }
+        />
+      </Drawer>
+      <ConfirmModal
+        showModal={confirmDeleteId !== undefined}
+        danger
+        onOk={() => deleteContractTemplate(confirmDeleteId)}
+        onCancel={() => setConfirmDeleteId(undefined)}
+        title="Delete this template?"
+        description="This action can not be undone. All information associated with this template will be lost."
+        okText="Delete Template"
+      />
     </MainLayout>
   );
 };

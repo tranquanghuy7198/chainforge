@@ -6,6 +6,7 @@ import {
   Menu,
   MenuProps,
   Space,
+  Spin,
   Tag,
 } from "antd";
 import {
@@ -69,7 +70,10 @@ const items: MenuItem[] = [
   // },
 ];
 
-const MainLayout: React.FC<{ children: ReactNode }> = ({ children }) => {
+const MainLayout: React.FC<{
+  children: ReactNode;
+  loading: boolean;
+}> = ({ children, loading }) => {
   const wallets = useAppSelector((state) => state.wallet.wallets);
   const navigate = useNavigate();
   const location = useLocation();
@@ -97,7 +101,11 @@ const MainLayout: React.FC<{ children: ReactNode }> = ({ children }) => {
         <ProfileCard />
         <ProductContact />
       </Layout.Sider>
-      <Layout>{children}</Layout>
+      <Layout>
+        <Spin spinning={loading} size="large">
+          <div className="page">{children}</div>
+        </Spin>
+      </Layout>
       <FloatButton
         className="float-btn"
         type="primary"
